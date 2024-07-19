@@ -1,0 +1,46 @@
+package com.ee06.wooms.domain.users.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.UuidGenerator.Style;
+
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
+@Entity
+@Table(name = "users")
+public class User {
+
+    @Id
+    @UuidGenerator(style = Style.TIME)
+    @Column(name = "user_uuid", columnDefinition = "BINARY(16)")
+    private UUID userUuid;
+
+    @Column(name = "user_email")
+    private String userEmail;
+
+    @Column(name = "user_password")
+    private String userPassword;
+
+    @Column(name = "user_name")
+    private String userName;
+
+    @Column(name = "social_provider")
+    private SocialProvider socialProvider;
+
+    @Column(name = "user_status")
+    private UserStatus userStatus;
+
+    @Column(name = "user_costume")
+    private Integer userCostume;
+}
