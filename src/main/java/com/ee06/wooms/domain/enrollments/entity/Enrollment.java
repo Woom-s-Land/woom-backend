@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.enrollments.entity;
 
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
+import com.ee06.wooms.global.audit.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "wooms_enrollments")
-public class Enrollment {
+public class Enrollment extends BaseTimeEntity {
     @EmbeddedId
     private Pk pk;
 
