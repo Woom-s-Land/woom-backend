@@ -1,7 +1,7 @@
 package com.ee06.wooms.global.jwt;
 
 import com.ee06.wooms.domain.users.entity.User;
-import com.ee06.wooms.domain.users.entity.dto.CustomOAuth2User;
+import com.ee06.wooms.domain.users.dto.CustomOAuth2User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

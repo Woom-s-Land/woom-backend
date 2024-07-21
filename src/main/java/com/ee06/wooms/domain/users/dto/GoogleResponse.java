@@ -1,4 +1,4 @@
-package com.ee06.wooms.domain.users.entity.dto;
+package com.ee06.wooms.domain.users.dto;
 
 import com.ee06.wooms.domain.users.entity.SocialProvider;
 
