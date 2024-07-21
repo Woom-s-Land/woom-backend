@@ -8,7 +8,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 public class JWTUtil {
@@ -26,13 +25,13 @@ public class JWTUtil {
                 .get("name", String.class);
     }
 
-    public UUID getUserUuid(String token) {
+    public String getUserUuid(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
-                .get("uuid", UUID.class);
+                .get("uuid", String.class);
     }
 
     public Boolean isExpired(String token) {

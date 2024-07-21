@@ -30,7 +30,7 @@ public class CustomOAuth2User implements OAuth2User {
         return user.getUserName();
     }
 
-    public String getSocialProvider() {
-        return String.valueOf(user.getSocialProvider());
+    public String getUuid() {
+        return String.valueOf(user.getUserUuid());
     }
 }

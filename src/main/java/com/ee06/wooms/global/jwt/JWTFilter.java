@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         User user = User.builder()
-                .userUuid(jwtUtil.getUserUuid(token))
+                .userUuid(UUID.fromString(jwtUtil.getUserUuid(token)))
                 .userName(jwtUtil.getUserName(token))
                 .build();
 
