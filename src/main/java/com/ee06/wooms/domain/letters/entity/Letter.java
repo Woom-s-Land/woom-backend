@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.letters.entity;
 
 
 import com.ee06.wooms.domain.users.entity.User;
+import com.ee06.wooms.global.audit.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "user_letters")
-public class Letter {
+public class Letter extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_letter_id")

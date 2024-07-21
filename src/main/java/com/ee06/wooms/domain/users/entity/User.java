@@ -1,5 +1,6 @@
 package com.ee06.wooms.domain.users.entity;
 
+import com.ee06.wooms.global.audit.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -19,7 +20,7 @@ import org.hibernate.annotations.UuidGenerator.Style;
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @UuidGenerator(style = Style.TIME)
