@@ -50,4 +50,17 @@ public class JWTFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
+
+    public static void setErrorResponse(HttpServletResponse response , ErrorCode errorCode) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(errorCode.getHttpStatus().value());
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(errorCode.getHttpStatus())
+                .message(errorCode.getMessage())
+                .build();
+
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+    }
 }

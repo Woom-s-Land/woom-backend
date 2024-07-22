@@ -1,8 +1,9 @@
 package com.ee06.wooms.global.security;
 
 import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
-import com.ee06.wooms.global.jwt.JWTFilter;
 import com.ee06.wooms.global.jwt.JWTUtil;
+import com.ee06.wooms.global.jwt.filter.JWTFilter;
+import com.ee06.wooms.global.jwt.handler.CustomAuthenticationEntryPointHandler;
 import com.ee06.wooms.global.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -30,12 +31,19 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
-                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/", "api/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/groups/**").authenticated()
+                        .requestMatchers("/api/letters/**").authenticated()
+                        .requestMatchers("/api/comments/**").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .headers((headersConfigurer) ->
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                )
+                .exceptionHandling((handler) -> handler
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPointHandler())
                 )
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login((oauth2) -> oauth2
@@ -46,7 +54,6 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-
 
         return http.build();
     }
