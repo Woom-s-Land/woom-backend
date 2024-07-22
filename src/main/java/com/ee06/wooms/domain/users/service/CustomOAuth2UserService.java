@@ -10,6 +10,8 @@ import com.ee06.wooms.domain.users.entity.UserStatus;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -24,9 +26,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
@@ -40,7 +44,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             User user = User.builder()
                     .userUuid(UUID.randomUUID())
                     .userEmail(userEmail)
-                    .userPassword("password")
+                    .userPassword(bCryptPasswordEncoder.encode("password"))
                     .userName(oAuth2Response.getName())
                     .socialProvider(SocialProvider.valueOf(registrationId.toUpperCase()))
                     .userStatus(UserStatus.ACTIVE)
