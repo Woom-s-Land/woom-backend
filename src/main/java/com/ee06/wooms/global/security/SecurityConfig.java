@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .with(new Custom(authenticationConfiguration), Custom::getClass);
+                .with(new Custom(authenticationConfiguration, jwtUtil), Custom::getClass);
 
         return http.build();
     }
@@ -66,10 +66,11 @@ public class SecurityConfig {
     @RequiredArgsConstructor
     public static class Custom extends AbstractHttpConfigurer<Custom, HttpSecurity> {
         private final AuthenticationConfiguration authenticationConfiguration;
+        private final JWTUtil jwtUtil;
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
-            LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration));
+            LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
             loginFilter.setFilterProcessesUrl("/api/auth");
 
             http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
