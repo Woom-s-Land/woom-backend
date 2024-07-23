@@ -1,4 +1,4 @@
-package com.ee06.wooms.domain.users.dto;
+package com.ee06.wooms.domain.users.dto.oauth;
 
 public interface OAuth2Response {
     String getProvider();

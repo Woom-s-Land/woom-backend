@@ -1,6 +1,6 @@
 package com.ee06.wooms.global.oauth;
 
-import com.ee06.wooms.domain.users.dto.CustomOAuth2User;
+import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.Token;
 import jakarta.servlet.http.Cookie;

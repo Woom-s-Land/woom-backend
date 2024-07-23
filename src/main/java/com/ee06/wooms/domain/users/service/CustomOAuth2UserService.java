@@ -1,9 +1,9 @@
 package com.ee06.wooms.domain.users.service;
 
-import com.ee06.wooms.domain.users.dto.CustomOAuth2User;
-import com.ee06.wooms.domain.users.dto.GithubResponse;
-import com.ee06.wooms.domain.users.dto.GoogleResponse;
-import com.ee06.wooms.domain.users.dto.OAuth2Response;
+import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
+import com.ee06.wooms.domain.users.dto.oauth.GithubResponse;
+import com.ee06.wooms.domain.users.dto.oauth.GoogleResponse;
+import com.ee06.wooms.domain.users.dto.oauth.OAuth2Response;
 import com.ee06.wooms.domain.users.entity.SocialProvider;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;

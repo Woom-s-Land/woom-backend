@@ -1,6 +1,6 @@
 package com.ee06.wooms.global.jwt.filter;
 
-import com.ee06.wooms.domain.users.dto.CustomOAuth2User;
+import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import jakarta.servlet.FilterChain;

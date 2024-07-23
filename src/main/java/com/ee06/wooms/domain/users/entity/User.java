@@ -1,17 +1,19 @@
 package com.ee06.wooms.domain.users.entity;
 
+import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.UuidGenerator.Style;
+
+import java.util.UUID;
 
 
 @NoArgsConstructor
@@ -48,4 +50,11 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_nickname")
     private String nickname;
 
+    public static User of(Join joinDto) {
+        return User.builder()
+                .email(joinDto.getEmail())
+                .password(joinDto.getPassword())
+                .name(joinDto.getName())
+                .build();
+    }
 }
