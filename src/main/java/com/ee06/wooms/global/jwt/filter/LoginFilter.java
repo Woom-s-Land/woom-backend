@@ -37,8 +37,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
-        log.info(loginDto.getEmail());
-        log.info(loginDto.getPassword());
 
         return authenticationManager.authenticate(authToken);
     }
@@ -47,9 +45,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        String uuid = customUserDetails.getEmail();
+        String uuid = customUserDetails.getUuid();
         String name = customUserDetails.getUsername();
-
 
         Token token = jwtUtil.generateToken(uuid, name);
         response.addCookie(createCookie("Authorization", token.getAccessToken()));

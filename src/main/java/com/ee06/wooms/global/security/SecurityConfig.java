@@ -49,7 +49,6 @@ public class SecurityConfig {
                 .headers((headersConfigurer) ->
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
-                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
@@ -74,6 +73,8 @@ public class SecurityConfig {
             loginFilter.setFilterProcessesUrl("/api/auth");
 
             http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+            http.addFilterAfter(new JWTFilter(jwtUtil, "OAUTH"), OAuth2LoginAuthenticationFilter.class);
+            http.addFilterBefore(new JWTFilter(jwtUtil, "COMMON"), LoginFilter.class);
         }
     }
 
