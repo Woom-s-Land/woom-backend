@@ -38,8 +38,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (token != null && jwtUtil.validateToken(token)) {
             User user = User.builder()
-                    .userUuid(UUID.fromString(jwtUtil.getUserUuid(token)))
-                    .userName(jwtUtil.getUserName(token))
+                    .uuid(UUID.fromString(jwtUtil.getUserUuid(token)))
+                    .name(jwtUtil.getUserName(token))
                     .build();
 
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(user, Map.of());
