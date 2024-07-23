@@ -50,7 +50,6 @@ public class SecurityConfig {
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
@@ -58,9 +57,23 @@ public class SecurityConfig {
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                )
+                .with(new Custom(authenticationConfiguration), Custom::getClass);
 
         return http.build();
+    }
+
+    @RequiredArgsConstructor
+    public static class Custom extends AbstractHttpConfigurer<Custom, HttpSecurity> {
+        private final AuthenticationConfiguration authenticationConfiguration;
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration));
+            loginFilter.setFilterProcessesUrl("/api/auth");
+
+            http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        }
     }
 
     @Bean
