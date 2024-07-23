@@ -3,7 +3,6 @@ package com.ee06.wooms.global.security;
 import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.filter.JWTFilter;
-import com.ee06.wooms.global.jwt.handler.CustomAuthenticationEntryPointHandler;
 import com.ee06.wooms.global.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -41,9 +40,6 @@ public class SecurityConfig {
                 )
                 .headers((headersConfigurer) ->
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-                )
-                .exceptionHandling((handler) -> handler
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPointHandler())
                 )
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login((oauth2) -> oauth2

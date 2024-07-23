@@ -25,23 +25,27 @@ public class User extends BaseTimeEntity {
     @Id
     @UuidGenerator(style = Style.TIME)
     @Column(name = "user_uuid", columnDefinition = "BINARY(16)")
-    private UUID userUuid;
+    private UUID uuid;
 
     @Column(name = "user_email")
-    private String userEmail;
+    private String email;
 
     @Column(name = "user_password")
-    private String userPassword;
+    private String password;
 
     @Column(name = "user_name")
-    private String userName;
+    private String name;
 
     @Column(name = "social_provider")
     private SocialProvider socialProvider;
 
     @Column(name = "user_status")
-    private UserStatus userStatus;
+    private UserStatus status;
 
     @Column(name = "user_costume")
-    private Integer userCostume;
+    private Integer costume;
+
+    @Column(name = "user_nickname")
+    private String nickname;
+
 }

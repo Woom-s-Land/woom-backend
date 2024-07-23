@@ -41,8 +41,6 @@ public class Enrollment extends BaseTimeEntity {
     @JoinColumn(name = "wooms_uuid", columnDefinition = "BINARY(16)")
     private Wooms wooms;
 
-    private String userNickname;
-
     private EnrollmentStatus status;
 
     @NoArgsConstructor

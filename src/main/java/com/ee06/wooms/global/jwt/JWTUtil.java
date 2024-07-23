@@ -44,11 +44,11 @@ public class JWTUtil {
                 .get("uuid", String.class);
     }
 
-    public Token generateToken(String userUuid, String userName) {
+    public Token generateToken(String uuid, String name) {
         String accessToken = Jwts.builder()
                 .subject("access-token")
-                .claim("uuid", userUuid)
-                .claim("name", userName)
+                .claim("uuid", uuid)
+                .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenValidityInMilliseconds))
                 .signWith(secretKey)

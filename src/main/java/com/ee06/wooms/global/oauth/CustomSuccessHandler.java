@@ -28,10 +28,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
-        String userUuid = customUserDetails.getUuid();
-        String userName = customUserDetails.getAttribute("name");
+        String uuid = customUserDetails.getUuid();
+        String name = customUserDetails.getAttribute("name");
 
-        Token token = jwtUtil.generateToken(userUuid, userName);
+        Token token = jwtUtil.generateToken(uuid, name);
 
         response.addCookie(createCookie("Authorization", token.getAccessToken()));
         response.sendRedirect(frontURI);
