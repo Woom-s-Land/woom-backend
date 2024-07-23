@@ -3,9 +3,6 @@ package com.ee06.wooms.global.jwt.filter;
 import com.ee06.wooms.domain.users.dto.CustomOAuth2User;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.global.jwt.JWTUtil;
-import com.ee06.wooms.global.jwt.dto.ErrorCode;
-import com.ee06.wooms.global.jwt.dto.ErrorResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -38,8 +35,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (token != null && jwtUtil.validateToken(token)) {
             User user = User.builder()
-                    .uuid(UUID.fromString(jwtUtil.getUserUuid(token)))
-                    .name(jwtUtil.getUserName(token))
+                    .uuid(UUID.fromString(jwtUtil.getUuid(token)))
+                    .name(jwtUtil.getName(token))
                     .build();
 
             CustomOAuth2User customOAuth2User = new CustomOAuth2User(user, Map.of());
@@ -49,18 +46,5 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
-    }
-
-    public static void setErrorResponse(HttpServletResponse response , ErrorCode errorCode) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(errorCode.getHttpStatus().value());
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(errorCode.getHttpStatus())
-                .message(errorCode.getMessage())
-                .build();
-
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

@@ -27,7 +27,7 @@ public class JWTUtil {
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 1000;
     }
 
-    public String getUserName(String token){
+    public String getName(String token){
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build().parseSignedClaims(token)
@@ -35,7 +35,7 @@ public class JWTUtil {
                 .get("name", String.class);
     }
 
-    public String getUserUuid(String token) {
+    public String getUuid(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
