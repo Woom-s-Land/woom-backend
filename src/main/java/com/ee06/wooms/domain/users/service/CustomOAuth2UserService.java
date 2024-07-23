@@ -7,7 +7,9 @@ import com.ee06.wooms.domain.users.dto.oauth.OAuth2Response;
 import com.ee06.wooms.domain.users.entity.SocialProvider;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
+import com.ee06.wooms.domain.users.exception.UserExistException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
+import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.oauth.exception.NotFoundPlatformException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2Response oAuth2Response =
                 provideOAuth(userRequest.getClientRegistration().getRegistrationId(), oAuth2User)
-                .orElseThrow(() -> new NotFoundPlatformException("제공하지 않는 플랫폼"));
+                .orElseThrow(() -> new NotFoundPlatformException(ErrorCode.NOT_FOUND_PLATFORM_SERVICE));
 
         String userEmail = oAuth2Response.getEmail();
 

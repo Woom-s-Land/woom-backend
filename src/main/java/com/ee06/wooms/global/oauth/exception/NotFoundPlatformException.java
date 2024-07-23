@@ -1,19 +1,12 @@
 package com.ee06.wooms.global.oauth.exception;
 
+import com.ee06.wooms.global.exception.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class NotFoundPlatformException extends RuntimeException {
-    public NotFoundPlatformException() {
-        super();
-    }
-
-    public NotFoundPlatformException(String message) {
-        super(message);
-    }
-
-    public NotFoundPlatformException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NotFoundPlatformException(Throwable cause) {
-        super(cause);
-    }
+    final ErrorCode errorCode;
 }
+
