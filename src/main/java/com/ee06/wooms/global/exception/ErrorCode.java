@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     //======================== 사용자 예외 ========================//
     EXIST_USER(HttpStatus.INTERNAL_SERVER_ERROR, "이미 회원가입 된 이메일입니다."),
+    NOT_FOUND_USER(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 이메일입니다."),
 
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");
