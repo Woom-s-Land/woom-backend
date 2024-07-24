@@ -1,4 +1,4 @@
-package com.ee06.wooms.global.security;
+package com.ee06.wooms.global.config;
 
 import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
 import com.ee06.wooms.global.jwt.JWTUtil;
