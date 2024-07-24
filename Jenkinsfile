@@ -18,7 +18,7 @@ pipeline {
 
         stage('Clone Repository') {
             steps {
-                git branch: 'develop', url: "https://github.com/hennible0612/woom-backend"
+                git branch: 'develop', url: "https://github.com/Woom-s-Land/wooms-backend"
             }
         }
 
