@@ -2,7 +2,6 @@ package com.ee06.wooms.global.oauth;
 
 import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
 import com.ee06.wooms.global.jwt.JWTUtil;
-import com.ee06.wooms.global.jwt.dto.Token;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,9 +30,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String uuid = customUserDetails.getUuid();
         String name = customUserDetails.getAttribute("name");
 
-        Token token = jwtUtil.generateToken(uuid, name);
-
-        response.addCookie(createCookie("Authorization", token.getAccessToken()));
+        String accessToken = jwtUtil.generateAccessToken(uuid, name);
+        String refreshToken = jwtUtil.generateRefreshToken();
+        response.addCookie(createCookie("Authorization", accessToken));
+        response.addCookie(createCookie("refresh", refreshToken));
+        
         response.sendRedirect(frontURI);
     }
 

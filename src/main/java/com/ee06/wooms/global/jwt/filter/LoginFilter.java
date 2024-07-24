@@ -3,7 +3,6 @@ package com.ee06.wooms.global.jwt.filter;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.auth.Login;
 import com.ee06.wooms.global.jwt.JWTUtil;
-import com.ee06.wooms.global.jwt.dto.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,14 +48,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String uuid = customUserDetails.getUuid();
         String name = customUserDetails.getUsername();
 
-        Token token = jwtUtil.generateToken(uuid, name);
-        response.addCookie(createCookie("Authorization", token.getAccessToken()));
+        String accessToken = jwtUtil.generateAccessToken(uuid, name);
+        String refreshToken = jwtUtil.generateRefreshToken();
+        response.addCookie(createCookie("Authorization", accessToken));
+        response.addCookie(createCookie("refresh", refreshToken));
+
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        log.info("Login Fail");
-        super.unsuccessfulAuthentication(request, response, failed);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
     }
 
     private Cookie createCookie(String key, String value) {
