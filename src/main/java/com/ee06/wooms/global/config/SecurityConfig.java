@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -57,6 +59,9 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .exceptionHandling((handler) -> handler
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
                 .with(new Custom(authenticationConfiguration, jwtUtil), Custom::getClass);
 
         return http.build();
@@ -72,9 +77,13 @@ public class SecurityConfig {
             LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
             loginFilter.setFilterProcessesUrl("/api/auth");
 
-            http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-            http.addFilterAfter(new JWTFilter(jwtUtil, "OAUTH"), OAuth2LoginAuthenticationFilter.class);
-            http.addFilterBefore(new JWTFilter(jwtUtil, "COMMON"), LoginFilter.class);
+            JWTFilter oauthJwtFilter = new JWTFilter(jwtUtil, "OAUTH");
+            JWTFilter commonJwtFilter = new JWTFilter(jwtUtil, "COMMON");
+
+            http
+                    .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+                    .addFilterAfter(oauthJwtFilter, OAuth2LoginAuthenticationFilter.class)
+                    .addFilterBefore(commonJwtFilter, OAuth2LoginAuthenticationFilter.class);
         }
     }
 
