@@ -28,6 +28,14 @@ public class JWTUtil {
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 1000;
     }
 
+    public String getSubject(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build().parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
     public String getName(String token){
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -55,9 +63,11 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
     }
-    public String generateRefreshToken() {
+    public String generateRefreshToken(String uuid, String name) {
         return Jwts.builder()
                 .subject("refresh-token")
+                .claim("uuid", uuid)
+                .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenValidityInMilliseconds))
                 .signWith(secretKey)

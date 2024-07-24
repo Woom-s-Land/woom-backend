@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/", "api/auth/**").permitAll()
+                        .requestMatchers("/", "/reissue", "api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/groups/**").authenticated()
                         .requestMatchers("/api/letters/**").authenticated()
