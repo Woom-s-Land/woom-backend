@@ -2,6 +2,7 @@ package com.ee06.wooms.global.config;
 
 import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
 import com.ee06.wooms.global.jwt.JWTUtil;
+import com.ee06.wooms.global.jwt.filter.CustomLogoutFilter;
 import com.ee06.wooms.global.jwt.filter.JWTFilter;
 import com.ee06.wooms.global.jwt.filter.LoginFilter;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
@@ -23,6 +24,7 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -43,7 +45,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/", "/reissue", "api/auth/**").permitAll()
+                        .requestMatchers("/", "/re", "api/auth/**").permitAll()
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/groups/**").authenticated()
                         .requestMatchers("/api/letters/**").authenticated()
@@ -64,7 +66,11 @@ public class SecurityConfig {
                 .exceptionHandling((handler) -> handler
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
-                .with(new Custom(authenticationConfiguration, refreshTokenRepository, jwtUtil), Custom::getClass);
+                .with(new Custom(
+                        authenticationConfiguration,
+                        refreshTokenRepository,
+                        jwtUtil), Custom::getClass
+                );
 
         return http.build();
     }
@@ -79,6 +85,7 @@ public class SecurityConfig {
         public void configure(HttpSecurity http) throws Exception {
             LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), refreshTokenRepository, jwtUtil);
             loginFilter.setFilterProcessesUrl("/api/auth");
+            loginFilter.setPostOnly(true);
 
             JWTFilter oauthJwtFilter = new JWTFilter(jwtUtil, "OAUTH");
             JWTFilter commonJwtFilter = new JWTFilter(jwtUtil, "COMMON");
@@ -86,7 +93,8 @@ public class SecurityConfig {
             http
                     .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                     .addFilterAfter(oauthJwtFilter, OAuth2LoginAuthenticationFilter.class)
-                    .addFilterBefore(commonJwtFilter, OAuth2LoginAuthenticationFilter.class);
+                    .addFilterBefore(commonJwtFilter, OAuth2LoginAuthenticationFilter.class)
+                    .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
         }
     }
 
