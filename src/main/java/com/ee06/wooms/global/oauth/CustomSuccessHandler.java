@@ -2,6 +2,8 @@ package com.ee06.wooms.global.oauth;
 
 import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
 import com.ee06.wooms.global.jwt.JWTUtil;
+import com.ee06.wooms.global.jwt.dto.RefreshToken;
+import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +23,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${spring.front.uri}")
     private String frontURI;
 
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JWTUtil jwtUtil;
 
     @Override
@@ -35,6 +38,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("Authorization", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
 
+        addRefreshToken(uuid, refreshToken);
+
         response.sendRedirect(frontURI);
     }
 
@@ -45,5 +50,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    private void addRefreshToken(String uuid, String refreshToken) {
+        RefreshToken token = RefreshToken
+                .builder()
+                .uuid(uuid)
+                .refreshToken(refreshToken)
+                .build();
+
+        refreshTokenRepository.save(token);
     }
 }

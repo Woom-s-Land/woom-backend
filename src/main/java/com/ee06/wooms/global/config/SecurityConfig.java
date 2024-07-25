@@ -4,6 +4,7 @@ import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.filter.JWTFilter;
 import com.ee06.wooms.global.jwt.filter.LoginFilter;
+import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import com.ee06.wooms.global.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,7 +64,7 @@ public class SecurityConfig {
                 .exceptionHandling((handler) -> handler
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
-                .with(new Custom(authenticationConfiguration, jwtUtil), Custom::getClass);
+                .with(new Custom(authenticationConfiguration, refreshTokenRepository, jwtUtil), Custom::getClass);
 
         return http.build();
     }
@@ -70,11 +72,12 @@ public class SecurityConfig {
     @RequiredArgsConstructor
     public static class Custom extends AbstractHttpConfigurer<Custom, HttpSecurity> {
         private final AuthenticationConfiguration authenticationConfiguration;
+        private final RefreshTokenRepository refreshTokenRepository;
         private final JWTUtil jwtUtil;
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
-            LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+            LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), refreshTokenRepository, jwtUtil);
             loginFilter.setFilterProcessesUrl("/api/auth");
 
             JWTFilter oauthJwtFilter = new JWTFilter(jwtUtil, "OAUTH");

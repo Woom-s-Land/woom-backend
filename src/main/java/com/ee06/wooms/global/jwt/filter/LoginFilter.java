@@ -3,6 +3,8 @@ package com.ee06.wooms.global.jwt.filter;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.auth.Login;
 import com.ee06.wooms.global.jwt.JWTUtil;
+import com.ee06.wooms.global.jwt.dto.RefreshToken;
+import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +26,7 @@ import java.io.IOException;
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JWTUtil jwtUtil;
 
     @Override
@@ -50,8 +53,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String accessToken = jwtUtil.generateAccessToken(uuid, name);
         String refreshToken = jwtUtil.generateRefreshToken(uuid, name);
+
+        addRefreshToken(uuid, refreshToken);
+
         response.addCookie(createCookie("Authorization", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));
+
 
         response.setStatus(HttpStatus.OK.value());
     }
@@ -59,6 +66,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    private void addRefreshToken(String uuid, String refreshToken) {
+        RefreshToken token = RefreshToken
+                .builder()
+                .uuid(uuid)
+                .refreshToken(refreshToken)
+                .build();
+
+        refreshTokenRepository.save(token);
     }
 
     private Cookie createCookie(String key, String value) {

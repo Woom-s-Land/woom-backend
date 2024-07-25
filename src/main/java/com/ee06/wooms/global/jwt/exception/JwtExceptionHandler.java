@@ -13,4 +13,9 @@ public class JwtExceptionHandler {
     public ResponseEntity<Object> invalidJwt(InvalidTokenException e) {
         return ErrorCodeUtils.build(ErrorCode.INVALID_TOKEN);
     }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<Object> invalidRefreshJwt(InvalidRefreshTokenException e) {
+        return ErrorCodeUtils.build(ErrorCode.INVALID_REFRESH_TOKEN);
+    }
 }
