@@ -1,7 +1,8 @@
 package com.ee06.wooms.global.jwt;
 
-import com.ee06.wooms.global.jwt.dto.Token;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,14 @@ public class JWTUtil {
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds * 1000;
     }
 
+    public String getSubject(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build().parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
     public String getName(String token){
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -44,8 +53,8 @@ public class JWTUtil {
                 .get("uuid", String.class);
     }
 
-    public Token generateToken(String uuid, String name) {
-        String accessToken = Jwts.builder()
+    public String generateAccessToken(String uuid, String name) {
+        return Jwts.builder()
                 .subject("access-token")
                 .claim("uuid", uuid)
                 .claim("name", name)
@@ -53,19 +62,14 @@ public class JWTUtil {
                 .expiration(new Date(System.currentTimeMillis() + accessTokenValidityInMilliseconds))
                 .signWith(secretKey)
                 .compact();
-
-        String refreshToken = Jwts.builder()
+    }
+    public String generateRefreshToken() {
+        return Jwts.builder()
                 .subject("refresh-token")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenValidityInMilliseconds))
                 .signWith(secretKey)
                 .compact();
-
-        return Token.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .grantType("Bearer")
-                .build();
     }
 
     public boolean validateToken(String token) {

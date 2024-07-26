@@ -1,4 +1,4 @@
-package com.ee06.wooms.global.jwt.dto;
+package com.ee06.wooms.domain.users.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Token {
-    private String accessToken;
-    private String refreshToken;
-    private String grantType;
+public class Login {
+    private String email;
+    private String password;
 }

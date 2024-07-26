@@ -1,4 +1,4 @@
-package com.ee06.wooms.global.jwt.dto;
+package com.ee06.wooms.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
