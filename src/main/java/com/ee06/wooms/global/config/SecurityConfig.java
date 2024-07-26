@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,17 +40,29 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web
+                .ignoring()
+                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**")
+                .requestMatchers(PathRequest.toH2Console());
+    }
+
+    private static final String[] AUTH_WHITELIST = {
+            "/re",
+            "/api/auth/**",
+            "/api/users/**",
+            "/api/groups/**",
+            "/api/letters/**",
+            "/api/comments/**",
+    };
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
-                        .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .requestMatchers("/", "/re", "api/auth/**").permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
-                        .requestMatchers("/api/groups/**").authenticated()
-                        .requestMatchers("/api/letters/**").authenticated()
-                        .requestMatchers("/api/comments/**").authenticated()
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().permitAll()
                 )
                 .headers((headersConfigurer) ->
