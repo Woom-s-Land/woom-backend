@@ -37,7 +37,7 @@ public class JwtService {
         String name = jwtUtil.getName(token);
 
         String newAccessToken = jwtUtil.generateAccessToken(uuid, name);
-        String newRefreshToken = jwtUtil.generateRefreshToken(uuid, name);
+        String newRefreshToken = jwtUtil.generateRefreshToken();
 
         refreshTokenRepository.deleteByRefreshToken(token);
         addRefreshToken(uuid, token);

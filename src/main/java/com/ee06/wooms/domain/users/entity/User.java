@@ -6,6 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +31,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_uuid", columnDefinition = "BINARY(16)")
     private UUID uuid;
 
+    @Email
     @Column(name = "user_email")
     private String email;
 
