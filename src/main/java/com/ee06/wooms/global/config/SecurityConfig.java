@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toH2Console());
     }
 
-    private static final String[] AUTH_WHITELIST = {
+    private static final String[] AUTH_REQUIRED = {
             "/re",
             "/api/auth/**",
             "/api/users/**",
@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
 
                         .requestMatchers("/api/auth/users", "/api/auth").permitAll()
-                        .requestMatchers(AUTH_WHITELIST).authenticated()
+                        .requestMatchers(AUTH_REQUIRED).authenticated()
                         .anyRequest().permitAll()
                 )
                 .headers((headersConfigurer) ->

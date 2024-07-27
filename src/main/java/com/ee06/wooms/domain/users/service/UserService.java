@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -54,24 +55,16 @@ public class UserService implements UserDetailsService {
     }
 
     public CommonResponse modifyPassword(CustomUserDetails currentUser, String password) {
-        return userRepository.findById(UUID.fromString(currentUser.getUuid()))
-                .map(user -> {
-                    user.modifyPassword(bCryptPasswordEncoder.encode(password));
-                    userRepository.save(user);
-                    return new CommonResponse("ok");
-                })
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+        return updateUser(currentUser, user -> {
+            user.modifyPassword(bCryptPasswordEncoder.encode(password));
+        });
     }
 
     public CommonResponse modifyUserInfo(CustomUserDetails currentUser, UserGameInfo userGameInfo) {
-        return userRepository.findById(UUID.fromString(currentUser.getUuid()))
-                .map(user -> {
-                    user.modifyNickname(userGameInfo.getNickname());
-                    user.modifyCostume(userGameInfo.getCostume());
-                    userRepository.save(user);
-                    return new CommonResponse("ok");
-                })
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+        return updateUser(currentUser, user -> {
+            user.modifyNickname(userGameInfo.getNickname());
+            user.modifyCostume(userGameInfo.getCostume());
+        });
     }
 
     @Override
@@ -91,5 +84,15 @@ public class UserService implements UserDetailsService {
                 .costume(RandomHelper.generateCostumeNumber())
                 .nickname(RandomHelper.generateNickname())
                 .build();
+    }
+
+    private CommonResponse updateUser(CustomUserDetails currentUser, Consumer<User> userUpdater) {
+        return userRepository.findById(UUID.fromString(currentUser.getUuid()))
+                .map(user -> {
+                    userUpdater.accept(user);
+                    userRepository.save(user);
+                    return new CommonResponse("ok");
+                })
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 }
