@@ -6,7 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,6 +51,18 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "user_nickname")
     private String nickname;
+
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void modifyPassword(String password) {
+        this.password = password;
+    }
+
+    public void modifyCostume(Integer costume) {
+        this.costume = costume;
+    }
 
     public static User of(Join joinDto) {
         return User.builder()

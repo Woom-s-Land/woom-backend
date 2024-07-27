@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toH2Console());
     }
 
-    private static final String[] AUTH_WHITELIST = {
+    private static final String[] AUTH_REQUIRED = {
             "/re",
             "/api/auth/**",
             "/api/users/**",
@@ -62,13 +62,17 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
+
+                        .requestMatchers("/api/auth/users", "/api/auth").permitAll()
+                        .requestMatchers(AUTH_REQUIRED).authenticated()
                         .anyRequest().permitAll()
                 )
                 .headers((headersConfigurer) ->
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .oauth2Login((oauth2) -> oauth2
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.baseUri("/api/oauth2/authorization/"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)

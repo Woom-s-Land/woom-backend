@@ -14,8 +14,14 @@ public class UserExceptionHandler {
         return ErrorCodeUtils.build(ErrorCode.EXIST_USER);
     }
 
-    @ExceptionHandler(UserEmailNotFoundException.class)
-    public ResponseEntity<Object> notFoundUser(UserEmailNotFoundException e) {
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> notFoundUser(UserNotFoundException e) {
         return ErrorCodeUtils.build(ErrorCode.NOT_FOUND_USER);
     }
+
+    @ExceptionHandler(UserEmailNotFoundException.class)
+    public ResponseEntity<Object> notFoundEmailUser(UserEmailNotFoundException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_FOUND_EMAIL_USER);
+    }
+
 }

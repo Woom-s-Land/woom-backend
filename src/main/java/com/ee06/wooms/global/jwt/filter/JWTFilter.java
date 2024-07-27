@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        if (request.getRequestURI().matches("^\\/api\\/auth\\/users(?:\\/.*)?$")) {
+        if (request.getRequestURI().matches("^\\/api\\/auth\\/users$")) {
             chain.doFilter(request, response);
             return;
         }
