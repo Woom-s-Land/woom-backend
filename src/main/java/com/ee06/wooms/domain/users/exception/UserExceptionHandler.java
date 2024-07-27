@@ -24,4 +24,9 @@ public class UserExceptionHandler {
         return ErrorCodeUtils.build(ErrorCode.NOT_FOUND_EMAIL_USER);
     }
 
+    @ExceptionHandler(UserNotSentEmailException.class)
+    public ResponseEntity<Object> notSendingEmail(UserNotSentEmailException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_SENT_EMAIL_USER);
+    }
+
 }

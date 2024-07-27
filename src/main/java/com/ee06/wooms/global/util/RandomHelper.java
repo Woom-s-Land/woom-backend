@@ -29,4 +29,12 @@ public class RandomHelper {
 
         return actions[randomActionIndex] + "_" + nouns[randomNounIndex];
     }
+
+    public static String generateRandomMailAuthenticationCode() {
+        return rand.ints(48, 122 + 1)
+                .filter(i -> (i <=57 || i >=65) && (i <= 90 || i>= 97))
+                .limit(6)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
 }
