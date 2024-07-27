@@ -60,8 +60,8 @@ public class UserService implements UserDetailsService {
 
     public CommonResponse sendEmail(Mail email) {
         String code = RandomHelper.generateRandomMailAuthenticationCode();
-        String title = "회원 가입 인증 이메일 입니다.";
-        String content = RandomHelper.getEmailContent(code);
+        String title = "[WOOMS] 회원 가입 인증 이메일 입니다.";
+        String content = RandomHelper.getEmailAuthContent(code);
 
         if(mailRepository.existsById(email.getEmail())) mailRepository.deleteById(email.getEmail());
         email.modifyCode(code);
@@ -78,6 +78,23 @@ public class UserService implements UserDetailsService {
                     throw new UserEmailCodeNotMatchedException(ErrorCode.NOT_MATCHED_EMAIL_CODE_USER);
                 })
                 .orElseThrow(() -> new UserEmailExpiredException(ErrorCode.EMAIL_EXPIRED_USER));
+    }
+
+    public CommonResponse reIssuePassword(Mail email) {
+        String password = RandomHelper.generateRandomPassword();
+        String title = "[WOOMS] 비밀번호 재발급 이메일 입니다.";
+        String content = RandomHelper.getEmailReIssueContent(password);
+
+        userRepository.findByEmail(email.getEmail()).ifPresentOrElse(
+                user -> {
+                    user.modifyPassword(bCryptPasswordEncoder.encode(RandomHelper.generateRandomPassword()));
+                    sendEmailToRequestUser(configEmail, email.getEmail(), title, content)
+                            .orElseThrow(() -> new UserNotSentEmailException(ErrorCode.NOT_SENT_EMAIL_USER));
+                    userRepository.save(user);
+                },
+                () -> {throw new UserEmailNotFoundException(ErrorCode.NOT_FOUND_EMAIL_USER);}
+        );
+        return new CommonResponse("ok");
     }
 
     public UserGameInfo userInfo(CustomUserDetails currentUser) {
@@ -143,7 +160,6 @@ public class UserService implements UserDetailsService {
             helper.setText(content,true);
             mailSender.send(message);
         } catch (MessagingException e) {
-            e.printStackTrace();
             return Optional.empty();
         }
 

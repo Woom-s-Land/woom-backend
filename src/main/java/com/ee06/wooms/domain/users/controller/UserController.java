@@ -34,6 +34,11 @@ public class UserController {
         return ResponseEntity.ok(userService.verifyEmailCode(email));
     }
 
+    @PatchMapping("/auth/password")
+    public ResponseEntity<CommonResponse> reIssuePassword(@RequestBody Mail email) {
+        return ResponseEntity.ok(userService.reIssuePassword(email));
+    }
+
     @GetMapping("/users/info")
     public ResponseEntity<UserGameInfo> userInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(userService.userInfo(currentUser));
