@@ -62,7 +62,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
+
+                        .requestMatchers("/api/auth/users", "/api/auth").permitAll()
+                        .requestMatchers(AUTH_WHITELIST).authenticated()
                         .anyRequest().permitAll()
                 )
                 .headers((headersConfigurer) ->

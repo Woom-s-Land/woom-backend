@@ -1,15 +1,18 @@
 package com.ee06.wooms.domain.users.service;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
+import com.ee06.wooms.domain.users.dto.UserInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
 import com.ee06.wooms.domain.users.exception.UserExistException;
+import com.ee06.wooms.domain.users.exception.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.RandomHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -36,6 +41,12 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
 
         return new CommonResponse("ok");
+    }
+
+    public UserInfo userInfo(CustomUserDetails currentUser) {
+        return userRepository.findById(UUID.fromString(currentUser.getUuid()))
+                .map(user -> new UserInfo(user.getEmail(), user.getNickname()))
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 
     @Override
