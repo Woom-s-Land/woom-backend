@@ -3,7 +3,7 @@ package com.ee06.wooms.domain.users.controller;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
-import com.ee06.wooms.domain.users.dto.auth.Mail;
+import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,11 @@ public class UserController {
     @PostMapping("/auth/email")
     public ResponseEntity<CommonResponse> sendEmail(@RequestBody Mail email) {
         return ResponseEntity.ok(userService.sendEmail(email));
+    }
+
+    @PostMapping("/auth/email/code")
+    public ResponseEntity<CommonResponse> verifyEmailCode(@RequestBody Mail email) {
+        return ResponseEntity.ok(userService.verifyEmailCode(email));
     }
 
     @GetMapping("/users/info")

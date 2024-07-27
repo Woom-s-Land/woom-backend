@@ -1,5 +1,6 @@
 package com.ee06.wooms.domain.users.exception;
 
+import com.ee06.wooms.domain.users.exception.ex.*;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.ErrorCodeUtils;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,16 @@ public class UserExceptionHandler {
     @ExceptionHandler(UserNotSentEmailException.class)
     public ResponseEntity<Object> notSendingEmail(UserNotSentEmailException e) {
         return ErrorCodeUtils.build(ErrorCode.NOT_SENT_EMAIL_USER);
+    }
+
+    @ExceptionHandler(UserEmailExpiredException.class)
+    public ResponseEntity<Object> notSendingEmail(UserEmailExpiredException e) {
+        return ErrorCodeUtils.build(ErrorCode.EMAIL_EXPIRED_USER);
+    }
+
+    @ExceptionHandler(UserEmailCodeNotMatchedException.class)
+    public ResponseEntity<Object> notSendingEmail(UserEmailCodeNotMatchedException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_MATCHED_EMAIL_CODE_USER);
     }
 
 }

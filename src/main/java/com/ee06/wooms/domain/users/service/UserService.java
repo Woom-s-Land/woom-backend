@@ -3,12 +3,11 @@ package com.ee06.wooms.domain.users.service;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
-import com.ee06.wooms.domain.users.dto.auth.Mail;
+import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
-import com.ee06.wooms.domain.users.exception.UserExistException;
-import com.ee06.wooms.domain.users.exception.UserNotFoundException;
-import com.ee06.wooms.domain.users.exception.UserNotSentEmailException;
+import com.ee06.wooms.domain.users.exception.ex.*;
+import com.ee06.wooms.domain.users.repository.MailRepository;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import com.ee06.wooms.global.exception.ErrorCode;
@@ -27,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -36,6 +36,8 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final MailRepository mailRepository;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender mailSender;
 
@@ -59,16 +61,23 @@ public class UserService implements UserDetailsService {
     public CommonResponse sendEmail(Mail email) {
         String code = RandomHelper.generateRandomMailAuthenticationCode();
         String title = "회원 가입 인증 이메일 입니다.";
-        String content =
-                "Wooms를 방문해주셔서 감사합니다." +
-                        "<br><br>" +
-                        "인증 번호는 " + code + "입니다." +
-                        "<br>" +
-                        "회원가입 창에 해당 인증번호를 입력해주세요 ";
+        String content = RandomHelper.getEmailContent(code);
+
+        if(mailRepository.existsById(email.getEmail())) mailRepository.deleteById(email.getEmail());
+        email.modifyCode(code);
+        mailRepository.save(email);
 
         return sendEmailToRequestUser(configEmail, email.getEmail(), title, content)
                 .map(sendResult -> new CommonResponse("ok"))
                 .orElseThrow(() -> new UserNotSentEmailException(ErrorCode.NOT_SENT_EMAIL_USER));
+    }
+
+    public CommonResponse verifyEmailCode(Mail email) {
+        return mailRepository.findById(email.getEmail()).map(findMail -> {
+                    if(Objects.equals(email.getCode(), findMail.getCode())) return new CommonResponse("ok");
+                    throw new UserEmailCodeNotMatchedException(ErrorCode.NOT_MATCHED_EMAIL_CODE_USER);
+                })
+                .orElseThrow(() -> new UserEmailExpiredException(ErrorCode.EMAIL_EXPIRED_USER));
     }
 
     public UserGameInfo userInfo(CustomUserDetails currentUser) {
