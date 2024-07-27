@@ -71,6 +71,8 @@ public class SecurityConfig {
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
                 .oauth2Login((oauth2) -> oauth2
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.baseUri("/api/oauth2/authorization/"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
