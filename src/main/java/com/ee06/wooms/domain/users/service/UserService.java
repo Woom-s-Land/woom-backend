@@ -1,7 +1,7 @@
 package com.ee06.wooms.domain.users.service;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.UserInfo;
+import com.ee06.wooms.domain.users.dto.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
@@ -43,9 +43,34 @@ public class UserService implements UserDetailsService {
         return new CommonResponse("ok");
     }
 
-    public UserInfo userInfo(CustomUserDetails currentUser) {
+    public UserGameInfo userInfo(CustomUserDetails currentUser) {
         return userRepository.findById(UUID.fromString(currentUser.getUuid()))
-                .map(user -> new UserInfo(user.getEmail(), user.getNickname()))
+                .map(user -> UserGameInfo.builder()
+                        .email(user.getEmail())
+                        .nickname(user.getNickname())
+                        .costume(user.getCostume())
+                        .build())
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+    }
+
+    public CommonResponse modifyPassword(CustomUserDetails currentUser, String password) {
+        return userRepository.findById(UUID.fromString(currentUser.getUuid()))
+                .map(user -> {
+                    user.modifyPassword(bCryptPasswordEncoder.encode(password));
+                    userRepository.save(user);
+                    return new CommonResponse("ok");
+                })
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+    }
+
+    public CommonResponse modifyUserInfo(CustomUserDetails currentUser, UserGameInfo userGameInfo) {
+        return userRepository.findById(UUID.fromString(currentUser.getUuid()))
+                .map(user -> {
+                    user.modifyNickname(userGameInfo.getNickname());
+                    user.modifyCostume(userGameInfo.getCostume());
+                    userRepository.save(user);
+                    return new CommonResponse("ok");
+                })
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
     }
 

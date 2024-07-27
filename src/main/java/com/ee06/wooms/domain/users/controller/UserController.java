@@ -1,7 +1,7 @@
 package com.ee06.wooms.domain.users.controller;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.UserInfo;
+import com.ee06.wooms.domain.users.dto.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -23,8 +23,19 @@ public class UserController {
         return ResponseEntity.ok(userService.join(joinDto));
     }
 
-    @GetMapping("/auth/users/info")
-    public ResponseEntity<UserInfo> userInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
+    @GetMapping("/users/info")
+    public ResponseEntity<UserGameInfo> userInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(userService.userInfo(currentUser));
+    }
+
+    @PatchMapping("/users/password")
+    public ResponseEntity<CommonResponse> modifyPassword(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody String password) {
+        return ResponseEntity.ok(userService.modifyPassword(currentUser, password));
+    }
+
+    @PatchMapping("/users/character")
+    public ResponseEntity<CommonResponse> modifyUserInfo(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                         @RequestBody UserGameInfo userGameInfo) {
+        return ResponseEntity.ok(userService.modifyUserInfo(currentUser, userGameInfo));
     }
 }
