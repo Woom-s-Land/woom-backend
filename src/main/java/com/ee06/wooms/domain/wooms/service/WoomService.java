@@ -20,43 +20,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class WoomService {
     private final UserRepository userRepository;
-
     private final WoomRepository woomRepository;
-
     private final EnrollmentRepository enrollmentRepository;
 
     @Transactional
     public WoomDto createWoomGroup(CustomUserDetails currentUser, WoomCreateRequestDto woomCreateRequestDto) {
         User user = fetchUser(currentUser.getUuid());
+
         Wooms savedWoom = createAndSaveWoom(user, woomCreateRequestDto);
-        createAndSaveEnrollment(user, savedWoom);
+
+        Enrollment newEnrollment = Enrollment.of(user, savedWoom, EnrollmentStatus.ACCEPT);
+        enrollmentRepository.save(newEnrollment);
 
         return WoomDto.builder()
-                .woomInviteCode(UUID.randomUUID().toString())
-                .woomId(savedWoom.getUuid())
+                .woomId(savedWoom.getId())
+                .woomInviteCode(savedWoom.getUuid())
                 .woomTitle(savedWoom.getTitle())
                 .build();
     }
 
     private Wooms createAndSaveWoom(User user, WoomCreateRequestDto request) {
-        Wooms newWoom = Wooms.builder()
-                .user(user)
-                .title(request.getWoomTitle())
-                .build();
+        Wooms newWoom = Wooms.of(user, request);
         return woomRepository.save(newWoom);
     }
 
-    private void createAndSaveEnrollment(User user, Wooms woom) {
-        Enrollment newEnrollment = Enrollment.builder()
-                .pk(new Enrollment.Pk(user.getUuid(), woom.getUuid()))
-                .user(user)
-                .wooms(woom)
-                .status(EnrollmentStatus.ACCEPT)
-                .build();
-        enrollmentRepository.save(newEnrollment);
-    }
-
-    private User fetchUser(String userUuidStr) throws UserNotFoundException {
+    private User fetchUser(String userUuidStr) {
         UUID userUuid = UUID.fromString(userUuidStr);
         return userRepository.findById(userUuid)
                 .orElseThrow(UserNotFoundException::new);

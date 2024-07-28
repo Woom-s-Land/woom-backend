@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Builder
 public class WoomDto {
-    private final String woomInviteCode;
-    private final UUID woomId;
+    private final Long woomId;
+    private final UUID woomInviteCode;
     private final String woomTitle;
 }

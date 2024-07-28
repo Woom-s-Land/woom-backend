@@ -36,9 +36,9 @@ public class Enrollment extends BaseTimeEntity {
     @JoinColumn(name = "user_uuid", columnDefinition = "BINARY(16)")
     private User user;
 
-    @MapsId("woomUuid")
+    @MapsId("woomId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wooms_uuid", columnDefinition = "BINARY(16)")
+    @JoinColumn(name = "wooms_id")
     private Wooms wooms;
 
     private EnrollmentStatus status;
@@ -51,7 +51,17 @@ public class Enrollment extends BaseTimeEntity {
     public static class Pk implements Serializable {
         @Column(name = "user_uuid", columnDefinition = "BINARY(16)")
         private UUID userUuid;
-        @Column(name = "wooms_uuid", columnDefinition = "BINARY(16)")
-        private UUID woomUuid;
+
+        @Column(name = "wooms_id")
+        private Long woomId;
+    }
+
+    public static Enrollment of(User user, Wooms wooms, EnrollmentStatus status) {
+        return Enrollment.builder()
+                .user(user)
+                .wooms(wooms)
+                .status(status)
+                .pk(new Enrollment.Pk(user.getUuid(), wooms.getId()))
+                .build();
     }
 }
