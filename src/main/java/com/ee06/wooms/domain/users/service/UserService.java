@@ -5,13 +5,7 @@ import com.ee06.wooms.domain.users.dto.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.entity.User;
-import com.ee06.wooms.domain.users.entity.UserStatus;
-import com.ee06.wooms.domain.users.exception.ex.UserEmailCodeNotMatchedException;
-import com.ee06.wooms.domain.users.exception.ex.UserEmailExpiredException;
-import com.ee06.wooms.domain.users.exception.ex.UserEmailNotFoundException;
-import com.ee06.wooms.domain.users.exception.ex.UserExistException;
-import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
-import com.ee06.wooms.domain.users.exception.ex.UserNotSentEmailException;
+import com.ee06.wooms.domain.users.exception.ex.*;
 import com.ee06.wooms.domain.users.repository.MailRepository;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -20,10 +14,6 @@ import com.ee06.wooms.global.util.RandomHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +24,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -49,14 +44,11 @@ public class UserService implements UserDetailsService {
     private String configEmail;
 
     public CommonResponse join(Join join) {
-        String email = join.getEmail();
-        String password = bCryptPasswordEncoder.encode(join.getPassword());
-        String name = join.getName();
-
-        boolean isExists = userRepository.existsByEmail(email);
+        boolean isExists = userRepository.existsByEmail(join.getEmail());
         if (isExists) throw new UserExistException(ErrorCode.EXIST_USER);
 
-        User user = setUser(email, password, name);
+        join.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
+        User user = User.of(join);
         userRepository.save(user);
 
         return new CommonResponse("ok");
@@ -130,17 +122,6 @@ public class UserService implements UserDetailsService {
         user.orElseThrow(() -> new UsernameNotFoundException(email));
 
         return new CustomUserDetails(user.get());
-    }
-
-    private static User setUser(String email, String password, String name) {
-        return User.builder()
-                .email(email)
-                .password(password)
-                .name(name)
-                .status(UserStatus.ACTIVE)
-                .costume(RandomHelper.generateCostumeNumber())
-                .nickname(RandomHelper.generateNickname())
-                .build();
     }
 
     private CommonResponse updateUser(CustomUserDetails currentUser, Consumer<User> userUpdater) {

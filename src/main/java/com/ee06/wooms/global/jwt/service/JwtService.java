@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtService {
     private final JWTUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -34,9 +36,12 @@ public class JwtService {
         }
 
         String uuid = jwtUtil.getUuid(token);
-        String name = jwtUtil.getName(token);
+        String nickname = jwtUtil.getNickname(token);
+        String costume = String.valueOf(jwtUtil.getCostume(token));
 
-        String newAccessToken = jwtUtil.generateAccessToken(uuid, name);
+        log.info("costume : {}", costume);
+
+        String newAccessToken = jwtUtil.generateAccessToken(uuid, nickname, costume);
         String newRefreshToken = jwtUtil.generateRefreshToken();
 
         refreshTokenRepository.deleteByRefreshToken(token);
