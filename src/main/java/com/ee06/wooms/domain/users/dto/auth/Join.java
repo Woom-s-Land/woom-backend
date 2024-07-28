@@ -1,14 +1,11 @@
 package com.ee06.wooms.domain.users.dto.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Builder
+@Setter
 public class Join {
     private String email;
     private String password;

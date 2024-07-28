@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.users.entity;
 
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
+import com.ee06.wooms.global.util.RandomHelper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -69,6 +70,9 @@ public class User extends BaseTimeEntity {
                 .email(joinDto.getEmail())
                 .password(joinDto.getPassword())
                 .name(joinDto.getName())
+                .status(UserStatus.ACTIVE)
+                .costume(RandomHelper.generateCostumeNumber())
+                .nickname(RandomHelper.generateNickname())
                 .build();
     }
 }
