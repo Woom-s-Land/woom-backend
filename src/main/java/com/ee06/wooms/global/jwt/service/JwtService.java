@@ -39,8 +39,6 @@ public class JwtService {
         String nickname = jwtUtil.getNickname(token);
         String costume = String.valueOf(jwtUtil.getCostume(token));
 
-        log.info("costume : {}", costume);
-
         String newAccessToken = jwtUtil.generateAccessToken(uuid, nickname, costume);
         String newRefreshToken = jwtUtil.generateRefreshToken();
 
