@@ -35,7 +35,7 @@ public class Story extends BaseTimeEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wooms_uuid", columnDefinition = "BINARY(16)")
+    @JoinColumn(name = "wooms_id")
     private Wooms wooms;
 
     @Column(name = "wooms_story_content")

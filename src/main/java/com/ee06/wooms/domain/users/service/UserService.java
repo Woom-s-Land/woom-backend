@@ -6,7 +6,12 @@ import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
-import com.ee06.wooms.domain.users.exception.ex.*;
+import com.ee06.wooms.domain.users.exception.ex.UserEmailCodeNotMatchedException;
+import com.ee06.wooms.domain.users.exception.ex.UserEmailExpiredException;
+import com.ee06.wooms.domain.users.exception.ex.UserEmailNotFoundException;
+import com.ee06.wooms.domain.users.exception.ex.UserExistException;
+import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
+import com.ee06.wooms.domain.users.exception.ex.UserNotSentEmailException;
 import com.ee06.wooms.domain.users.repository.MailRepository;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -15,6 +20,10 @@ import com.ee06.wooms.global.util.RandomHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,11 +34,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -104,7 +108,7 @@ public class UserService implements UserDetailsService {
                         .nickname(user.getNickname())
                         .costume(user.getCostume())
                         .build())
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public CommonResponse modifyPassword(CustomUserDetails currentUser, String password) {
@@ -146,7 +150,7 @@ public class UserService implements UserDetailsService {
                     userRepository.save(user);
                     return new CommonResponse("ok");
                 })
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public Optional<Integer> sendEmailToRequestUser(String configEmail, String email, String title, String content) {
