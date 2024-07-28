@@ -11,6 +11,9 @@ import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.RandomHelper;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 @Slf4j
 @Service
@@ -51,7 +50,7 @@ public class UserService implements UserDetailsService {
                         .nickname(user.getNickname())
                         .costume(user.getCostume())
                         .build())
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public CommonResponse modifyPassword(CustomUserDetails currentUser, String password) {
@@ -93,6 +92,6 @@ public class UserService implements UserDetailsService {
                     userRepository.save(user);
                     return new CommonResponse("ok");
                 })
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(UserNotFoundException::new);
     }
 }
