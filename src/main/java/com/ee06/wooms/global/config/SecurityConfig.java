@@ -47,13 +47,10 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toH2Console());
     }
 
-    private static final String[] AUTH_REQUIRED = {
-            "/re",
-            "/api/auth/**",
-            "/api/users/**",
-            "/api/groups/**",
-            "/api/letters/**",
-            "/api/comments/**",
+    private static final String[] WHITE_LIST = {
+            "/api/auth", "/api/auth/users",
+            "/api/oauth2/authorization/**", "/login/oauth2/code/**",
+            "/api/auth/email", "/api/auth/email/code", "/api/auth/password"
     };
 
     @Bean
@@ -62,10 +59,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) -> authorizeRequest
-
-                        .requestMatchers("/api/auth/users", "/api/auth").permitAll()
-                        .requestMatchers(AUTH_REQUIRED).authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(WHITE_LIST).permitAll()
+                        .anyRequest().authenticated()
                 )
                 .headers((headersConfigurer) ->
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)

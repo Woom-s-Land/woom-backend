@@ -5,7 +5,7 @@ import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.entity.User;
-import com.ee06.wooms.domain.users.exception.UserNotFoundException;
+import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.domain.wooms.dto.WoomCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomDto;

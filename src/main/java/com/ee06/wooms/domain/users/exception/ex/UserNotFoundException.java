@@ -1,4 +1,4 @@
-package com.ee06.wooms.domain.users.exception;
+package com.ee06.wooms.domain.users.exception.ex;
 
 import static com.ee06.wooms.global.exception.ErrorCode.NOT_FOUND_USER;
 
