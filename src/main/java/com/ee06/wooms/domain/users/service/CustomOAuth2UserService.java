@@ -7,7 +7,6 @@ import com.ee06.wooms.domain.users.dto.oauth.OAuth2Response;
 import com.ee06.wooms.domain.users.entity.SocialProvider;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
-import com.ee06.wooms.domain.users.exception.UserExistException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.oauth.exception.NotFoundPlatformException;

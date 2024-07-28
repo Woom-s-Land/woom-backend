@@ -3,6 +3,7 @@ package com.ee06.wooms.domain.users.controller;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
+import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,21 @@ public class UserController {
         return ResponseEntity.ok(userService.join(joinDto));
     }
 
+    @PostMapping("/auth/email")
+    public ResponseEntity<CommonResponse> sendEmail(@RequestBody Mail email) {
+        return ResponseEntity.ok(userService.sendEmail(email));
+    }
+
+    @PostMapping("/auth/email/code")
+    public ResponseEntity<CommonResponse> verifyEmailCode(@RequestBody Mail email) {
+        return ResponseEntity.ok(userService.verifyEmailCode(email));
+    }
+
+    @PatchMapping("/auth/password")
+    public ResponseEntity<CommonResponse> reIssuePassword(@RequestBody Mail email) {
+        return ResponseEntity.ok(userService.reIssuePassword(email));
+    }
+
     @GetMapping("/users/info")
     public ResponseEntity<UserGameInfo> userInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(userService.userInfo(currentUser));
@@ -38,4 +54,6 @@ public class UserController {
                                                          @RequestBody UserGameInfo userGameInfo) {
         return ResponseEntity.ok(userService.modifyUserInfo(currentUser, userGameInfo));
     }
+
+
 }
