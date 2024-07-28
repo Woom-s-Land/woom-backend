@@ -43,7 +43,8 @@ public class JWTFilter extends OncePerRequestFilter {
             Authentication authToken = null;
             User user = User.builder()
                     .uuid(UUID.fromString(jwtUtil.getUuid(token)))
-                    .name(jwtUtil.getName(token))
+                    .nickname(jwtUtil.getNickname(token))
+                    .costume(Integer.parseInt(jwtUtil.getCostume(token)))
                     .build();
 
             if(Objects.equals(IS_COME, "OAUTH")) {

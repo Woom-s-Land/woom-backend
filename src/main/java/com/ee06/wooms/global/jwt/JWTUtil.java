@@ -36,14 +36,6 @@ public class JWTUtil {
                 .getSubject();
     }
 
-    public String getName(String token){
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build().parseSignedClaims(token)
-                .getPayload()
-                .get("name", String.class);
-    }
-
     public String getUuid(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
@@ -53,16 +45,36 @@ public class JWTUtil {
                 .get("uuid", String.class);
     }
 
-    public String generateAccessToken(String uuid, String name) {
+    public String getNickname(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("nickname", String.class);
+    }
+
+    public String getCostume(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("costume", String.class);
+    }
+
+    public String generateAccessToken(String uuid, String nickname, String costume) {
         return Jwts.builder()
                 .subject("access-token")
                 .claim("uuid", uuid)
-                .claim("name", name)
+                .claim("nickname", nickname)
+                .claim("costume", costume)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessTokenValidityInMilliseconds))
                 .signWith(secretKey)
                 .compact();
     }
+
     public String generateRefreshToken() {
         return Jwts.builder()
                 .subject("refresh-token")
