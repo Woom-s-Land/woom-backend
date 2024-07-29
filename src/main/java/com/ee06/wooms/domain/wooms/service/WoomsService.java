@@ -7,8 +7,8 @@ import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
-import com.ee06.wooms.domain.wooms.dto.WoomCreateRequestDto;
-import com.ee06.wooms.domain.wooms.dto.WoomDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsDto;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -21,16 +21,16 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class WoomService {
+public class WoomsService {
     private final UserRepository userRepository;
     private final WoomsRepository woomsRepository;
     private final EnrollmentRepository enrollmentRepository;
 
     @Transactional
-    public CommonResponse createWoomGroup(CustomUserDetails currentUser, WoomCreateRequestDto woomCreateRequestDto) {
+    public CommonResponse createWoomsGroup(CustomUserDetails currentUser, WoomsCreateRequestDto woomCreateRequestDto) {
         User user = fetchUser(currentUser.getUuid());
 
-        Wooms savedWoom = createAndSaveWoom(user, woomCreateRequestDto);
+        Wooms savedWoom = createAndSaveWooms(user, woomCreateRequestDto);
 
         Enrollment newEnrollment = Enrollment.of(user, savedWoom, EnrollmentStatus.ACCEPT);
         enrollmentRepository.save(newEnrollment);
@@ -38,7 +38,7 @@ public class WoomService {
         return new CommonResponse("ok");
     }
 
-    private Wooms createAndSaveWoom(User user, WoomCreateRequestDto request) {
+    private Wooms createAndSaveWooms(User user, WoomsCreateRequestDto request) {
         Wooms newWoom = Wooms.of(user, request);
         return woomsRepository.save(newWoom);
     }
@@ -49,14 +49,14 @@ public class WoomService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    public List<WoomDto> findAllWoomsByUser(UUID userUuid) {
+    public List<WoomsDto> findAllWoomsByUser(UUID userUuid) {
         List<Wooms> wooms = woomsRepository.findByUserUuid(userUuid);
         return wooms.stream()
                 .map(Wooms::toDto)
                 .collect(Collectors.toList());
     }
 
-    public CommonResponse createWoomParticipationRequest(CustomUserDetails currentUser) {
+    public CommonResponse createWoomsParticipationRequest(CustomUserDetails currentUser) {
         User user = fetchUser(currentUser.getUuid());
 //        Wooms targetWoom = woomRepository.findByInviteCode();
 

@@ -9,11 +9,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @Builder
-public class WoomInfoDto {
-    private final Long woomId;
-    private final UUID woomInviteCode;
-    private final String woomTitle;
-    private final LocalDateTime woomCreateTime;
-    private final Long woomTotalUsers;
+public class woomsInfoDto {
+    private final Long woomsId;
+    private final UUID woomsInviteCode;
+    private final String woomsTitle;
+    private final LocalDateTime woomsCreateTime;
+    private final Long woomsTotalUsers;
 
 }
