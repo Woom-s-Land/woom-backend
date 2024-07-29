@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @Builder
-public class WoomDto {
-    private final Long woomId;
-    private final UUID woomInviteCode;
-    private final String woomTitle;
+public class WoomsDto {
+    private final Long woomsId;
+    private final UUID woomsInviteCode;
+    private final String woomsTitle;
 }

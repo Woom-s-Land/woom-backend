@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WoomCreateRequestDto {
-    private String woomTitle;
+public class WoomsCreateRequestDto {
+    private String woomsTitle;
 }
