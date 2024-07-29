@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -121,7 +122,7 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userRepository.findByEmail(email);
         user.orElseThrow(() -> new UsernameNotFoundException(email));
 
-        return new CustomUserDetails(user.get());
+        return new CustomUserDetails(user.get(), Map.of());
     }
 
     private CommonResponse updateUser(CustomUserDetails currentUser, Consumer<User> userUpdater) {

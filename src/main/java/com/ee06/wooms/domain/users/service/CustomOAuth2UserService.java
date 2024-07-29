@@ -1,6 +1,6 @@
 package com.ee06.wooms.domain.users.service;
 
-import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
+import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.oauth.GithubResponse;
 import com.ee06.wooms.domain.users.dto.oauth.GoogleResponse;
 import com.ee06.wooms.domain.users.dto.oauth.OAuth2Response;
@@ -40,12 +40,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Optional<User> existUser = userRepository.findByEmail(userEmail);
         if(existUser.isPresent()) {
-            return new CustomOAuth2User(existUser.get(), oAuth2User.getAttributes());
+            return new CustomUserDetails(existUser.get(), oAuth2User.getAttributes());
         }
 
         User user = setUserInfo(userEmail, oAuth2Response, registrationId);
         userRepository.save(user);
-        return new CustomOAuth2User(user, oAuth2User.getAttributes());
+        return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
 
     private User setUserInfo(String userEmail, OAuth2Response oAuth2Response, String registrationId) {

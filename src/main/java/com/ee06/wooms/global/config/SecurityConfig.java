@@ -69,7 +69,6 @@ public class SecurityConfig {
                         .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/oauth2/authorization/"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
-                        .disable()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -94,22 +93,16 @@ public class SecurityConfig {
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
+            JWTFilter jwtFilter = new JWTFilter(jwtUtil, jwtAuthenticationEntryPoint);
             LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), refreshTokenRepository, jwtUtil);
             loginFilter.setFilterProcessesUrl("/api/auth");
             loginFilter.setPostOnly(true);
 
-            JWTFilter oauthJwtFilter = new JWTFilter(jwtUtil, "OAUTH", jwtAuthenticationEntryPoint);
-            JWTFilter commonJwtFilter = new JWTFilter(jwtUtil, "COMMON", jwtAuthenticationEntryPoint);
-
             http
                     .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
-                    .addFilterAfter(oauthJwtFilter, OAuth2LoginAuthenticationFilter.class)
-                    .addFilterBefore(commonJwtFilter, OAuth2LoginAuthenticationFilter.class)
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class)
-                    .exceptionHandling((handler) -> handler
-                            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                    );
-
+                    .exceptionHandling((handler) -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint));
         }
     }
 

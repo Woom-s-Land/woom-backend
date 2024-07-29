@@ -1,7 +1,6 @@
 package com.ee06.wooms.global.jwt.filter;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.jwt.JWTUtil;
@@ -28,7 +27,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
-    private final String IS_COME;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
@@ -46,18 +44,8 @@ public class JWTFilter extends OncePerRequestFilter {
                 .orElse(null);
 
         if (isNotValidate(request, response, chain, token)) return;
-
-        Authentication authToken = null;
-
-        if(Objects.equals(IS_COME, "OAUTH")) {
-            CustomOAuth2User customOAuth2User = new CustomOAuth2User(generateForAuthUser(token), Map.of());
-            authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-        }
-        if(Objects.equals(IS_COME, "COMMON")) {
-            CustomUserDetails customUserDetails = new CustomUserDetails(generateForAuthUser(token));
-            authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        }
-
+        CustomUserDetails customUserDetails = new CustomUserDetails(generateForAuthUser(token), Map.of());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         chain.doFilter(request, response);
