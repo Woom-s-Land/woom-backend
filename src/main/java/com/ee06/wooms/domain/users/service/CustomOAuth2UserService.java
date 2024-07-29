@@ -9,6 +9,7 @@ import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.oauth.exception.NotFoundPlatformException;
+import com.ee06.wooms.global.util.RandomHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -51,6 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return User.builder()
                 .email(userEmail)
                 .name(oAuth2Response.getName())
+                .nickname(RandomHelper.generateNickname())
                 .socialProvider(SocialProvider.valueOf(registrationId.toUpperCase()))
                 .status(UserStatus.ACTIVE)
                 .costume(1)
