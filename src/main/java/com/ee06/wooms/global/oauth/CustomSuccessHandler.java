@@ -31,8 +31,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String uuid = customUserDetails.getUuid();
-        String nickname = customUserDetails.getAttribute("nickname");
-        String costume = String.valueOf(customUserDetails.getAttribute("costume"));
+        String nickname = customUserDetails.getNickname();
+        String costume = customUserDetails.getCostume();
 
         String accessToken = jwtUtil.generateAccessToken(uuid, nickname, costume);
         String refreshToken = jwtUtil.generateRefreshToken();
