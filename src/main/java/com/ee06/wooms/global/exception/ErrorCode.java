@@ -24,6 +24,11 @@ public enum ErrorCode {
     EMAIL_EXPIRED_USER(HttpStatus.BAD_GATEWAY, "만료된 인증 코드입니다. 다시 인증해주세요."),
     NOT_MATCHED_EMAIL_CODE_USER(HttpStatus.UNAUTHORIZED, "일치하지 않는 코드입니다. 다시 확인해주세요."),
 
+    //======================== 사용자 예외 ========================//
+    NOT_VALID_WOOMS_INVITE_CODE(HttpStatus.NOT_FOUND, "유효하지 않은 초대 코드입니다."),
+    CONFLICT_ALREADY_WAITING(HttpStatus.CONFLICT, "이미 대기 중인 방입니다."),
+    CONFLICT_ALREADY_MEMBER(HttpStatus.CONFLICT, "이미 가입한 방입니다."),
+
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");
 
