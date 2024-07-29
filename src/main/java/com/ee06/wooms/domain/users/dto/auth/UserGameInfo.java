@@ -1,4 +1,4 @@
-package com.ee06.wooms.domain.users.dto;
+package com.ee06.wooms.domain.users.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

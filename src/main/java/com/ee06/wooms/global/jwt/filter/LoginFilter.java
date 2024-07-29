@@ -51,7 +51,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String uuid = customUserDetails.getUuid();
         String name = customUserDetails.getUser().getNickname();
         String costume = String.valueOf(customUserDetails.getUser().getCostume());
-        log.info("costume : {}", costume);
 
         String accessToken = jwtUtil.generateAccessToken(uuid, name, costume);
         String refreshToken = jwtUtil.generateRefreshToken();

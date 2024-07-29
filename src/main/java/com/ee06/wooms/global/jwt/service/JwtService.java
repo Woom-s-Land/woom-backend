@@ -1,7 +1,6 @@
 package com.ee06.wooms.global.jwt.service;
 
 import com.ee06.wooms.global.common.CommonResponse;
-import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.RefreshToken;
 import com.ee06.wooms.global.jwt.exception.InvalidRefreshTokenException;
@@ -28,11 +27,11 @@ public class JwtService {
     public CommonResponse issueRefreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = getToken(request);
         if(!jwtUtil.validateToken(token) || !Objects.equals(jwtUtil.getSubject(token), "refresh-token")){
-            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException();
         }
 
         if(refreshTokenRepository.existsByRefreshToken(token)) {
-            throw new InvalidRefreshTokenException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new InvalidRefreshTokenException();
         }
 
         String uuid = jwtUtil.getUuid(token);
