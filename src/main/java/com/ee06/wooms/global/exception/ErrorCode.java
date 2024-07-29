@@ -2,11 +2,17 @@ package com.ee06.wooms.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+@RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
+
+    //======================== Binding 예외 ========================//
+    BINDING_ERROR(HttpStatus.BAD_REQUEST),
+
     //======================== JWT 예외 ========================//
     NOT_FOUND_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 토큰입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
@@ -28,5 +34,5 @@ public enum ErrorCode {
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");
 
     private final HttpStatus httpStatus;
-    private final String message;
+    private String message;
 }

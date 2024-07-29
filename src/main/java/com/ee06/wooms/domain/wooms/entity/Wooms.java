@@ -1,8 +1,8 @@
 package com.ee06.wooms.domain.wooms.entity;
 
 import com.ee06.wooms.domain.users.entity.User;
-import com.ee06.wooms.domain.wooms.dto.WoomCreateRequestDto;
-import com.ee06.wooms.domain.wooms.dto.WoomDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsDto;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +33,8 @@ public class Wooms extends BaseTimeEntity {
     @Column(name = "wooms_id")
     private Long id;
 
-    @Column(name = "wooms_uuid", columnDefinition = "BINARY(16)")
-    private UUID uuid;
+    @Column(name = "invite_code", columnDefinition = "BINARY(16)")
+    private UUID inviteCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_uuid", columnDefinition = "BINARY(16)")
@@ -43,19 +43,19 @@ public class Wooms extends BaseTimeEntity {
     @Column(name = "wooms_title")
     private String title;
 
-    public static Wooms of(User user, WoomCreateRequestDto request) {
+    public static Wooms of(User user, WoomsCreateRequestDto request) {
         return Wooms.builder()
                 .user(user)
-                .title(request.getWoomTitle())
-                .uuid(UUID.randomUUID())
+                .title(request.getWoomsTitle())
+                .inviteCode(UUID.randomUUID())
                 .build();
     }
 
-    public static WoomDto toDto(Wooms woom) {
-        return WoomDto.builder()
-                .woomId(woom.getId())
-                .woomInviteCode(woom.getUuid())
-                .woomTitle(woom.getTitle())
+    public WoomsDto toDto() {
+        return WoomsDto.builder()
+                .woomsId(this.id)
+                .woomsInviteCode(this.inviteCode)
+                .woomsTitle(this.title)
                 .build();
     }
 
