@@ -47,11 +47,6 @@ public class WoomsService {
 
     }
 
-    private Wooms createAndSaveWooms(User user, WoomsCreateRequestDto request) {
-        Wooms newWooms = Wooms.of(user, request);
-        return woomsRepository.save(newWooms);
-    }
-
 
     public List<WoomsDto> findAllWooms(UUID userUuid) {
         List<Wooms> wooms = woomsRepository.findByUserUuid(userUuid);
@@ -59,7 +54,6 @@ public class WoomsService {
                 .map(Wooms::toDto)
                 .collect(Collectors.toList());
     }
-
 
     public CommonResponse createWoomsParticipationRequest(CustomUserDetails currentUser, String woomsInviteCode) {
 
@@ -74,15 +68,6 @@ public class WoomsService {
         enrollmentRepository.save(newEnrollment);
 
         return new CommonResponse("ok");
-    }
-
-    private static void checkEnrollmentStatus(Enrollment enrollment) {
-        if (enrollment.getStatus() == EnrollmentStatus.WAITING) {
-            throw new WoomsAlreadyWaitingException();
-        }
-        if (enrollment.getStatus() == EnrollmentStatus.ACCEPT) {
-            throw new WoomsAlreadyMemberException();
-        }
     }
 
     public WoomsDetailInfoDto findWoomsDetail(CustomUserDetails currentUser, Long woomsId) {
@@ -107,6 +92,15 @@ public class WoomsService {
         return new WoomsDetailInfoDto(woomsDto, userInfoDtos);
     }
 
+    private static void checkEnrollmentStatus(Enrollment enrollment) {
+        if (enrollment.getStatus() == EnrollmentStatus.WAITING) {
+            throw new WoomsAlreadyWaitingException();
+        }
+        if (enrollment.getStatus() == EnrollmentStatus.ACCEPT) {
+            throw new WoomsAlreadyMemberException();
+        }
+    }
+
     private User fetchUser(String userUuidStr) {
         UUID userUuid = UUID.fromString(userUuidStr);
         return userRepository.findById(userUuid)
@@ -117,6 +111,11 @@ public class WoomsService {
         UUID inviteCode = UUID.fromString(woomsInviteCode);
         return woomsRepository.findByInviteCode(inviteCode)
                 .orElseThrow(WoomsNotValidInviteCodeException::new);
+    }
+
+    private Wooms createAndSaveWooms(User user, WoomsCreateRequestDto request) {
+        Wooms newWooms = Wooms.of(user, request);
+        return woomsRepository.save(newWooms);
     }
 
 }
