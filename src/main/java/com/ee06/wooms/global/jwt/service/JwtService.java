@@ -25,7 +25,7 @@ public class JwtService {
     private final JWTUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public CommonResponse re(HttpServletRequest request, HttpServletResponse response) {
+    public CommonResponse issueRefreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = getToken(request);
         if(!jwtUtil.validateToken(token) || !Objects.equals(jwtUtil.getSubject(token), "refresh-token")){
             throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
