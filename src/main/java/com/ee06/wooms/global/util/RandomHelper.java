@@ -18,9 +18,9 @@ public class RandomHelper {
     public static String generateNickname() {
         String[] actions = {
                 "심심한", "웃는", "뛰는", "먹는", "숨는",
-                "반짝이는", "꾸는", "걷는", "생각하는", "눈물나는",
+                "반짝이는", "꿈꾸는", "걷는", "생각하는", "눈물나는",
                 "부끄러운", "우울한", "춤추는", "바쁜", "배고픈",
-                "이불 속의", "잠든", "노래하는", "힘든", "지친"
+                "이불속의", "잠든", "노래하는", "힘든", "지친"
         };
 
         String[] nouns = {
@@ -33,7 +33,7 @@ public class RandomHelper {
         int randomActionIndex = rand.nextInt(actions.length);
         int randomNounIndex = rand.nextInt(nouns.length);
 
-        return actions[randomActionIndex] + "_" + nouns[randomNounIndex];
+        return actions[randomActionIndex] + nouns[randomNounIndex];
     }
 
     public static String generateRandomMailAuthenticationCode() {

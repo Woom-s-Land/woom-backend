@@ -6,11 +6,16 @@ import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
+import com.ee06.wooms.global.exception.BindingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -20,22 +25,31 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/auth/users")
-    public ResponseEntity<CommonResponse> join(@RequestBody Join joinDto) {
+    public ResponseEntity<CommonResponse> join(@Valid @RequestBody Join joinDto, BindingResult result) {
+        log.info(joinDto.getPassword());
+        if (result.hasErrors())
+            throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         return ResponseEntity.ok(userService.join(joinDto));
     }
 
     @PostMapping("/auth/email")
-    public ResponseEntity<CommonResponse> sendEmail(@RequestBody Mail email) {
+    public ResponseEntity<CommonResponse> sendEmail(@Valid @RequestBody Mail email, BindingResult result) {
+        if (result.hasErrors())
+            throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         return ResponseEntity.ok(userService.sendEmail(email));
     }
 
     @PostMapping("/auth/email/code")
-    public ResponseEntity<CommonResponse> verifyEmailCode(@RequestBody Mail email) {
+    public ResponseEntity<CommonResponse> verifyEmailCode(@Valid @RequestBody Mail email, BindingResult result) {
+        if (result.hasErrors())
+            throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         return ResponseEntity.ok(userService.verifyEmailCode(email));
     }
 
     @PatchMapping("/auth/password")
-    public ResponseEntity<CommonResponse> reIssuePassword(@RequestBody Mail email) {
+    public ResponseEntity<CommonResponse> reIssuePassword(@RequestBody Mail email, BindingResult result) {
+        if (result.hasErrors())
+            throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         return ResponseEntity.ok(userService.reIssuePassword(email));
     }
 
@@ -45,15 +59,17 @@ public class UserController {
     }
 
     @PatchMapping("/users/password")
-    public ResponseEntity<CommonResponse> modifyPassword(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody String password) {
+    public ResponseEntity<CommonResponse> modifyPassword(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                         @RequestBody String password) {
         return ResponseEntity.ok(userService.modifyPassword(currentUser, password));
     }
 
     @PatchMapping("/users/character")
     public ResponseEntity<CommonResponse> modifyUserInfo(@AuthenticationPrincipal CustomUserDetails currentUser,
-                                                         @RequestBody UserGameInfo userGameInfo) {
+                                                         @Valid @RequestBody UserGameInfo userGameInfo,
+                                                         BindingResult result) {
+        if (result.hasErrors())
+            throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         return ResponseEntity.ok(userService.modifyUserInfo(currentUser, userGameInfo));
     }
-
-
 }

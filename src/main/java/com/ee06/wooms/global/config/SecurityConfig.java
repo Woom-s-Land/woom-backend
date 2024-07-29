@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/oauth2/authorization/"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
+                        .disable()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

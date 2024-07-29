@@ -43,7 +43,9 @@ public class JWTFilter extends OncePerRequestFilter {
                         .findAny())
                 .orElse(null);
 
+        if (token == null) chain.doFilter(request, response);
         if (isNotValidate(request, response, chain, token)) return;
+
         CustomUserDetails customUserDetails = new CustomUserDetails(generateForAuthUser(token), Map.of());
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -60,11 +62,6 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private boolean isNotValidate(HttpServletRequest request, HttpServletResponse response, FilterChain chain, String token) throws IOException, ServletException {
-        if (token == null) {
-            chain.doFilter(request, response);
-            return true;
-        }
-
         try {
             jwtUtil.isExpired(token);
             jwtUtil.validateToken(token);
