@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.users.service;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
+import com.ee06.wooms.domain.users.dto.auth.UserDto;
 import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.Mail;
@@ -45,12 +46,19 @@ public class UserService implements UserDetailsService {
     private String configEmail;
 
     public CommonResponse join(Join join) {
-        boolean isExists = userRepository.existsByEmail(join.getEmail());
-        if (isExists) throw new UserExistException();
-
-        join.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
-        User user = User.of(join);
-        userRepository.save(user);
+        userRepository.findByEmail(join.getEmail())
+                .ifPresentOrElse(user -> {
+                    UserDto userDto = user.toDto();
+                    if (userDto.getSocialProvider() != null) {
+                        userDto.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
+                        userDto.setSocialProvider(null);
+                        userRepository.save(User.of(userDto));
+                    } else throw new UserExistException();
+                }, () -> {
+                    join.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
+                    User newUser = User.of(join);
+                    userRepository.save(newUser);
+                });
 
         return new CommonResponse("ok");
     }
@@ -108,7 +116,9 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(UUID.fromString(currentUser.getUuid()))
                 .orElseThrow(UserNotFoundException::new);
 
-        if (Objects.equals(user.getPassword(), passwordInfo.getOldPassword())) {
+        log.info(user.getPassword());
+        log.info(bCryptPasswordEncoder.encode(passwordInfo.getOldPassword()));
+        if (bCryptPasswordEncoder.matches(passwordInfo.getOldPassword(), user.getPassword())) {
             return updateUser(currentUser, userToUpdate -> userToUpdate.modifyPassword(bCryptPasswordEncoder.encode(passwordInfo.getNewPassword())));
         } else throw new UserPasswordNotMatchedException();
     }

@@ -2,6 +2,7 @@ package com.ee06.wooms.global.jwt.filter;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.auth.Login;
+import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.RefreshToken;
