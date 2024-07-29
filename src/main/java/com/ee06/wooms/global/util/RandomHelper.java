@@ -44,9 +44,9 @@ public class RandomHelper {
                 .toString();
     }
 
-    public static String getEmailAuthContent(String code) {
+    public static String getEmailAuthContent(String socialUserContent, String code) {
         String content =
-                "Wooms를 방문해주셔서 감사합니다." +
+                "Wooms를 방문해주셔서 감사합니다.<br>" + socialUserContent +
                         "<br><br>" +
                         "인증 번호는 " + code + "입니다." +
                         "<br>" +

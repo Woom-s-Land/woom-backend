@@ -48,12 +48,11 @@ public class UserService implements UserDetailsService {
     public CommonResponse join(Join join) {
         userRepository.findByEmail(join.getEmail())
                 .ifPresentOrElse(user -> {
+                    if(user.getSocialProvider() == null) throw new UserExistException();
                     UserDto userDto = user.toDto();
-                    if (userDto.getSocialProvider() != null) {
-                        userDto.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
-                        userDto.setSocialProvider(null);
-                        userRepository.save(User.of(userDto));
-                    } else throw new UserExistException();
+                    userDto.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
+                    userDto.setSocialProvider(null);
+                    userRepository.save(User.of(userDto));
                 }, () -> {
                     join.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
                     User newUser = User.of(join);
@@ -64,9 +63,15 @@ public class UserService implements UserDetailsService {
     }
 
     public CommonResponse sendEmail(Mail email) {
+        Optional<User> user = userRepository.findByEmail(email.getEmail());
+        boolean isSocialUser = user.map(User::getSocialProvider).isPresent();
+
+        String socialUserContent = "";
+        if (isSocialUser) socialUserContent = "이미 소셜 회원으로 가입 되어 있는 상태입니다.<br>계정을 통합하려면 계속 회원가입을 진행해주세요" ;
+
         String code = RandomHelper.generateRandomMailAuthenticationCode();
         String title = "[WOOMS] 회원 가입 인증 이메일 입니다.";
-        String content = RandomHelper.getEmailAuthContent(code);
+        String content = RandomHelper.getEmailAuthContent(socialUserContent, code);
 
         if(mailRepository.existsById(email.getEmail())) mailRepository.deleteById(email.getEmail());
         email.modifyCode(code);
