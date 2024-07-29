@@ -1,7 +1,8 @@
 package com.ee06.wooms.domain.users.service;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.UserGameInfo;
+import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
+import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.entity.User;
@@ -9,7 +10,6 @@ import com.ee06.wooms.domain.users.exception.ex.*;
 import com.ee06.wooms.domain.users.repository.MailRepository;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
-import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.RandomHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
 
     public CommonResponse join(Join join) {
         boolean isExists = userRepository.existsByEmail(join.getEmail());
-        if (isExists) throw new UserExistException(ErrorCode.EXIST_USER);
+        if (isExists) throw new UserExistException();
 
         join.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
         User user = User.of(join);
@@ -66,15 +66,15 @@ public class UserService implements UserDetailsService {
 
         return sendEmailToRequestUser(configEmail, email.getEmail(), title, content)
                 .map(sendResult -> new CommonResponse("ok"))
-                .orElseThrow(() -> new UserNotSentEmailException(ErrorCode.NOT_SENT_EMAIL_USER));
+                .orElseThrow(UserNotSentEmailException::new);
     }
 
     public CommonResponse verifyEmailCode(Mail email) {
         return mailRepository.findById(email.getEmail()).map(findMail -> {
                     if(Objects.equals(email.getCode(), findMail.getCode())) return new CommonResponse("ok");
-                    throw new UserEmailCodeNotMatchedException(ErrorCode.NOT_MATCHED_EMAIL_CODE_USER);
+                    throw new UserEmailCodeNotMatchedException();
                 })
-                .orElseThrow(() -> new UserEmailExpiredException(ErrorCode.EMAIL_EXPIRED_USER));
+                .orElseThrow(UserEmailExpiredException::new);
     }
 
     public CommonResponse reIssuePassword(Mail email) {
@@ -86,10 +86,10 @@ public class UserService implements UserDetailsService {
                 user -> {
                     user.modifyPassword(bCryptPasswordEncoder.encode(RandomHelper.generateRandomPassword()));
                     sendEmailToRequestUser(configEmail, email.getEmail(), title, content)
-                            .orElseThrow(() -> new UserNotSentEmailException(ErrorCode.NOT_SENT_EMAIL_USER));
+                            .orElseThrow(UserNotSentEmailException::new);
                     userRepository.save(user);
                 },
-                () -> {throw new UserEmailNotFoundException(ErrorCode.NOT_FOUND_EMAIL_USER);}
+                () -> {throw new UserEmailNotFoundException();}
         );
         return new CommonResponse("ok");
     }
@@ -104,10 +104,13 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    public CommonResponse modifyPassword(CustomUserDetails currentUser, String password) {
-        return updateUser(currentUser, user -> {
-            user.modifyPassword(bCryptPasswordEncoder.encode(password));
-        });
+    public CommonResponse modifyPassword(CustomUserDetails currentUser, ModifyPasswordInfo passwordInfo) {
+        User user = userRepository.findById(UUID.fromString(currentUser.getUuid()))
+                .orElseThrow(UserNotFoundException::new);
+
+        if (Objects.equals(user.getPassword(), passwordInfo.getOldPassword())) {
+            return updateUser(currentUser, userToUpdate -> userToUpdate.modifyPassword(bCryptPasswordEncoder.encode(passwordInfo.getNewPassword())));
+        } else throw new UserPasswordNotMatchedException();
     }
 
     public CommonResponse modifyUserInfo(CustomUserDetails currentUser, UserGameInfo userGameInfo) {

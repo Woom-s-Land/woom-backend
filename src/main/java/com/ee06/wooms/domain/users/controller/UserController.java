@@ -1,8 +1,9 @@
 package com.ee06.wooms.domain.users.controller;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.UserGameInfo;
+import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
+import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -26,7 +27,6 @@ public class UserController {
 
     @PostMapping("/auth/users")
     public ResponseEntity<CommonResponse> join(@Valid @RequestBody Join joinDto, BindingResult result) {
-        log.info(joinDto.getPassword());
         if (result.hasErrors())
             throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         return ResponseEntity.ok(userService.join(joinDto));
@@ -60,8 +60,8 @@ public class UserController {
 
     @PatchMapping("/users/password")
     public ResponseEntity<CommonResponse> modifyPassword(@AuthenticationPrincipal CustomUserDetails currentUser,
-                                                         @RequestBody String password) {
-        return ResponseEntity.ok(userService.modifyPassword(currentUser, password));
+                                                         @RequestBody ModifyPasswordInfo passwordInfo) {
+        return ResponseEntity.ok(userService.modifyPassword(currentUser, passwordInfo));
     }
 
     @PatchMapping("/users/character")
