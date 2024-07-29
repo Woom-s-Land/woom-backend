@@ -28,7 +28,7 @@ public class WoomsController {
     private final WoomsService woomsService;
 
     @PostMapping("/wooms")
-    public ResponseEntity<CommonResponse> createWooms(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomsCreateRequestDto woomsCreateRequestDto) {
+    public ResponseEntity<WoomsDto> createWooms(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomsCreateRequestDto woomsCreateRequestDto) {
         return ResponseEntity.ok(woomsService.createWooms(currentUser, woomsCreateRequestDto));
     }
 
@@ -38,9 +38,9 @@ public class WoomsController {
         return ResponseEntity.ok(woomsInfo);
     }
 
-    @PostMapping("/wooms/{woomInviteCode}/users")
-    public ResponseEntity<CommonResponse> woomsParticipationRequest(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable String woomsInviteCode) {
-        return ResponseEntity.ok(woomsService.createWoomsParticipationRequest(currentUser));
+    @PostMapping("/wooms/{woomsInviteCode}/users")
+    public ResponseEntity<CommonResponse> woomsParticipationRequest(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable("woomsInviteCode") String woomsInviteCode) {
+        return ResponseEntity.ok(woomsService.createWoomsParticipationRequest(currentUser, woomsInviteCode));
     }
 
 
