@@ -33,8 +33,8 @@ public class Wooms extends BaseTimeEntity {
     @Column(name = "wooms_id")
     private Long id;
 
-    @Column(name = "wooms_uuid", columnDefinition = "BINARY(16)")
-    private UUID uuid;
+    @Column(name = "invite_code", columnDefinition = "BINARY(16)")
+    private UUID inviteCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_uuid", columnDefinition = "BINARY(16)")
@@ -47,15 +47,15 @@ public class Wooms extends BaseTimeEntity {
         return Wooms.builder()
                 .user(user)
                 .title(request.getWoomTitle())
-                .uuid(UUID.randomUUID())
+                .inviteCode(UUID.randomUUID())
                 .build();
     }
 
-    public static WoomDto toDto(Wooms woom) {
+    public WoomDto toDto() {
         return WoomDto.builder()
-                .woomId(woom.getId())
-                .woomInviteCode(woom.getUuid())
-                .woomTitle(woom.getTitle())
+                .woomId(this.id)
+                .woomInviteCode(this.inviteCode)
+                .woomTitle(this.title)
                 .build();
     }
 
