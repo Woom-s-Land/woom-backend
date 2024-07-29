@@ -20,27 +20,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class WoomsService {
     private final UserRepository userRepository;
     private final WoomsRepository woomsRepository;
     private final EnrollmentRepository enrollmentRepository;
 
-    @Transactional
-    public CommonResponse createWoomsGroup(CustomUserDetails currentUser, WoomsCreateRequestDto woomCreateRequestDto) {
+    public CommonResponse createWooms(CustomUserDetails currentUser, WoomsCreateRequestDto woomsCreateRequestDto) {
         User user = fetchUser(currentUser.getUuid());
 
-        Wooms savedWoom = createAndSaveWooms(user, woomCreateRequestDto);
+        Wooms savedWooms = createAndSaveWooms(user, woomsCreateRequestDto);
 
-        Enrollment newEnrollment = Enrollment.of(user, savedWoom, EnrollmentStatus.ACCEPT);
+        Enrollment newEnrollment = Enrollment.of(user, savedWooms, EnrollmentStatus.ACCEPT);
         enrollmentRepository.save(newEnrollment);
 
         return new CommonResponse("ok");
     }
 
     private Wooms createAndSaveWooms(User user, WoomsCreateRequestDto request) {
-        Wooms newWoom = Wooms.of(user, request);
-        return woomsRepository.save(newWoom);
+        Wooms newWooms = Wooms.of(user, request);
+        return woomsRepository.save(newWooms);
     }
 
     private User fetchUser(String userUuidStr) {

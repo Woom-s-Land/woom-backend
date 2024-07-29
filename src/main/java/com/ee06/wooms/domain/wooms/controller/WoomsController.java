@@ -25,22 +25,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class WoomsController {
 
-    private final WoomsService woomService;
+    private final WoomsService woomsService;
 
     @PostMapping("/wooms")
-    public ResponseEntity<CommonResponse> createWoomsGroup(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomsCreateRequestDto woomsCreateRequestDto) {
-        return ResponseEntity.ok(woomService.createWoomsGroup(currentUser, woomsCreateRequestDto));
+    public ResponseEntity<CommonResponse> createWooms(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomsCreateRequestDto woomsCreateRequestDto) {
+        return ResponseEntity.ok(woomsService.createWooms(currentUser, woomsCreateRequestDto));
     }
 
     @GetMapping("/wooms")
     public ResponseEntity<List<WoomsDto>> getWoomsInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
-        List<WoomsDto> woomsInfo = woomService.findAllWoomsByUser(UUID.fromString(currentUser.getUuid()));
+        List<WoomsDto> woomsInfo = woomsService.findAllWoomsByUser(UUID.fromString(currentUser.getUuid()));
         return ResponseEntity.ok(woomsInfo);
     }
 
     @PostMapping("/wooms/{woomInviteCode}/users")
-    public ResponseEntity<CommonResponse> woomsParticipationRequest(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable String woomInviteCode) {
-        return ResponseEntity.ok(woomService.createWoomsParticipationRequest(currentUser));
+    public ResponseEntity<CommonResponse> woomsParticipationRequest(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable String woomsInviteCode) {
+        return ResponseEntity.ok(woomsService.createWoomsParticipationRequest(currentUser));
     }
 
 
