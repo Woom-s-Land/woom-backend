@@ -9,7 +9,7 @@ public class ErrorCodeUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    private ResponseEntity<Object> build(ErrorCode errorCode,String message) {
+    public static ResponseEntity<Object> build(ErrorCode errorCode,String message) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(new ErrorResponse(errorCode.getHttpStatus(), message));
