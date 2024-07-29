@@ -5,6 +5,7 @@ import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.wooms.dto.WoomCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomDto;
 import com.ee06.wooms.domain.wooms.service.WoomService;
+import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,8 @@ public class WoomController {
 
     private final WoomService woomService;
 
-    @PostMapping("/groups")
-    public ResponseEntity<WoomDto> createWoomGroup(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomCreateRequestDto woomCreateRequestDto) {
+    @PostMapping("/wooms")
+    public ResponseEntity<CommonResponse> createWoomGroup(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomCreateRequestDto woomCreateRequestDto) {
         return ResponseEntity.ok(woomService.createWoomGroup(currentUser, woomCreateRequestDto));
     }
 

@@ -11,6 +11,7 @@ import com.ee06.wooms.domain.wooms.dto.WoomCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomDto;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.domain.wooms.repository.WoomRepository;
+import com.ee06.wooms.global.common.CommonResponse;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class WoomService {
     private final EnrollmentRepository enrollmentRepository;
 
     @Transactional
-    public WoomDto createWoomGroup(CustomUserDetails currentUser, WoomCreateRequestDto woomCreateRequestDto) {
+    public CommonResponse createWoomGroup(CustomUserDetails currentUser, WoomCreateRequestDto woomCreateRequestDto) {
         User user = fetchUser(currentUser.getUuid());
 
         Wooms savedWoom = createAndSaveWoom(user, woomCreateRequestDto);
@@ -32,11 +33,7 @@ public class WoomService {
         Enrollment newEnrollment = Enrollment.of(user, savedWoom, EnrollmentStatus.ACCEPT);
         enrollmentRepository.save(newEnrollment);
 
-        return WoomDto.builder()
-                .woomId(savedWoom.getId())
-                .woomInviteCode(savedWoom.getUuid())
-                .woomTitle(savedWoom.getTitle())
-                .build();
+        return new CommonResponse("ok");
     }
 
     private Wooms createAndSaveWoom(User user, WoomCreateRequestDto request) {
