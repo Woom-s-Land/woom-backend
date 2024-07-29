@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface WoomsRepository  extends JpaRepository<Wooms, Long> {
     List<Wooms> findByUserUuid(UUID userUuid);
     Optional<Wooms> findByInviteCode(UUID inviteCode);
+
 }

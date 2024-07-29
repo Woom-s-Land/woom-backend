@@ -10,9 +10,11 @@ import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDto;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
+
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
+
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import jakarta.transaction.Transactional;
@@ -26,12 +28,12 @@ import org.springframework.stereotype.Service;
 @Transactional
 @Service
 public class WoomsService {
-
     private final UserRepository userRepository;
     private final WoomsRepository woomsRepository;
     private final EnrollmentRepository enrollmentRepository;
 
     public WoomsDto createWooms(CustomUserDetails currentUser, WoomsCreateRequestDto woomsCreateRequestDto) {
+
         User user = fetchUser(currentUser.getUuid());
 
         Wooms savedWooms = createAndSaveWooms(user, woomsCreateRequestDto);
@@ -40,6 +42,7 @@ public class WoomsService {
         enrollmentRepository.save(newEnrollment);
 
         return savedWooms.toDto();
+
     }
 
     private Wooms createAndSaveWooms(User user, WoomsCreateRequestDto request) {
@@ -59,6 +62,7 @@ public class WoomsService {
                 .map(Wooms::toDto)
                 .collect(Collectors.toList());
     }
+
 
     public CommonResponse createWoomsParticipationRequest(CustomUserDetails currentUser, String woomsInviteCode) {
 
@@ -89,4 +93,5 @@ public class WoomsService {
         return woomsRepository.findByInviteCode(inviteCode)
                 .orElseThrow(WoomsNotValidInviteCodeException::new);
     }
+
 }
