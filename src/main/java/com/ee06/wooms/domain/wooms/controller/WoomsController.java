@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.wooms.controller;
 
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
+import com.ee06.wooms.domain.users.dto.UserInfoDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDto;
@@ -25,7 +26,6 @@ public class WoomsController {
     private final WoomsService woomsService;
 
     @PostMapping("/wooms")
-
     public ResponseEntity<WoomsDto> createWooms(@AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody WoomsCreateRequestDto woomsCreateRequestDto) {
         return ResponseEntity.ok(woomsService.createWooms(currentUser, woomsCreateRequestDto));
     }
@@ -45,5 +45,10 @@ public class WoomsController {
     @GetMapping("/wooms/{woomsId}/info")
     public ResponseEntity<WoomsDetailInfoDto> getWoomsDetailInfo(@AuthenticationPrincipal CustomUserDetails currentUser,  @PathVariable("woomsId") Long woomsId) {
         return ResponseEntity.ok(woomsService.findWoomsDetail(currentUser, woomsId));
+    }
+
+    @GetMapping("/wooms/{woomsId}/enrollment")
+    public ResponseEntity<List<UserInfoDto>> getEnrolledUsers(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable("woomsId") Long woomsId) {
+        return ResponseEntity.ok(woomsService.getEnrolledUsers(currentUser, woomsId));
     }
 }
