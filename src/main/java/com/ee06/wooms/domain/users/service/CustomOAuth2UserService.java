@@ -1,6 +1,6 @@
 package com.ee06.wooms.domain.users.service;
 
-import com.ee06.wooms.domain.users.dto.oauth.CustomOAuth2User;
+import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.oauth.GithubResponse;
 import com.ee06.wooms.domain.users.dto.oauth.GoogleResponse;
 import com.ee06.wooms.domain.users.dto.oauth.OAuth2Response;
@@ -8,8 +8,8 @@ import com.ee06.wooms.domain.users.entity.SocialProvider;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.entity.UserStatus;
 import com.ee06.wooms.domain.users.repository.UserRepository;
-import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.oauth.exception.NotFoundPlatformException;
+import com.ee06.wooms.global.util.RandomHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -34,24 +34,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2Response oAuth2Response =
                 provideOAuth(userRequest.getClientRegistration().getRegistrationId(), oAuth2User)
-                .orElseThrow(() -> new NotFoundPlatformException(ErrorCode.NOT_FOUND_PLATFORM_SERVICE));
+                .orElseThrow(NotFoundPlatformException::new);
 
         String userEmail = oAuth2Response.getEmail();
 
         Optional<User> existUser = userRepository.findByEmail(userEmail);
         if(existUser.isPresent()) {
-            return new CustomOAuth2User(existUser.get(), oAuth2User.getAttributes());
+            return new CustomUserDetails(existUser.get(), oAuth2User.getAttributes());
         }
 
         User user = setUserInfo(userEmail, oAuth2Response, registrationId);
         userRepository.save(user);
-        return new CustomOAuth2User(user, oAuth2User.getAttributes());
+        return new CustomUserDetails(user, oAuth2User.getAttributes());
     }
 
     private User setUserInfo(String userEmail, OAuth2Response oAuth2Response, String registrationId) {
         return User.builder()
                 .email(userEmail)
                 .name(oAuth2Response.getName())
+                .nickname(RandomHelper.generateNickname())
                 .socialProvider(SocialProvider.valueOf(registrationId.toUpperCase()))
                 .status(UserStatus.ACTIVE)
                 .costume(1)

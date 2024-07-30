@@ -3,6 +3,9 @@ package com.ee06.wooms.global.util;
 import java.util.Random;
 
 public class RandomHelper {
+    public static final String USER_AUTH_MAIL_TITLE = "[WOOMS] 회원 가입 인증 이메일 입니다.";
+    public static final String USER_RE_ISSUE_PASSWORD_TITLE = "[WOOMS] 비밀번호 재발급 이메일 입니다.";
+    public static final String SOCIAL_SENTENCES = "이미 소셜 회원으로 가입 되어 있는 상태입니다.<br>계정을 통합하려면 계속 회원가입을 진행해주세요";
     private static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
     private static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String DIGITS = "0123456789";
@@ -18,9 +21,9 @@ public class RandomHelper {
     public static String generateNickname() {
         String[] actions = {
                 "심심한", "웃는", "뛰는", "먹는", "숨는",
-                "반짝이는", "꾸는", "걷는", "생각하는", "눈물나는",
+                "반짝이는", "꿈꾸는", "걷는", "생각하는", "눈물나는",
                 "부끄러운", "우울한", "춤추는", "바쁜", "배고픈",
-                "이불 속의", "잠든", "노래하는", "힘든", "지친"
+                "이불속의", "잠든", "노래하는", "힘든", "지친"
         };
 
         String[] nouns = {
@@ -33,7 +36,7 @@ public class RandomHelper {
         int randomActionIndex = rand.nextInt(actions.length);
         int randomNounIndex = rand.nextInt(nouns.length);
 
-        return actions[randomActionIndex] + "_" + nouns[randomNounIndex];
+        return actions[randomActionIndex] + nouns[randomNounIndex];
     }
 
     public static String generateRandomMailAuthenticationCode() {
@@ -44,9 +47,9 @@ public class RandomHelper {
                 .toString();
     }
 
-    public static String getEmailAuthContent(String code) {
+    public static String getEmailAuthContent(String socialUserContent, String code) {
         String content =
-                "Wooms를 방문해주셔서 감사합니다." +
+                "Wooms를 방문해주셔서 감사합니다.<br>" + socialUserContent +
                         "<br><br>" +
                         "인증 번호는 " + code + "입니다." +
                         "<br>" +

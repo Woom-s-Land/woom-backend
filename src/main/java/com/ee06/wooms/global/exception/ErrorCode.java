@@ -29,6 +29,9 @@ public enum ErrorCode {
     NOT_SENT_EMAIL_USER(HttpStatus.INTERNAL_SERVER_ERROR, "이메일을 전송하지 못하였습니다.\n정확한 이메일을 입력해주세요."),
     EMAIL_EXPIRED_USER(HttpStatus.BAD_GATEWAY, "만료된 인증 코드입니다. 다시 인증해주세요."),
     NOT_MATCHED_EMAIL_CODE_USER(HttpStatus.UNAUTHORIZED, "일치하지 않는 코드입니다. 다시 확인해주세요."),
+    NOT_MATCHED_PASSWORD_USER(HttpStatus.UNAUTHORIZED, "현재 비밀번호가 일치하지 않습니다. 다시 확인해주세요."),
+    NOT_LOGIN_USER(HttpStatus.UNAUTHORIZED, "로그인 할 수 없습니다. 아이디 혹은 비밀번호를 다시 확인해주세요."),
+    TOO_LONG_NICKNAME_USER(HttpStatus.BAD_REQUEST, "별명이 너무 깁니다. 다시 입력해주세요."),
 
     //======================== Wooms 예외 ========================//
     NOT_VALID_WOOMS_INVITE_CODE(HttpStatus.NOT_FOUND, "유효하지 않은 초대 코드입니다."),
