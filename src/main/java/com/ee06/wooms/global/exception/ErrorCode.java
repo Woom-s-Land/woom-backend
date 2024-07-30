@@ -33,10 +33,11 @@ public enum ErrorCode {
     NOT_LOGIN_USER(HttpStatus.UNAUTHORIZED, "로그인 할 수 없습니다. 아이디 혹은 비밀번호를 다시 확인해주세요."),
     TOO_LONG_NICKNAME_USER(HttpStatus.BAD_REQUEST, "별명이 너무 깁니다. 다시 입력해주세요."),
 
-    //======================== 사용자 예외 ========================//
+    //======================== Wooms 예외 ========================//
     NOT_VALID_WOOMS_INVITE_CODE(HttpStatus.NOT_FOUND, "유효하지 않은 초대 코드입니다."),
     CONFLICT_ALREADY_WAITING(HttpStatus.CONFLICT, "이미 대기 중인 방입니다."),
     CONFLICT_ALREADY_MEMBER(HttpStatus.CONFLICT, "이미 가입한 방입니다."),
+    FORBIDDEN_USER_NOT_ENROLLED(HttpStatus.FORBIDDEN, "가입하지 않은 방입니다."),
 
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");

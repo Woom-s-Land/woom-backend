@@ -1,5 +1,6 @@
 package com.ee06.wooms.domain.users.entity;
 
+import com.ee06.wooms.domain.users.dto.UserInfoDto;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
 import com.ee06.wooms.global.util.RandomHelper;
@@ -73,6 +74,15 @@ public class User extends BaseTimeEntity {
                 .status(UserStatus.ACTIVE)
                 .costume(RandomHelper.generateCostumeNumber())
                 .nickname(RandomHelper.generateNickname())
+                .build();
+    }
+
+    public UserInfoDto toDto() {
+        return UserInfoDto.builder()
+                .uuid(this.uuid)
+                .name(this.name)
+                .nickname(this.nickname)
+                .costume(this.costume)
                 .build();
     }
 }
