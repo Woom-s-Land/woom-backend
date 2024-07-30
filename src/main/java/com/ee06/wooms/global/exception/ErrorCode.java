@@ -35,6 +35,7 @@ public enum ErrorCode {
     CONFLICT_ALREADY_WAITING(HttpStatus.CONFLICT, "이미 대기 중인 방입니다."),
     CONFLICT_ALREADY_MEMBER(HttpStatus.CONFLICT, "이미 가입한 방입니다."),
     FORBIDDEN_USER_NOT_ENROLLED(HttpStatus.FORBIDDEN, "가입하지 않은 방입니다."),
+    FORBIDDEN_USER_NOT_LEADER(HttpStatus.FORBIDDEN, "유저는 Wooms의 리더가 아닙니다."),
 
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");
