@@ -45,4 +45,9 @@ public class UserExceptionHandler {
         return ErrorCodeUtils.build(ErrorCode.NOT_MATCHED_PASSWORD_USER);
     }
 
+    @ExceptionHandler(UserNicknameTooLongException.class)
+    public ResponseEntity<Object> notMatchedPassword(UserNicknameTooLongException e) {
+        return ErrorCodeUtils.build(ErrorCode.TOO_LONG_NICKNAME_USER);
+    }
+
 }

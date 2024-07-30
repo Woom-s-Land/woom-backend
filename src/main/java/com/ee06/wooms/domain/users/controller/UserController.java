@@ -1,10 +1,11 @@
 package com.ee06.wooms.domain.users.controller;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
+import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.entity.Mail;
+import com.ee06.wooms.domain.users.exception.ex.UserNicknameTooLongException;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
 import com.ee06.wooms.global.exception.BindingException;
@@ -16,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @Slf4j
@@ -55,6 +57,7 @@ public class UserController {
 
     @GetMapping("/users/info")
     public ResponseEntity<UserGameInfo> userInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
+
         return ResponseEntity.ok(userService.userInfo(currentUser));
     }
 
@@ -68,8 +71,13 @@ public class UserController {
     public ResponseEntity<CommonResponse> modifyUserInfo(@AuthenticationPrincipal CustomUserDetails currentUser,
                                                          @Valid @RequestBody UserGameInfo userGameInfo,
                                                          BindingResult result) {
+
+        if (userGameInfo.getNickname().getBytes(StandardCharsets.UTF_8).length > 14)
+            throw new UserNicknameTooLongException();
+
         if (result.hasErrors())
             throw new BindingException(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
+
         return ResponseEntity.ok(userService.modifyUserInfo(currentUser, userGameInfo));
     }
 }
