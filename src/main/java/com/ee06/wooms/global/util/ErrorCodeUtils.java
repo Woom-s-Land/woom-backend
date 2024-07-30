@@ -2,6 +2,8 @@ package com.ee06.wooms.global.util;
 
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.exception.ErrorResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 public class ErrorCodeUtils {
@@ -9,10 +11,10 @@ public class ErrorCodeUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static ResponseEntity<Object> build(ErrorCode errorCode,String message) {
+    public static ResponseEntity<Object> build(HttpStatus status, String message) {
         return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(new ErrorResponse(errorCode.getHttpStatus(), message));
+                .status(status)
+                .body(new ErrorResponse(status, message));
     }
 
     public static ResponseEntity<Object> build(ErrorCode errorCode) {
