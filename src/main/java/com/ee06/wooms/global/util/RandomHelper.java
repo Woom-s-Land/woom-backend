@@ -3,6 +3,9 @@ package com.ee06.wooms.global.util;
 import java.util.Random;
 
 public class RandomHelper {
+    public static final String USER_AUTH_MAIL_TITLE = "[WOOMS] 회원 가입 인증 이메일 입니다.";
+    public static final String USER_RE_ISSUE_PASSWORD_TITLE = "[WOOMS] 비밀번호 재발급 이메일 입니다.";
+    public static final String SOCIAL_SENTENCES = "이미 소셜 회원으로 가입 되어 있는 상태입니다.<br>계정을 통합하려면 계속 회원가입을 진행해주세요";
     private static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
     private static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String DIGITS = "0123456789";

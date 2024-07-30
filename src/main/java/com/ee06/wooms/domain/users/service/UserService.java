@@ -1,17 +1,15 @@
 package com.ee06.wooms.domain.users.service;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
-import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
-import com.ee06.wooms.domain.users.dto.auth.UserDto;
-import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.dto.auth.Join;
+import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
+import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.*;
 import com.ee06.wooms.domain.users.repository.MailRepository;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
-import com.ee06.wooms.global.util.RandomHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -25,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Objects;
@@ -32,8 +31,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static com.ee06.wooms.global.util.RandomHelper.*;
+
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -49,35 +51,30 @@ public class UserService implements UserDetailsService {
         userRepository.findByEmail(join.getEmail())
                 .ifPresentOrElse(user -> {
                     if(user.getSocialProvider() == null) throw new UserExistException();
-                    UserDto userDto = user.toDto();
-                    userDto.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
-                    userDto.setSocialProvider(null);
-                    userRepository.save(User.of(userDto));
+                    user.modifyPassword(bCryptPasswordEncoder.encode(join.getPassword()));
+                    userRepository.save(user);
                 }, () -> {
                     join.setPassword(bCryptPasswordEncoder.encode(join.getPassword()));
                     User newUser = User.of(join);
                     userRepository.save(newUser);
                 });
-
         return new CommonResponse("ok");
     }
 
     public CommonResponse sendEmail(Mail email) {
-        Optional<User> user = userRepository.findByEmail(email.getEmail());
-        boolean isSocialUser = user.map(User::getSocialProvider).isPresent();
+        String socialUserContent = userRepository.findByEmail(email.getEmail())
+                .flatMap(user -> Optional.ofNullable(user.getSocialProvider()))
+                .map(provider -> SOCIAL_SENTENCES)
+                .orElse("");
 
-        String socialUserContent = "";
-        if (isSocialUser) socialUserContent = "이미 소셜 회원으로 가입 되어 있는 상태입니다.<br>계정을 통합하려면 계속 회원가입을 진행해주세요" ;
-
-        String code = RandomHelper.generateRandomMailAuthenticationCode();
-        String title = "[WOOMS] 회원 가입 인증 이메일 입니다.";
-        String content = RandomHelper.getEmailAuthContent(socialUserContent, code);
+        String code = generateRandomMailAuthenticationCode();
+        String content = getEmailAuthContent(socialUserContent, code);
 
         if(mailRepository.existsById(email.getEmail())) mailRepository.deleteById(email.getEmail());
         email.modifyCode(code);
         mailRepository.save(email);
 
-        return sendEmailToRequestUser(configEmail, email.getEmail(), title, content)
+        return sendEmailToRequestUser(configEmail, email.getEmail(), USER_AUTH_MAIL_TITLE, content)
                 .map(sendResult -> new CommonResponse("ok"))
                 .orElseThrow(UserNotSentEmailException::new);
     }
@@ -91,14 +88,13 @@ public class UserService implements UserDetailsService {
     }
 
     public CommonResponse reIssuePassword(Mail email) {
-        String password = RandomHelper.generateRandomPassword();
-        String title = "[WOOMS] 비밀번호 재발급 이메일 입니다.";
-        String content = RandomHelper.getEmailReIssueContent(password);
+        String password = generateRandomPassword();
+        String content = getEmailReIssueContent(password);
 
         userRepository.findByEmail(email.getEmail()).ifPresentOrElse(
                 user -> {
-                    user.modifyPassword(bCryptPasswordEncoder.encode(RandomHelper.generateRandomPassword()));
-                    sendEmailToRequestUser(configEmail, email.getEmail(), title, content)
+                    user.modifyPassword(bCryptPasswordEncoder.encode(generateRandomPassword()));
+                    sendEmailToRequestUser(configEmail, email.getEmail(), USER_RE_ISSUE_PASSWORD_TITLE, content)
                             .orElseThrow(UserNotSentEmailException::new);
                     userRepository.save(user);
                 },
@@ -121,8 +117,6 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(UUID.fromString(currentUser.getUuid()))
                 .orElseThrow(UserNotFoundException::new);
 
-        log.info(user.getPassword());
-        log.info(bCryptPasswordEncoder.encode(passwordInfo.getOldPassword()));
         if (bCryptPasswordEncoder.matches(passwordInfo.getOldPassword(), user.getPassword())) {
             return updateUser(currentUser, userToUpdate -> userToUpdate.modifyPassword(bCryptPasswordEncoder.encode(passwordInfo.getNewPassword())));
         } else throw new UserPasswordNotMatchedException();
@@ -147,7 +141,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(UUID.fromString(currentUser.getUuid()))
                 .map(user -> {
                     userUpdater.accept(user);
-                    userRepository.save(user);
                     return new CommonResponse("ok");
                 })
                 .orElseThrow(UserNotFoundException::new);

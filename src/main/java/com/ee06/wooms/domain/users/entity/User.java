@@ -1,7 +1,6 @@
 package com.ee06.wooms.domain.users.entity;
 
 import com.ee06.wooms.domain.users.dto.auth.Join;
-import com.ee06.wooms.domain.users.dto.auth.UserDto;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
 import com.ee06.wooms.global.util.RandomHelper;
 import jakarta.persistence.Column;
@@ -66,8 +65,6 @@ public class User extends BaseTimeEntity {
         this.costume = costume;
     }
 
-    public void modifySocialProvider(SocialProvider socialProvider) { this.socialProvider = socialProvider; }
-
     public static User of(Join joinDto) {
         return User.builder()
                 .email(joinDto.getEmail())
@@ -76,32 +73,6 @@ public class User extends BaseTimeEntity {
                 .status(UserStatus.ACTIVE)
                 .costume(RandomHelper.generateCostumeNumber())
                 .nickname(RandomHelper.generateNickname())
-                .build();
-    }
-
-    public static User of(UserDto userDto) {
-        return User.builder()
-                .uuid(userDto.getUuid())
-                .email(userDto.getEmail())
-                .password(userDto.getPassword())
-                .name(userDto.getName())
-                .socialProvider(userDto.getSocialProvider())
-                .status(userDto.getStatus())
-                .costume(userDto.getCostume())
-                .nickname(userDto.getNickname())
-                .build();
-    }
-
-    public UserDto toDto() {
-        return UserDto.builder()
-                .uuid(this.uuid)
-                .email(this.email)
-                .password(this.password)
-                .name(this.name)
-                .socialProvider(this.socialProvider)
-                .status(this.status)
-                .costume(this.costume)
-                .nickname(this.nickname)
                 .build();
     }
 }
