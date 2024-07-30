@@ -84,17 +84,19 @@ public class JWTUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("유효하지않은 토큰입니다", e);
-        } catch (ExpiredJwtException e) {
-            log.info("만료된 토큰입니다.", e);
-        } catch (IllegalArgumentException e) {
-            log.info("잘못된 토큰입니다.", e);
-        }
+    public Boolean isExpired(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration()
+                .before(new Date());
+    }
+
+    public Boolean validateToken(String token) {
+        try { Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);return true; }
+        catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | ExpiredJwtException | IllegalArgumentException _) {}
         return false;
     }
 }

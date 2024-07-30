@@ -1,6 +1,5 @@
 package com.ee06.wooms.global.jwt.filter;
 
-import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.exception.InvalidRefreshTokenException;
 import com.ee06.wooms.global.jwt.exception.InvalidTokenException;
@@ -54,11 +53,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         if(!jwtUtil.validateToken(refresh) || !Objects.equals(jwtUtil.getSubject(refresh), "refresh-token")){
-            throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
+            throw new InvalidTokenException();
         }
 
         if(refreshTokenRepository.existsByRefreshToken(refresh)) {
-            throw new InvalidRefreshTokenException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new InvalidRefreshTokenException();
         }
 
         //로그아웃 진행

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class ReIssueController {
     private final JwtService jwtService;
-
-    @PostMapping("/re")
-    public ResponseEntity<CommonResponse> re(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.ok(jwtService.re(request, response));
+    @GetMapping("/api/auth/token")
+    public ResponseEntity<CommonResponse> issueRefreshToken(HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(jwtService.issueRefreshToken(request, response));
     }
-
-
 }
