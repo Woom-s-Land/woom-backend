@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.wooms.exception;
 
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidEnrollmentException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotLeaderException;
@@ -37,5 +38,9 @@ public class WoomsExceptionHandler {
     @ExceptionHandler(WoomsUserNotLeaderException.class)
     public ResponseEntity<Object> woomsUserNotLeaderException(WoomsUserNotLeaderException e) {
         return ErrorCodeUtils.build(ErrorCode.FORBIDDEN_USER_NOT_LEADER);
+    }
+    @ExceptionHandler(WoomsNotValidEnrollmentException.class)
+    public ResponseEntity<Object> woomsNotValidEnrollmentException(WoomsNotValidEnrollmentException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_VALID_ENROLLMENT);
     }
 }
