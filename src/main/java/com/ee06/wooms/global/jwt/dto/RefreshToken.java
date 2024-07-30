@@ -8,16 +8,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-@RedisHash(timeToLive = 604800)
+@RedisHash(value = "refreshToken", timeToLive = 604800)
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Builder
+@Getter
 public class RefreshToken {
     @Id
-    private String uuid;
-
     private String refreshToken;
+    private String uuid;
 
     @TimeToLive
     private Long expiration;
