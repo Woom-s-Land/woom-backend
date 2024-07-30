@@ -3,10 +3,7 @@ package com.ee06.wooms.domain.wooms.controller;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.UserInfoDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsEnrollRequest;
+import com.ee06.wooms.domain.wooms.dto.*;
 import com.ee06.wooms.domain.wooms.service.WoomsService;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -59,4 +56,14 @@ public class WoomsController {
                                                                @RequestBody WoomsEnrollRequest updateRequest) {
         return ResponseEntity.ok(woomsService.patchEnrolledUsers(currentUser, woomsId, userUuid, updateRequest));
     }
+
+    @PatchMapping("/wooms/{woomsId}/admins/delegations")
+    public ResponseEntity<CommonResponse> mandateAdmin(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                       @PathVariable("woomsId") Long woomsId,
+                                                       @RequestBody WoomsMandateAdminRequest mandateRequest) {
+
+        return ResponseEntity.ok(woomsService.patchWoomsAdmin(currentUser, woomsId, mandateRequest));
+    }
+
+
 }
