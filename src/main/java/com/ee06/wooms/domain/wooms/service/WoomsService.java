@@ -87,7 +87,6 @@ public class WoomsService {
         return new WoomsDetailInfoDto(woomsDto, userInfoDtos);
     }
 
-
     public List<UserInfoDto> getEnrolledUsers(CustomUserDetails currentUser, Long woomsId) {
         UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
         if (!woomsRepository.existsByUserUuidAndId(currentUserUuid, woomsId)) {
@@ -137,7 +136,7 @@ public class WoomsService {
                 .orElseThrow(WoomsNotValidException::new);
 
         wooms.modifyUser(targetUser);
-        woomsRepository.save(wooms);
+
         return new CommonResponse("ok");
     }
 
