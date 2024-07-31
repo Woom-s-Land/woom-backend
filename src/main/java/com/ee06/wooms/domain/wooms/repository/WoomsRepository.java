@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface WoomsRepository  extends JpaRepository<Wooms, Long> {
     List<Wooms> findByUserUuid(UUID userUuid);
     Optional<Wooms> findByInviteCode(UUID inviteCode);
-
+    boolean existsByUserUuidAndId(UUID userUuid, Long id);
 }

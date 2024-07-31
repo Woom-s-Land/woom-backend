@@ -18,4 +18,5 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
     Optional<Enrollment> findByPkUserUuidAndWoomsId(UUID userUuid, Long woomsId);
 
     List<Enrollment> findByPkWoomIdAndStatus(Long woomId, EnrollmentStatus status);
+
 }

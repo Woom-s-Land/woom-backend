@@ -2,8 +2,10 @@ package com.ee06.wooms.domain.wooms.exception;
 
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidEnrollmentException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotLeaderException;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.ErrorCodeUtils;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +33,14 @@ public class WoomsExceptionHandler {
     @ExceptionHandler(WoomsUserNotEnrolledException.class)
     public ResponseEntity<Object> woomsUserNotEnrolledException(WoomsUserNotEnrolledException e) {
         return ErrorCodeUtils.build(ErrorCode.FORBIDDEN_USER_NOT_ENROLLED);
+    }
+
+    @ExceptionHandler(WoomsUserNotLeaderException.class)
+    public ResponseEntity<Object> woomsUserNotLeaderException(WoomsUserNotLeaderException e) {
+        return ErrorCodeUtils.build(ErrorCode.FORBIDDEN_USER_NOT_LEADER);
+    }
+    @ExceptionHandler(WoomsNotValidEnrollmentException.class)
+    public ResponseEntity<Object> woomsNotValidEnrollmentException(WoomsNotValidEnrollmentException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_VALID_ENROLLMENT);
     }
 }

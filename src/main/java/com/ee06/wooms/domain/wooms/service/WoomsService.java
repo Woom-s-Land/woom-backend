@@ -11,11 +11,9 @@ import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsEnrollRequest;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
+import com.ee06.wooms.domain.wooms.exception.ex.*;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import jakarta.transaction.Transactional;
@@ -30,6 +28,7 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 public class WoomsService {
+
     private final UserRepository userRepository;
     private final WoomsRepository woomsRepository;
     private final EnrollmentRepository enrollmentRepository;
@@ -46,7 +45,6 @@ public class WoomsService {
         return savedWooms.toDto();
 
     }
-
 
     public List<WoomsDto> findAllWooms(UUID userUuid) {
         List<Wooms> wooms = woomsRepository.findByUserUuid(userUuid);
@@ -92,6 +90,51 @@ public class WoomsService {
         return new WoomsDetailInfoDto(woomsDto, userInfoDtos);
     }
 
+
+    public List<UserInfoDto> getEnrolledUsers(CustomUserDetails currentUser, Long woomsId) {
+        UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
+        if (!woomsRepository.existsByUserUuidAndId(currentUserUuid, woomsId)) {
+            throw new WoomsUserNotLeaderException();
+        }
+        List<Enrollment> enrollments = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.WAITING);
+
+        return enrollments.stream()
+                .map(Enrollment::getUser)
+                .distinct()
+                .map(this::createUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public CommonResponse patchEnrolledUsers(CustomUserDetails currentUser, Long woomsId, String userUuid, WoomsEnrollRequest updateRequest) {
+        UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
+        UUID targetUserUuid = UUID.fromString(userUuid);
+
+        if (!woomsRepository.existsByUserUuidAndId(currentUserUuid, woomsId)) {
+            throw new WoomsUserNotLeaderException();
+        }
+
+        Enrollment enrollment = enrollmentRepository.findByPkUserUuidAndWoomsId(targetUserUuid, woomsId)
+                .orElseThrow(WoomsUserNotEnrolledException::new);
+
+        EnrollmentStatus newStatus = validateAndUpdateStatus(enrollment, updateRequest.getStatus());
+        enrollment.modifyEnrollmentStatus(newStatus);
+
+        enrollmentRepository.save(enrollment);
+
+        return new CommonResponse("ok");
+    }
+
+    private EnrollmentStatus validateAndUpdateStatus(Enrollment enrollment, EnrollmentStatus newStatus) {
+        if (enrollment.getStatus() == newStatus) {
+            throw new WoomsNotValidEnrollmentException();
+        }
+        if (enrollment.getStatus() != EnrollmentStatus.WAITING) {
+            throw new WoomsNotValidEnrollmentException();
+        }
+        return newStatus;
+    }
+
+
     private static void checkEnrollmentStatus(Enrollment enrollment) {
         if (enrollment.getStatus() == EnrollmentStatus.WAITING) {
             throw new WoomsAlreadyWaitingException();
@@ -117,5 +160,15 @@ public class WoomsService {
         Wooms newWooms = Wooms.of(user, request);
         return woomsRepository.save(newWooms);
     }
+
+    private UserInfoDto createUserDto(User user) {
+        return UserInfoDto.builder()
+                .uuid(user.getUuid())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .costume(user.getCostume())
+                .build();
+    }
+
 
 }

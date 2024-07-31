@@ -53,4 +53,9 @@ public class Enrollment extends BaseTimeEntity {
                 .pk(new Enrollment.Pk(user.getUuid(), wooms.getId()))
                 .build();
     }
+
+    public void modifyEnrollmentStatus(EnrollmentStatus status) {
+        this.status = status;
+    }
+
 }
