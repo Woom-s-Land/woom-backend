@@ -27,7 +27,7 @@ public class Story extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wooms_stroy_id")
+    @Column(name = "wooms_story_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -45,7 +45,7 @@ public class JwtService {
         String newAccessToken = jwtUtil.generateAccessToken(uuid, nickname, costume);
         String newRefreshToken = jwtUtil.generateRefreshToken(uuid);
 
-        refreshTokenRepository.deleteByRefreshToken(refreshToken);
+        refreshTokenRepository.deleteById(refreshToken);
         addRefreshToken(uuid, newRefreshToken);
 
         response.addCookie(createCookie("Authorization", newAccessToken));
