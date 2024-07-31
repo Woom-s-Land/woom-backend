@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "com.ee06.wooms.domain.wooms")
+@RestControllerAdvice(basePackages = "com.ee06.wooms.domain")
 public class WoomsExceptionHandler {
 
     @ExceptionHandler(WoomsAlreadyMemberException.class)
