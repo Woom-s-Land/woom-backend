@@ -1,5 +1,7 @@
 package com.ee06.wooms.domain.comments.entity;
 
+import com.ee06.wooms.domain.comments.dto.CommentRequest;
+import com.ee06.wooms.domain.comments.dto.CommentResponse;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
@@ -31,7 +33,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wooms_id")
+    @JoinColumn(name = "wooms_uuid", columnDefinition = "BINARY(16)")
     private Wooms wooms;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,4 +42,19 @@ public class Comment extends BaseTimeEntity {
 
     @Column(name = "wooms_comment_content")
     private String content;
+
+    public static Comment of(Wooms wooms, User user, CommentRequest commentRequest) {
+        return  Comment.builder()
+                .wooms(wooms)
+                .user(user)
+                .content(commentRequest.getContent())
+                .build();
+    }
+    public CommentResponse toDto(){
+        return CommentResponse.builder()
+                .nickname(user.getNickname())
+                .content(content)
+                .createdDate(getCreatedDate())
+                .build();
+    }
 }
