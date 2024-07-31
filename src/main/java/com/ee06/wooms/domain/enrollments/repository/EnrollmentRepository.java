@@ -19,4 +19,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
 
     List<Enrollment> findByPkWoomIdAndStatus(Long woomId, EnrollmentStatus status);
 
+    boolean existsByPkUserUuidAndPkWoomId(UUID userUuid, Long woomId);
+
 }
