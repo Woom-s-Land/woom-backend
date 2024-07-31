@@ -43,7 +43,12 @@ public enum ErrorCode {
     NOT_VALID_WOOMS(HttpStatus.NOT_FOUND, "유효하지 않은 Wooms 입니다.."),
 
     //======================== OAuth 예외 ========================//
-    NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");
+    NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다."),
+
+
+    //======================= Comment 예외 ======================//
+    EXIST_WROTE_COMMENT(HttpStatus.BAD_REQUEST, "오늘 이미 방명록을 작성하였습니다.");
+
 
     private final HttpStatus httpStatus;
     private String message;
