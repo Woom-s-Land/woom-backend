@@ -33,7 +33,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wooms_uuid", columnDefinition = "BINARY(16)")
+    @JoinColumn(name = "wooms_id")
     private Wooms wooms;
 
     @ManyToOne(fetch = FetchType.LAZY)
