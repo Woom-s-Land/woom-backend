@@ -8,6 +8,6 @@ public class ExistWroteCommentException extends RuntimeException {
     final ErrorCode errorCode;
 
     public ExistWroteCommentException() {
-        this.errorCode = ErrorCode.EMAIL_EXPIRED_USER;
+        this.errorCode = ErrorCode.EXIST_WROTE_COMMENT;
     }
 }
