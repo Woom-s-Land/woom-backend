@@ -15,7 +15,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +26,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 
 @RequiredArgsConstructor
-@Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -56,7 +54,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String costume = String.valueOf(customUserDetails.getUser().getCostume());
 
         String accessToken = jwtUtil.generateAccessToken(uuid, name, costume);
-        String refreshToken = jwtUtil.generateRefreshToken();
+        String refreshToken = jwtUtil.generateRefreshToken(uuid);
 
         addRefreshToken(uuid, refreshToken);
 

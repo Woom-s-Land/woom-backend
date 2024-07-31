@@ -56,7 +56,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
             throw new InvalidTokenException();
         }
 
-        if(refreshTokenRepository.existsByRefreshToken(refresh)) {
+        if (refreshTokenRepository.findById(refresh).isEmpty()) {
             throw new InvalidRefreshTokenException();
         }
 
