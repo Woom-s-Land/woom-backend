@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface RefreshTokenRepository extends CrudRepository<RefreshToken, String> {
-    boolean existsByRefreshToken(String refreshToken);
-
     @Transactional
     void deleteByRefreshToken(String refreshToken);
 }

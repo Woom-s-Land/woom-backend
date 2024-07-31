@@ -13,7 +13,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.*;
 
-@Slf4j
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
@@ -32,7 +30,7 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String uri = request.getRequestURI();
-        if (uri.matches("/api/auth/users") || uri.matches("/api/auth")) {
+        if (uri.matches("/api/auth/users") || uri.matches("/api/auth") || uri.matches("/api/auth/token")) {
             chain.doFilter(request, response);
             return;
         }
@@ -45,7 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 .orElse(null);
 
         if (token == null) chain.doFilter(request, response);
-        if (isNotValidate(request, response, chain, token)) return;
+        if (isNotValidate(request, response, token)) return;
 
         CustomUserDetails customUserDetails = new CustomUserDetails(generateForAuthUser(token), Map.of());
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
@@ -62,18 +60,21 @@ public class JWTFilter extends OncePerRequestFilter {
                 .build();
     }
 
-    private boolean isNotValidate(HttpServletRequest request, HttpServletResponse response, FilterChain chain, String token) throws IOException, ServletException {
+    private boolean isNotValidate(HttpServletRequest request, HttpServletResponse response, String token) throws IOException, ServletException {
         try {
             jwtUtil.isExpired(token);
             jwtUtil.validateToken(token);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.MAL_FORMED_TOKEN) {});
+            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.MAL_FORMED_TOKEN) {
+            });
             return true;
         } catch (ExpiredJwtException e) {
-            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.EXPIRED_TOKEN) {});
+            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.EXPIRED_TOKEN) {
+            });
             return true;
         } catch (IllegalArgumentException e) {
-            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.INVALID_TOKEN) {});
+            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.INVALID_TOKEN) {
+            });
             return true;
         }
         return false;

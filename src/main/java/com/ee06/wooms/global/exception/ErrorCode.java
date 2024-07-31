@@ -40,6 +40,7 @@ public enum ErrorCode {
     FORBIDDEN_USER_NOT_ENROLLED(HttpStatus.FORBIDDEN, "가입하지 않은 방입니다."),
     FORBIDDEN_USER_NOT_LEADER(HttpStatus.FORBIDDEN, "유저는 Wooms의 리더가 아닙니다."),
     NOT_VALID_ENROLLMENT(HttpStatus.NOT_FOUND, "유효하지 않은 수락 요청입니다."),
+    NOT_VALID_WOOMS(HttpStatus.NOT_FOUND, "유효하지 않은 Wooms 입니다.."),
 
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다.");

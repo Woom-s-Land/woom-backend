@@ -8,10 +8,7 @@ import com.ee06.wooms.domain.users.dto.UserInfoDto;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
-import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsEnrollRequest;
+import com.ee06.wooms.domain.wooms.dto.*;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.domain.wooms.exception.ex.*;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
@@ -90,7 +87,6 @@ public class WoomsService {
         return new WoomsDetailInfoDto(woomsDto, userInfoDtos);
     }
 
-
     public List<UserInfoDto> getEnrolledUsers(CustomUserDetails currentUser, Long woomsId) {
         UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
         if (!woomsRepository.existsByUserUuidAndId(currentUserUuid, woomsId)) {
@@ -120,6 +116,26 @@ public class WoomsService {
         enrollment.modifyEnrollmentStatus(newStatus);
 
         enrollmentRepository.save(enrollment);
+
+        return new CommonResponse("ok");
+    }
+
+    public CommonResponse patchWoomsAdmin(CustomUserDetails currentUser, Long woomsId, WoomsMandateAdminRequest mandateRequest) {
+        User user = fetchUser(currentUser.getUuid());
+        User targetUser = fetchUser(mandateRequest.getUserId());
+
+        if (!woomsRepository.existsByUserUuidAndId(user.getUuid(), woomsId)) {
+            throw new WoomsUserNotLeaderException();
+        }
+
+        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomId(targetUser.getUuid(), woomsId)) {
+            throw new WoomsNotValidEnrollmentException();
+        }
+
+        Wooms wooms = woomsRepository.findWoomsById(woomsId)
+                .orElseThrow(WoomsNotValidException::new);
+
+        wooms.modifyUser(targetUser);
 
         return new CommonResponse("ok");
     }
@@ -169,6 +185,5 @@ public class WoomsService {
                 .costume(user.getCostume())
                 .build();
     }
-
 
 }

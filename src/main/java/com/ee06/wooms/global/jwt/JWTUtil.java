@@ -1,6 +1,5 @@
 package com.ee06.wooms.global.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -75,9 +74,10 @@ public class JWTUtil {
                 .compact();
     }
 
-    public String generateRefreshToken() {
+    public String generateRefreshToken(String uuid) {
         return Jwts.builder()
                 .subject("refresh-token")
+                .claim("uuid", uuid)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenValidityInMilliseconds))
                 .signWith(secretKey)
@@ -95,8 +95,11 @@ public class JWTUtil {
     }
 
     public Boolean validateToken(String token) {
-        try { Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);return true; }
-        catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | ExpiredJwtException | IllegalArgumentException _) {}
+        try {
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+            return true;
+        }
+        catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException | IllegalArgumentException _) {}
         return false;
     }
 }

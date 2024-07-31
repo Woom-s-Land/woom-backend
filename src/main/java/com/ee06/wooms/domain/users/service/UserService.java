@@ -3,6 +3,7 @@ package com.ee06.wooms.domain.users.service;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.auth.Join;
 import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
+import com.ee06.wooms.domain.users.dto.auth.UserDto;
 import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.entity.User;
@@ -127,6 +128,18 @@ public class UserService implements UserDetailsService {
             user.modifyNickname(userGameInfo.getNickname());
             user.modifyCostume(userGameInfo.getCostume());
         });
+    }
+
+    public UserDto findById(UUID uuid) {
+        return userRepository.findById(uuid)
+                .map(user -> {
+                    return UserDto.builder()
+                            .email(user.getEmail())
+                            .nickname(user.getNickname())
+                            .costume(user.getCostume())
+                            .build();
+                })
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
