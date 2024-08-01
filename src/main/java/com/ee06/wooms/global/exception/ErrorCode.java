@@ -52,7 +52,8 @@ public enum ErrorCode {
     NOT_IN_SAME_GROUP(HttpStatus.BAD_REQUEST, "해당 유저와 같은 그룹에 속해 있지 않습니다."),
 
     //======================= AI 예외 ======================//
-    FAILED_REQUEST_GPT(HttpStatus.BAD_REQUEST, "GPT 요청에 실패하였습니다.");
+    FAILED_REQUEST_GPT(HttpStatus.BAD_REQUEST, "GPT 요청에 실패하였습니다."),
+    FAILED_CONVERT_MP3_FILE(HttpStatus.BAD_REQUEST, "MP3 파일 변환에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private String message;

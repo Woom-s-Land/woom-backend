@@ -21,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -58,8 +60,11 @@ public class StoryService {
     }
 
     public CommonResponse writeStory(CustomUserDetails userDetails, StoryDto writeDto, Long woomsId) {
-        String script = aiService.convertScript(writeDto.getContent(), writeDto.getUserNickname());
-        if(script == null) throw new FailedRequestToGptException();
+        String script =
+                Optional.ofNullable(aiService.convertScript(writeDto.getContent(), writeDto.getUserNickname()))
+                .orElseThrow(FailedRequestToGptException::new);
+
+        aiService.convertMP3File(script);
 
         storyRepository.save(Story.builder()
                 .user(fetchUser(userDetails.getUuid()))

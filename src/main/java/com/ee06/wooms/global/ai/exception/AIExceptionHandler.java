@@ -13,4 +13,9 @@ public class AIExceptionHandler {
     public ResponseEntity<Object> invalidJwt(FailedRequestToGptException e) {
         return ErrorCodeUtils.build(ErrorCode.FAILED_REQUEST_GPT);
     }
+
+    @ExceptionHandler(FailedConvertFileException.class)
+    public ResponseEntity<Object> invalidJwt(FailedConvertFileException e) {
+        return ErrorCodeUtils.build(ErrorCode.FAILED_CONVERT_MP3_FILE);
+    }
 }
