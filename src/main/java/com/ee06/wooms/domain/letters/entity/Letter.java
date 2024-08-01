@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -28,9 +30,6 @@ public class Letter extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_letter_id")
     private Long id;
-
-    @Column(name = "user_letter_title")
-    private String title;
 
     @Column(name = "user_letter_content")
     private String content;
@@ -45,4 +44,10 @@ public class Letter extends BaseTimeEntity {
 
     @Column(name = "user_letter_status")
     private LetterStatus status;
+
+    @Column(name = "sent_date")
+    private LocalDateTime sentDate;
+
+    @Column(name = "receive_date")
+    private LocalDateTime receiveDate;
 }
