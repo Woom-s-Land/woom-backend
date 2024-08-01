@@ -2,10 +2,7 @@ package com.ee06.wooms.global.config;
 
 import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
 import com.ee06.wooms.global.jwt.JWTUtil;
-import com.ee06.wooms.global.jwt.filter.CustomLogoutFilter;
-import com.ee06.wooms.global.jwt.filter.JWTFilter;
-import com.ee06.wooms.global.jwt.filter.JwtAuthenticationEntryPoint;
-import com.ee06.wooms.global.jwt.filter.LoginFilter;
+import com.ee06.wooms.global.jwt.filter.*;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import com.ee06.wooms.global.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -93,6 +90,7 @@ public class SecurityConfig {
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
+            ChannelJoinFilter channelJoinFilter = new ChannelJoinFilter(jwtUtil);
             JWTFilter jwtFilter = new JWTFilter(jwtUtil, jwtAuthenticationEntryPoint);
             LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), refreshTokenRepository, jwtAuthenticationEntryPoint, jwtUtil);
             loginFilter.setFilterProcessesUrl("/api/auth");
@@ -101,6 +99,7 @@ public class SecurityConfig {
             http
                     .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(channelJoinFilter, LoginFilter.class)
                     .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class)
                     .exceptionHandling((handler) -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint));
         }
