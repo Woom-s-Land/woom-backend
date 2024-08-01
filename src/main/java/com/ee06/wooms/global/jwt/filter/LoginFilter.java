@@ -2,7 +2,6 @@ package com.ee06.wooms.global.jwt.filter;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.auth.Login;
-import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.RefreshToken;
@@ -53,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String name = customUserDetails.getUser().getNickname();
         String costume = String.valueOf(customUserDetails.getUser().getCostume());
 
-        String accessToken = jwtUtil.generateAccessToken(uuid, name, costume);
+        String accessToken = jwtUtil.generateAccessToken(uuid, name, costume, "");
         String refreshToken = jwtUtil.generateRefreshToken(uuid);
 
         addRefreshToken(uuid, refreshToken);
