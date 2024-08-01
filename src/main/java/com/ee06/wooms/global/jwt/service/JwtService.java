@@ -42,7 +42,7 @@ public class JwtService {
         String nickname = userDto.getNickname();
         String costume = String.valueOf(userDto.getCostume());
 
-        String newAccessToken = jwtUtil.generateAccessToken(uuid, nickname, costume);
+        String newAccessToken = jwtUtil.generateAccessToken(uuid, nickname, costume, "");
         String newRefreshToken = jwtUtil.generateRefreshToken(uuid);
 
         refreshTokenRepository.deleteByRefreshToken(refreshToken);

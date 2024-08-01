@@ -34,7 +34,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String nickname = customUserDetails.getNickname();
         String costume = customUserDetails.getCostume();
 
-        String accessToken = jwtUtil.generateAccessToken(uuid, nickname, costume);
+        String accessToken = jwtUtil.generateAccessToken(uuid, nickname, costume, "");
         String refreshToken = jwtUtil.generateRefreshToken(uuid);
         response.addCookie(createCookie("Authorization", accessToken));
         response.addCookie(createCookie("refresh", refreshToken));

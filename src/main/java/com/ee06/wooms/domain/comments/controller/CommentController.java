@@ -45,6 +45,6 @@ public class CommentController {
     public ResponseEntity<CommonResponse> isWroteToday(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                        @PathVariable("woomsId") Long woomsId) {
         if(commentService.isWroteToday(userDetails, woomsId)) throw new ExistWroteCommentException();
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new CommonResponse("ok"));
     }
 }

@@ -62,10 +62,11 @@ public class JWTUtil {
                 .get("costume", String.class);
     }
 
-    public String generateAccessToken(String uuid, String nickname, String costume) {
+    public String generateAccessToken(String uuid, String nickname, String costume, String channelUuid) {
         return Jwts.builder()
                 .subject("access-token")
                 .claim("uuid", uuid)
+                .claim("channel-uuid", channelUuid)
                 .claim("nickname", nickname)
                 .claim("costume", costume)
                 .issuedAt(new Date(System.currentTimeMillis()))
