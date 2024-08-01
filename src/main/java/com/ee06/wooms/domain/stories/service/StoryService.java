@@ -1,7 +1,7 @@
 package com.ee06.wooms.domain.stories.service;
 
 import com.ee06.wooms.domain.stories.Script;
-import com.ee06.wooms.domain.stories.dto.StoryDto;
+import com.ee06.wooms.domain.stories.dto.StoryWriteRequest;
 import com.ee06.wooms.domain.stories.dto.StoryResponse;
 import com.ee06.wooms.domain.stories.entity.Story;
 import com.ee06.wooms.domain.stories.repository.StoryRepository;
@@ -14,6 +14,7 @@ import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
 import com.ee06.wooms.global.ai.service.AIService;
+import com.ee06.wooms.global.aws.service.S3Service;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ import java.util.UUID;
 @Slf4j
 public class StoryService {
     private final AIService aiService;
-
+    private final S3Service s3Service;
     private final UserRepository userRepository;
     private final StoryRepository storyRepository;
     private final WoomsRepository woomsRepository;
@@ -41,13 +42,13 @@ public class StoryService {
     public StoryResponse getStories(Long woomsId, Pageable pageable) {
         woomsRepository.findWoomsById(woomsId).orElseThrow(WoomsNotValidException::new);
 
-        List<StoryDto> stories = storyRepository.findAllByWoomsId(woomsId, pageable)
+        List<StoryWriteRequest> stories = storyRepository.findAllByWoomsId(woomsId, pageable)
                 .stream()
-                .map((story) -> StoryDto.builder()
+                .map((story) -> StoryWriteRequest.builder()
                         .id(story.getId())
                         .userNickname(story.getUser().getNickname())
                         .content(story.getContent())
-                        .path(story.getPath())
+                        .fileName(String.valueOf(story.getFileName()))
                         .build())
                 .toList();
         String message = pageable.getPageNumber() + "페이지";
@@ -59,28 +60,19 @@ public class StoryService {
                 .build();
     }
 
-    public CommonResponse writeStory(CustomUserDetails userDetails, StoryDto writeDto, Long woomsId) {
+    public CommonResponse writeStory(CustomUserDetails userDetails, StoryWriteRequest storyWriteRequest, Long woomsId) {
+        String fileName = String.valueOf(UUID.randomUUID());
+        User user = userRepository.findById(UUID.fromString(userDetails.getUuid())).orElseThrow(UserNotFoundException::new);
+        Wooms wooms = woomsRepository.findById(woomsId).orElseThrow(WoomsNotValidException::new);
+
         String script =
-                Optional.ofNullable(aiService.convertScript(writeDto.getContent(), writeDto.getUserNickname()))
-                .orElseThrow(FailedRequestToGptException::new);
+                Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
+                        .orElseThrow(FailedRequestToGptException::new);
+        File file = aiService.convertMP3File(script, fileName);
+        s3Service.save(file, "stories");
 
-        aiService.convertMP3File(script);
+        storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
 
-        storyRepository.save(Story.builder()
-                .user(fetchUser(userDetails.getUuid()))
-                .wooms(fetchWooms(woomsId))
-                .content(writeDto.getContent())
-                .build());
         return new CommonResponse("ok");
-    }
-
-    private User fetchUser(String userUuid) {
-        return userRepository.findById(UUID.fromString(userUuid))
-                .orElseThrow(UserNotFoundException::new);
-    }
-
-    private Wooms fetchWooms(Long woomsId) {
-        return woomsRepository.findWoomsById(woomsId)
-                .orElseThrow(WoomsNotValidException::new);
     }
 }

@@ -53,7 +53,10 @@ public enum ErrorCode {
 
     //======================= AI 예외 ======================//
     FAILED_REQUEST_GPT(HttpStatus.BAD_REQUEST, "GPT 요청에 실패하였습니다."),
-    FAILED_CONVERT_MP3_FILE(HttpStatus.BAD_REQUEST, "MP3 파일 변환에 실패하였습니다.");
+    FAILED_CONVERT_MP3_FILE(HttpStatus.BAD_REQUEST, "MP3 파일 변환에 실패하였습니다."),
+
+    //======================= S3 예외 ======================//
+    FAILED_UPLOAD_FILE(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private String message;

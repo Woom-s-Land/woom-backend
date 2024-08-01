@@ -11,13 +11,9 @@ import org.springframework.ai.openai.audio.speech.SpeechPrompt;
 import org.springframework.ai.openai.audio.speech.SpeechResponse;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,14 +29,14 @@ public class AIService {
         return chatOutput.getContent();
     }
 
-    public File convertMP3File(String script) {
+    public File convertMP3File(String script, String fileName) {
         SpeechPrompt speechPrompt = new SpeechPrompt(script, speechOptions);
         SpeechResponse audioResponse = speechModel.call(speechPrompt);
 
         byte[] responseAsBytes = audioResponse.getResult().getOutput();
         InputStream audioStream = new ByteArrayInputStream(responseAsBytes);
 
-        File mp3File = new File("C:\\Users\\LHS\\Documents\\" + UUID.randomUUID() + ".mp3");
+        File mp3File = new File(fileName + ".mp3");
         try {
             Files.copy(audioStream, mp3File.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {

@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class StoryResponse {
-    private List<StoryDto> stories;
+    private List<StoryWriteRequest> stories;
     private String message;
 }

@@ -9,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StoryDto {
+public class StoryWriteRequest {
     private Long id;
     private String userNickname;
     private String content;
-    private String path;
+    private String fileName;
 }
