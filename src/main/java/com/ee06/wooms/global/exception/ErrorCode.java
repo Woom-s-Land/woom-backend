@@ -49,7 +49,8 @@ public enum ErrorCode {
     EXIST_WROTE_COMMENT(HttpStatus.BAD_REQUEST, "오늘 이미 방명록을 작성하였습니다."),
 
     //======================= Letter 예외 ======================//
-    NOT_IN_SAME_GROUP(HttpStatus.BAD_REQUEST, "해당 유저와 같은 그룹에 속해 있지 않습니다.");
+    NOT_IN_SAME_GROUP(HttpStatus.BAD_REQUEST, "해당 유저와 같은 그룹에 속해 있지 않습니다."),
+    NOT_VALID_LETTER(HttpStatus.NOT_FOUND, "유효하지 않은 레터입니다.");
 
     private final HttpStatus httpStatus;
     private String message;
