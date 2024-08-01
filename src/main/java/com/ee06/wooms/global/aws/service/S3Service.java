@@ -19,6 +19,9 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.s3.url}")
+    private String root;
+
     public void save(File file, String dir) {
         String keyName = dir + "/" + file.getName();
         log.info(keyName);
@@ -31,4 +34,8 @@ public class S3Service {
         }
     }
 
+    public String getFilePath(String dir, String fileName) {
+        log.info("{}{}/{}", root, dir, fileName);
+        return root + dir + "/" + fileName + ".mp3";
+    }
 }

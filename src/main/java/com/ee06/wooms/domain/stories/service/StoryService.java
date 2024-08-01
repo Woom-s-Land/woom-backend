@@ -48,7 +48,7 @@ public class StoryService {
                         .id(story.getId())
                         .userNickname(story.getUser().getNickname())
                         .content(story.getContent())
-                        .fileName(String.valueOf(story.getFileName()))
+                        .fileName(s3Service.getFilePath("stories", String.valueOf(story.getFileName())))
                         .build())
                 .toList();
         String message = pageable.getPageNumber() + "페이지";
