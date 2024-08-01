@@ -45,10 +45,11 @@ public enum ErrorCode {
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다."),
 
-
     //======================= Comment 예외 ======================//
-    EXIST_WROTE_COMMENT(HttpStatus.BAD_REQUEST, "오늘 이미 방명록을 작성하였습니다.");
+    EXIST_WROTE_COMMENT(HttpStatus.BAD_REQUEST, "오늘 이미 방명록을 작성하였습니다."),
 
+    //======================= Letter 예외 ======================//
+    NOT_IN_SAME_GROUP(HttpStatus.BAD_REQUEST, "해당 유저와 같은 그룹에 속해 있지 않습니다.");
 
     private final HttpStatus httpStatus;
     private String message;
