@@ -12,8 +12,11 @@ import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
+import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
+import com.ee06.wooms.global.ai.service.AIService;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +27,12 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class StoryService {
-    private final StoryRepository storyRepository;
+    private final AIService aiService;
+
     private final UserRepository userRepository;
+    private final StoryRepository storyRepository;
     private final WoomsRepository woomsRepository;
 
     @Transactional(readOnly = true)
@@ -43,7 +49,7 @@ public class StoryService {
                         .build())
                 .toList();
         String message = pageable.getPageNumber() + "페이지";
-        if(stories.isEmpty()) message = message.concat(Script.NOT_FOUND_STORIES.getScript()) ;
+        if (stories.isEmpty()) message = message.concat(Script.NOT_FOUND_STORIES.getScript());
 
         return StoryResponse.builder()
                 .stories(stories)
@@ -52,14 +58,17 @@ public class StoryService {
     }
 
     public CommonResponse writeStory(CustomUserDetails userDetails, StoryDto writeDto, Long woomsId) {
+        String script = aiService.convertScript(writeDto.getContent(), writeDto.getUserNickname());
+        if(script == null) throw new FailedRequestToGptException();
+
         storyRepository.save(Story.builder()
                 .user(fetchUser(userDetails.getUuid()))
                 .wooms(fetchWooms(woomsId))
                 .content(writeDto.getContent())
                 .build());
-
         return new CommonResponse("ok");
     }
+
     private User fetchUser(String userUuid) {
         return userRepository.findById(UUID.fromString(userUuid))
                 .orElseThrow(UserNotFoundException::new);
