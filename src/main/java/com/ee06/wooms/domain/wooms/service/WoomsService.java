@@ -9,6 +9,7 @@ import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.domain.wooms.dto.*;
+import com.ee06.wooms.domain.wooms.entity.MapColorStatus;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.domain.wooms.exception.ex.*;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
@@ -136,6 +137,20 @@ public class WoomsService {
                 .orElseThrow(WoomsNotValidException::new);
 
         wooms.modifyUser(targetUser);
+
+        return new CommonResponse("ok");
+    }
+
+    public CommonResponse patchWoomsColor(CustomUserDetails currentUser, Long woomsId, MapColorStatus mapColor) {
+        User user = fetchUser(currentUser.getUuid());
+        if (!woomsRepository.existsByUserUuidAndId(user.getUuid(), woomsId)) {
+            throw new WoomsUserNotLeaderException();
+        }
+
+        Wooms wooms = woomsRepository.findWoomsById(woomsId)
+                .orElseThrow(WoomsNotValidException::new);
+
+        wooms.modifyMapColorStatus(mapColor);
 
         return new CommonResponse("ok");
     }

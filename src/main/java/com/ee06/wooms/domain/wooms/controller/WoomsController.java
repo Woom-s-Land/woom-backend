@@ -6,6 +6,7 @@ import com.ee06.wooms.domain.wooms.dto.WoomsEnrollRequest;
 import com.ee06.wooms.domain.wooms.dto.WoomsMandateAdminRequest;
 import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
+import com.ee06.wooms.domain.wooms.entity.MapColorStatus;
 import com.ee06.wooms.domain.wooms.service.WoomsService;
 import com.ee06.wooms.domain.wooms.dto.WoomsDto;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -73,6 +74,13 @@ public class WoomsController {
                                                        @RequestBody WoomsMandateAdminRequest mandateRequest) {
 
         return ResponseEntity.ok(woomsService.patchWoomsAdmin(currentUser, woomsId, mandateRequest));
+    }
+
+    @PatchMapping("/wooms/{woomsId}/colors/{mapColors}")
+    public ResponseEntity<CommonResponse> patchWoomsMapColor(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                             @PathVariable("woomsId") Long woomsId,
+                                                             @PathVariable("mapColors") MapColorStatus mapColor) {
+        return ResponseEntity.ok(woomsService.patchWoomsColor(currentUser, woomsId , mapColor));
     }
 
 
