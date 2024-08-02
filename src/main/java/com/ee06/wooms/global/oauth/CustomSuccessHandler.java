@@ -4,7 +4,7 @@ import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.RefreshToken;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
-import jakarta.servlet.http.Cookie;
+import com.ee06.wooms.global.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,21 +36,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String accessToken = jwtUtil.generateAccessToken(uuid, nickname, costume, "");
         String refreshToken = jwtUtil.generateRefreshToken(uuid);
-        response.addCookie(createCookie("Authorization", accessToken));
-        response.addCookie(createCookie("refresh", refreshToken));
+        CookieUtils.addCookie(response, "Authorization", accessToken, 216000);
+        CookieUtils.addCookie(response, "refresh", refreshToken, 216000);
 
         addRefreshToken(uuid, refreshToken);
 
         response.sendRedirect(frontURI);
-    }
-
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 
     private void addRefreshToken(String uuid, String refreshToken) {

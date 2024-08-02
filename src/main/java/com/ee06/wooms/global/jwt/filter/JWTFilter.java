@@ -5,11 +5,11 @@ import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.exception.CustomAuthenticationException;
+import com.ee06.wooms.global.util.CookieUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -35,12 +36,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = Optional.ofNullable(request.getCookies())
-                .flatMap(cookies -> Arrays.stream(cookies)
-                        .filter(cookie -> Objects.equals("Authorization", cookie.getName()))
-                        .map(Cookie::getValue)
-                        .findAny())
-                .orElse(null);
+        String token = CookieUtils.getCookie(request, "Authorization");
 
         if (token == null) chain.doFilter(request, response);
         if (isNotValidate(request, response, token)) return;
