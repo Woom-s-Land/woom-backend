@@ -1,10 +1,29 @@
 package com.ee06.wooms.domain.letters.repository;
 
 import com.ee06.wooms.domain.letters.entity.Letter;
+import com.ee06.wooms.domain.letters.entity.LetterStatus;
 import com.ee06.wooms.domain.users.entity.Mail;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface LetterRepository extends CrudRepository<Letter, Long> {
+public interface LetterRepository extends JpaRepository<Letter, Long> {
+
+    @Query("SELECT l " +
+            " FROM Letter l " +
+            "WHERE l.receiver.uuid = :userUuid AND l.receiveDate < :cutoffDate " +
+            "ORDER BY CASE WHEN l.status = 0 THEN 1 ELSE 2 END, l.receiveDate DESC")
+    Page<Letter> findByReceiverUuidAndReceiveDateBefore(@Param("userUuid") UUID userUuid,
+                                                        @Param("cutoffDate") LocalDateTime cutoffDate,
+                                                        Pageable pageable);
+
+    int countByReceiverUuidAndReceiveDateAfter(UUID receiverUuid, LocalDateTime dateTime);
 }
