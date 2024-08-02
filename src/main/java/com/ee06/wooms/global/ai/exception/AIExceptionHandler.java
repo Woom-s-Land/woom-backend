@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AIExceptionHandler {
 
     @ExceptionHandler(FailedRequestToGptException.class)
-    public ResponseEntity<Object> invalidJwt(FailedRequestToGptException e) {
+    public ResponseEntity<Object> failedRequestToGpt(FailedRequestToGptException e) {
         return ErrorCodeUtils.build(ErrorCode.FAILED_REQUEST_GPT);
     }
 
     @ExceptionHandler(FailedConvertFileException.class)
-    public ResponseEntity<Object> invalidJwt(FailedConvertFileException e) {
+    public ResponseEntity<Object> failedConvertAudioFile(FailedConvertFileException e) {
         return ErrorCodeUtils.build(ErrorCode.FAILED_CONVERT_MP3_FILE);
     }
 }
