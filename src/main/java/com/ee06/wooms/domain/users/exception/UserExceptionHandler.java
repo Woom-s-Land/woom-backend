@@ -50,4 +50,9 @@ public class UserExceptionHandler {
         return ErrorCodeUtils.build(ErrorCode.TOO_LONG_NICKNAME_USER);
     }
 
+    @ExceptionHandler(UserNotAllowedException.class)
+    public ResponseEntity<Object> notMatchedPassword(UserNotAllowedException e) {
+        return ErrorCodeUtils.build(ErrorCode.UN_AUTHENTICATED_USER);
+    }
+
 }
