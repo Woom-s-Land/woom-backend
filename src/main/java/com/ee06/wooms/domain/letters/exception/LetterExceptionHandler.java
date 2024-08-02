@@ -1,6 +1,7 @@
 package com.ee06.wooms.domain.letters.exception;
 
 import com.ee06.wooms.domain.letters.exception.ex.NotInSameWoomsException;
+import com.ee06.wooms.domain.letters.exception.ex.NotValidLetterException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidEnrollmentException;
@@ -21,5 +22,11 @@ public class LetterExceptionHandler {
     public ResponseEntity<Object> woomsAlreadyMemberException(NotInSameWoomsException e) {
         return ErrorCodeUtils.build(ErrorCode.NOT_IN_SAME_GROUP);
     }
+
+    @ExceptionHandler(NotValidLetterException.class)
+    public ResponseEntity<Object> notValidLetter(NotValidLetterException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_VALID_LETTER);
+    }
+
 
 }
