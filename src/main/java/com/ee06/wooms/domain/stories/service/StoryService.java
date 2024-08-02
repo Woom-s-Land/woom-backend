@@ -14,15 +14,15 @@ import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
 import com.ee06.wooms.global.ai.service.AIService;
-import com.ee06.wooms.global.aws.Extension;
 import com.ee06.wooms.global.aws.service.S3Service;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +30,7 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class StoryService {
     private final AIService aiService;
     private final S3Service s3Service;
@@ -48,11 +49,9 @@ public class StoryService {
                         .userNickname(story.getUser().getNickname())
                         .content(story.getContent())
                         .fileName(s3Service.getFilePath("stories",
-                                String.valueOf(story.getFileName()),
-                                Extension.STORY.getExtension()))
+                                String.valueOf(story.getFileName())))
                         .build())
                 .toList();
-
         String message = pageable.getPageNumber() + "페이지";
         if (stories.isEmpty()) message = message.concat(Script.NOT_FOUND_STORIES.getScript());
 
@@ -70,9 +69,9 @@ public class StoryService {
         String script =
                 Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
                         .orElseThrow(FailedRequestToGptException::new);
-        File file = aiService.convertMP3File(script, fileName);
-        s3Service.save(file, "stories");
 
+        InputStream audioStream = aiService.convertMP3File(script);
+        s3Service.save(audioStream, "stories", fileName);
         storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
 
         return new CommonResponse("ok");
