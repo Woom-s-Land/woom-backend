@@ -44,11 +44,15 @@ public class Wooms extends BaseTimeEntity {
     @Column(name = "wooms_title")
     private String title;
 
+    @Column(name = "map_color_status")
+    private MapColorStatus mapColorStatus;
+
     public static Wooms of(User user, WoomsCreateRequestDto request) {
         return Wooms.builder()
                 .user(user)
                 .title(request.getWoomsTitle())
                 .inviteCode(UUID.randomUUID())
+                .mapColorStatus(MapColorStatus.RED)
                 .build();
     }
 
@@ -57,6 +61,7 @@ public class Wooms extends BaseTimeEntity {
                 .woomsId(this.id)
                 .woomsInviteCode(this.inviteCode)
                 .woomsTitle(this.title)
+                .mapColorStatus(this.mapColorStatus)
                 .build();
     }
 
@@ -64,4 +69,7 @@ public class Wooms extends BaseTimeEntity {
         this.user = newUser;
     }
 
+    public void modifyMapColorStatus(MapColorStatus mapColor) {
+        this.mapColorStatus = mapColor;
+    }
 }
