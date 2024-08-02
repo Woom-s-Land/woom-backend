@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class WoomsMandateAdminRequest {
-    private String userId;
+    private String userUuid;
 }

@@ -8,16 +8,14 @@ import com.ee06.wooms.global.jwt.dto.RefreshToken;
 import com.ee06.wooms.global.jwt.exception.InvalidRefreshTokenException;
 import com.ee06.wooms.global.jwt.exception.InvalidTokenException;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
-import jakarta.servlet.http.Cookie;
+import com.ee06.wooms.global.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,7 +27,7 @@ public class JwtService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public CommonResponse issueRefreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = getToken(request);
+        String refreshToken = CookieUtils.getCookie(request, "refresh");
         if (!jwtUtil.validateToken(refreshToken) || !Objects.equals(jwtUtil.getSubject(refreshToken), "refresh-token"))
             throw new InvalidTokenException();
 
@@ -48,28 +46,10 @@ public class JwtService {
         refreshTokenRepository.deleteById(refreshToken);
         addRefreshToken(uuid, newRefreshToken);
 
-        response.addCookie(createCookie("Authorization", newAccessToken));
-        response.addCookie(createCookie("refresh", newRefreshToken));
+        CookieUtils.addCookie(response, "Authorization", newAccessToken, 216000);
+        CookieUtils.addCookie(response, "refresh", newRefreshToken, 216000);
 
         return new CommonResponse("ok");
-    }
-
-    private static String getToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getCookies())
-                .flatMap(cookies -> Arrays.stream(cookies)
-                        .filter(cookie -> Objects.equals("refresh", cookie.getName()))
-                        .map(Cookie::getValue)
-                        .findAny())
-                .orElse(null);
-    }
-
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 
     private void addRefreshToken(String uuid, String refreshToken) {

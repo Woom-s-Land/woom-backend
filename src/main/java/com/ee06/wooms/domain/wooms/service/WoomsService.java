@@ -123,7 +123,7 @@ public class WoomsService {
 
     public CommonResponse patchWoomsAdmin(CustomUserDetails currentUser, Long woomsId, WoomsMandateAdminRequest mandateRequest) {
         User user = fetchUser(currentUser.getUuid());
-        User targetUser = fetchUser(mandateRequest.getUserId());
+        User targetUser = fetchUser(mandateRequest.getUserUuid());
 
         if (!woomsRepository.existsByUserUuidAndId(user.getUuid(), woomsId)) {
             throw new WoomsUserNotLeaderException();

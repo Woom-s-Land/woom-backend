@@ -7,10 +7,10 @@ import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.RefreshToken;
 import com.ee06.wooms.global.jwt.exception.CustomAuthenticationException;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
+import com.ee06.wooms.global.util.CookieUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +57,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         addRefreshToken(uuid, refreshToken);
 
-        response.addCookie(createCookie("Authorization", accessToken));
-        response.addCookie(createCookie("refresh", refreshToken));
+        CookieUtils.addCookie(response, "Authorization", accessToken, 216000);
+        CookieUtils.addCookie(response, "refresh", refreshToken, 216000);
 
         response.setStatus(HttpStatus.OK.value());
     }
@@ -76,14 +76,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 .build();
 
         refreshTokenRepository.save(token);
-    }
-
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 }
