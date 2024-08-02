@@ -4,13 +4,11 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ee06.wooms.global.aws.exception.FileUploadFailedException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
@@ -20,11 +18,10 @@ public class S3Service {
     private String bucket;
 
     @Value("${cloud.aws.s3.url}")
-    private String root;
+    private String ROOT_URL;
 
     public void save(File file, String dir) {
         String keyName = dir + "/" + file.getName();
-        log.info(keyName);
 
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, keyName, file);
         try {
@@ -34,8 +31,7 @@ public class S3Service {
         }
     }
 
-    public String getFilePath(String dir, String fileName) {
-        log.info("{}{}/{}", root, dir, fileName);
-        return root + dir + "/" + fileName + ".mp3";
+    public String getFilePath(String dir, String fileName, String extension) {
+        return ROOT_URL + dir + "/" + fileName + "." + extension;
     }
 }

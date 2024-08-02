@@ -1,8 +1,8 @@
 package com.ee06.wooms.domain.stories.service;
 
 import com.ee06.wooms.domain.stories.Script;
-import com.ee06.wooms.domain.stories.dto.StoryWriteRequest;
 import com.ee06.wooms.domain.stories.dto.StoryResponse;
+import com.ee06.wooms.domain.stories.dto.StoryWriteRequest;
 import com.ee06.wooms.domain.stories.entity.Story;
 import com.ee06.wooms.domain.stories.repository.StoryRepository;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
@@ -14,10 +14,10 @@ import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
 import com.ee06.wooms.global.ai.service.AIService;
+import com.ee06.wooms.global.aws.Extension;
 import com.ee06.wooms.global.aws.service.S3Service;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,6 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
 public class StoryService {
     private final AIService aiService;
     private final S3Service s3Service;
@@ -48,9 +47,12 @@ public class StoryService {
                         .id(story.getId())
                         .userNickname(story.getUser().getNickname())
                         .content(story.getContent())
-                        .fileName(s3Service.getFilePath("stories", String.valueOf(story.getFileName())))
+                        .fileName(s3Service.getFilePath("stories",
+                                String.valueOf(story.getFileName()),
+                                Extension.STORY.getExtension()))
                         .build())
                 .toList();
+
         String message = pageable.getPageNumber() + "페이지";
         if (stories.isEmpty()) message = message.concat(Script.NOT_FOUND_STORIES.getScript());
 
