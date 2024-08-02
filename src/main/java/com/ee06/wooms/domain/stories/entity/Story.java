@@ -1,5 +1,6 @@
 package com.ee06.wooms.domain.stories.entity;
 
+import com.ee06.wooms.domain.stories.dto.StoryWriteRequest;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.global.audit.BaseTimeEntity;
@@ -27,7 +28,7 @@ public class Story extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wooms_stroy_id")
+    @Column(name = "wooms_story_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,6 +42,15 @@ public class Story extends BaseTimeEntity {
     @Column(name = "wooms_story_content")
     private String content;
 
-    @Column(name = "wooms_story_path")
-    private String path;
+    @Column(name = "wooms_story_file_name")
+    private String fileName;
+
+    public static Story of(Wooms wooms, User user, StoryWriteRequest storyWriteRequest, String fileName) {
+        return  Story.builder()
+                .wooms(wooms)
+                .user(user)
+                .content(storyWriteRequest.getContent())
+                .fileName(fileName)
+                .build();
+    }
 }
