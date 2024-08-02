@@ -93,7 +93,7 @@ public class LetterService {
         Letter letter = letterRepository.findById(letterId)
                 .orElseThrow(NotValidLetterException::new);
 
-        if (!letter.getReceiver().getUuid().equals(UUID.fromString(customUserDetails.getUuid()))) {
+        if (!Objects.equals(letter.getReceiver().getUuid(), UUID.fromString(customUserDetails.getUuid()))) {
             throw new UserNotAllowedException();
         }
 
