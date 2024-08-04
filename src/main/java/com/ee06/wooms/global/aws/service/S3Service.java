@@ -23,12 +23,12 @@ public class S3Service {
     @Value("${cloud.aws.s3.url}")
     private String root;
 
-    public void save(InputStream audioStream, String dir, String fileName) {
-        String keyName = dir + "/" + fileName;
+    public void save(InputStream stream, String dir, String fileName, String extension, String type) {
+        String keyName = "%s/%s%s".formatted(dir, fileName, extension);
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("audio/mpeg");
+        metadata.setContentType(type);
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, keyName, audioStream, metadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, keyName, stream, metadata);
         try {
             s3Client.putObject(putObjectRequest);
         } catch (Exception e) {
@@ -36,7 +36,7 @@ public class S3Service {
         }
     }
 
-    public String getFilePath(String dir, String fileName) {
-        return root + dir + "/" + fileName;
+    public String getFilePath(String dir, String fileName, String extension) {
+        return "%s%s/%s%s".formatted(root, dir, fileName, extension);
     }
 }

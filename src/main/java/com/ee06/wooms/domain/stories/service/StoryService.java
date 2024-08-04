@@ -14,6 +14,7 @@ import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
 import com.ee06.wooms.global.ai.service.AIService;
+import com.ee06.wooms.global.aws.FileFormat;
 import com.ee06.wooms.global.aws.service.S3Service;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.ee06.wooms.global.aws.FileFormat.*;
 
 @Service
 @Transactional
@@ -48,8 +51,12 @@ public class StoryService {
                         .id(story.getId())
                         .userNickname(story.getUser().getNickname())
                         .content(story.getContent())
-                        .fileName(s3Service.getFilePath("stories",
-                                String.valueOf(story.getFileName())))
+                        .fileName(s3Service.getFilePath(
+                                        "stories",
+                                        String.valueOf(story.getFileName()),
+                                        STORY_EXTENSION.getFormat()
+                                )
+                        )
                         .build())
                 .toList();
         String message = pageable.getPageNumber() + "페이지";
@@ -71,7 +78,7 @@ public class StoryService {
                         .orElseThrow(FailedRequestToGptException::new);
 
         InputStream audioStream = aiService.convertMP3File(script);
-        s3Service.save(audioStream, "stories", fileName);
+        s3Service.save(audioStream, "stories", fileName, STORY_EXTENSION.getFormat(), AUDIO_TYPE.getFormat());
         storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
 
         return new CommonResponse("ok");

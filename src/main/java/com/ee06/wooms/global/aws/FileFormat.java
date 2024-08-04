@@ -5,8 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Extension {
-    STORY(".mp3");
+public enum FileFormat {
+    STORY_EXTENSION(".mp3"),
+    AUDIO_TYPE("audio/mpeg");
 
-    private final String extension;
+    private final String format;
 }
