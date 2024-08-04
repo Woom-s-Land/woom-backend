@@ -39,7 +39,8 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
                 .ignoring()
-                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**")
+                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
+                ,"/actuator/**")
                 .requestMatchers(PathRequest.toH2Console());
     }
 
