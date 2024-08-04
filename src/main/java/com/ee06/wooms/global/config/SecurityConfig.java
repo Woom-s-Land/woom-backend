@@ -39,8 +39,8 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
                 .ignoring()
-                .requestMatchers("/images/**", "/js/**", "/css/**")
-                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**")
+                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
+                ,"/actuator/**", "/images/**", "/js/**", "/css/**")
                 .requestMatchers(PathRequest.toH2Console());
     }
 

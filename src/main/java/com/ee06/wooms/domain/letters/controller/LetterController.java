@@ -56,9 +56,6 @@ public class LetterController {
     }
 
     @Operation(summary = "특정 유저의 미래에 도착할 편지의 수를 확인합니다.")
-    @Parameters(value = {
-            @Parameter(name = "page", description = "요청한 페이지 번호 (0부터 시작)", example = "1"),
-    })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))),
     })
