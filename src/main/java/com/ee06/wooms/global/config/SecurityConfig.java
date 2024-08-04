@@ -39,14 +39,14 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
                 .ignoring()
+                .requestMatchers("/images/**", "/js/**", "/css/**")
                 .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**")
                 .requestMatchers(PathRequest.toH2Console());
     }
 
     private static final String[] WHITE_LIST = {
-            "/api/auth", "/api/auth/users", "/api/auth/token",
+            "/api/auth", "/api/auth/**",
             "/api/oauth2/authorization/**", "/api/login/oauth2/code/**",
-            "/api/auth/email", "/api/auth/email/code", "/api/auth/password",
             "/error"
     };
 

@@ -31,10 +31,11 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String uri = request.getRequestURI();
-        if (uri.matches("/api/auth/users") || uri.matches("/api/auth") || uri.matches("/api/auth/token")) {
+        if (uri.matches("^/api/auth(/.*)?$")) {
             chain.doFilter(request, response);
             return;
         }
+
 
         String token = CookieUtils.getCookie(request, "Authorization");
 
