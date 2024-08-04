@@ -78,6 +78,7 @@ public class LetterService {
         return LetterDto.builder()
                 .id(letter.getId())
                 .senderName(letter.getSender().getName())
+                .sentDate(letter.getSentDate())
                 .receiverName(letter.getReceiver().getName())
                 .content(letter.getContent())
                 .receiveDate(letter.getReceiveDate())

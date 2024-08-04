@@ -18,6 +18,7 @@ public class LetterDto {
     private Long id;
     private String content;
     private LocalDateTime receiveDate;
+    private LocalDateTime sentDate;
     private String senderName;
     private String receiverName;
     private LetterStatus status;
