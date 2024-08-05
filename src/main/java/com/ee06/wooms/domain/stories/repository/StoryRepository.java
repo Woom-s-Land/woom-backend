@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface StoryRepository extends JpaRepository<Story, Long> {
     List<Story> findAllByWoomsId(Long woomsId, Pageable pageable);
+    Integer countByWoomsId(Long woomsId);
 }

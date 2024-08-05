@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -77,6 +78,7 @@ public class LetterService {
         return LetterDto.builder()
                 .id(letter.getId())
                 .senderName(letter.getSender().getName())
+                .sentDate(letter.getSentDate())
                 .receiverName(letter.getReceiver().getName())
                 .content(letter.getContent())
                 .receiveDate(letter.getReceiveDate())

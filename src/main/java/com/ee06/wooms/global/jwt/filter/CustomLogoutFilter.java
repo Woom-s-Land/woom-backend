@@ -4,20 +4,18 @@ import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.exception.InvalidRefreshTokenException;
 import com.ee06.wooms.global.jwt.exception.InvalidTokenException;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
+import com.ee06.wooms.global.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
@@ -30,7 +28,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        //path and method verify
         String requestUri = request.getRequestURI();
         String requestMethod = request.getMethod();
         if (!requestUri.matches("^\\/api/auth$") || !Objects.equals(requestMethod, "DELETE")) {
@@ -39,14 +36,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         //get refresh token
-        String refresh = Optional.ofNullable(request.getCookies())
-                .flatMap(cookies -> Arrays.stream(cookies)
-                        .filter(cookie -> Objects.equals("refresh", cookie.getName()))
-                        .map(Cookie::getValue)
-                        .findAny())
-                .orElse(null);
+        String refresh = CookieUtils.getCookie(request, "refresh");
 
-        //refresh null check
         if (refresh == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -60,16 +51,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
             throw new InvalidRefreshTokenException();
         }
 
-        //로그아웃 진행
-        //Refresh 토큰 DB에서 제거
         refreshTokenRepository.deleteByRefreshToken(refresh);
 
-        //Refresh 토큰 Cookie 값 0
-        Cookie cookie = new Cookie("refresh", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
+        CookieUtils.addCookie(response, "refresh", refresh, 0);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }

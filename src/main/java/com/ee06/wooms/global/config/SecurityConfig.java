@@ -6,7 +6,6 @@ import com.ee06.wooms.global.jwt.filter.*;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import com.ee06.wooms.global.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,14 +38,13 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
                 .ignoring()
-                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**")
-                .requestMatchers(PathRequest.toH2Console());
+                .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
+                ,"/actuator/**", "/images/**", "/js/**", "/css/**");
     }
 
     private static final String[] WHITE_LIST = {
-            "/api/auth", "/api/auth/users", "/api/auth/token",
+            "/api/auth", "/api/auth/**",
             "/api/oauth2/authorization/**", "/api/login/oauth2/code/**",
-            "/api/auth/email", "/api/auth/email/code", "/api/auth/password",
             "/error"
     };
 
