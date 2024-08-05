@@ -12,4 +12,5 @@ public class StoryResponse {
     private List<StoryWriteRequest> stories;
     private String message;
     private Integer totalPage;
+
 }
