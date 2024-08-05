@@ -156,8 +156,7 @@ public class WoomsController {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponse.class))),
     })
     @GetMapping("/wooms/{woomsInviteCode}/name")
-    public ResponseEntity<CommonResponse> woomsGetWoomsName(@AuthenticationPrincipal CustomUserDetails currentUser,
-                                                                    @PathVariable("woomsInviteCode") String woomsInviteCode) {
-        return ResponseEntity.ok(woomsService.getWoomsName(currentUser, woomsInviteCode));
+    public ResponseEntity<CommonResponse> woomsGetWoomsName(@PathVariable("woomsInviteCode") String woomsInviteCode) {
+        return ResponseEntity.ok(woomsService.getWoomsName(woomsInviteCode));
     }
 }

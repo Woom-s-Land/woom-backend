@@ -172,7 +172,7 @@ public class WoomsService {
         return new CommonResponse("ok");
     }
 
-    public CommonResponse getWoomsName(CustomUserDetails currentUser, String woomsInviteCode) {
+    public CommonResponse getWoomsName(String woomsInviteCode) {
         Wooms targetWooms = findWoomsByInviteCode(woomsInviteCode);
 
         return new CommonResponse(targetWooms.getTitle());
