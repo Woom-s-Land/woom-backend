@@ -4,9 +4,11 @@ import com.ee06.wooms.domain.enrollments.entity.Enrollment;
 import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
     Optional<Enrollment> findByPkUserUuidAndWoomsId(UUID userUuid, Long woomsId);
 
     List<Enrollment> findByPkWoomIdAndStatus(Long woomId, EnrollmentStatus status);
+
+    Page<Enrollment> findByPkWoomIdAndStatus(Long woomId, EnrollmentStatus status, Pageable pageable);
 
     boolean existsByPkUserUuidAndPkWoomId(UUID userUuid, Long woomId);
 
