@@ -8,14 +8,27 @@ import com.ee06.wooms.domain.users.dto.UserInfoDto;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
-import com.ee06.wooms.domain.wooms.dto.*;
+import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsEnrollRequest;
+import com.ee06.wooms.domain.wooms.dto.WoomsMandateAdminRequest;
 import com.ee06.wooms.domain.wooms.entity.MapColorStatus;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
-import com.ee06.wooms.domain.wooms.exception.ex.*;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsEnrollmentLimitExceededException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidEnrollmentException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotLeaderException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -88,18 +101,16 @@ public class WoomsService {
         return new WoomsDetailInfoDto(woomsDto, userInfoDtos);
     }
 
-    public List<UserInfoDto> getEnrolledUsers(CustomUserDetails currentUser, Long woomsId) {
+    public Page<UserInfoDto> getEnrolledUsers(CustomUserDetails currentUser, Long woomsId, Pageable pageable) {
         UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
+
         if (!woomsRepository.existsByUserUuidAndId(currentUserUuid, woomsId)) {
             throw new WoomsUserNotLeaderException();
         }
-        List<Enrollment> enrollments = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.WAITING);
 
-        return enrollments.stream()
-                .map(Enrollment::getUser)
-                .distinct()
-                .map(this::createUserDto)
-                .collect(Collectors.toList());
+        Page<Enrollment> enrollmentsPage = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.WAITING, pageable);
+
+        return enrollmentsPage.map(enrollment -> createUserDto(enrollment.getUser()));
     }
 
     public CommonResponse patchEnrolledUsers(CustomUserDetails currentUser, Long woomsId, String userUuid, WoomsEnrollRequest updateRequest) {
@@ -108,6 +119,12 @@ public class WoomsService {
 
         if (!woomsRepository.existsByUserUuidAndId(currentUserUuid, woomsId)) {
             throw new WoomsUserNotLeaderException();
+        }
+
+        List<Enrollment> acceptedEnrollments = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.ACCEPT);
+
+        if (acceptedEnrollments.size() >= 12) {
+            throw new WoomsEnrollmentLimitExceededException();
         }
 
         Enrollment enrollment = enrollmentRepository.findByPkUserUuidAndWoomsId(targetUserUuid, woomsId)
@@ -155,6 +172,12 @@ public class WoomsService {
         return new CommonResponse("ok");
     }
 
+    public CommonResponse getWoomsName(String woomsInviteCode) {
+        Wooms targetWooms = findWoomsByInviteCode(woomsInviteCode);
+
+        return new CommonResponse(targetWooms.getTitle());
+    }
+
     private EnrollmentStatus validateAndUpdateStatus(Enrollment enrollment, EnrollmentStatus newStatus) {
         if (enrollment.getStatus() == newStatus) {
             throw new WoomsNotValidEnrollmentException();
@@ -200,5 +223,6 @@ public class WoomsService {
                 .costume(user.getCostume())
                 .build();
     }
+
 
 }
