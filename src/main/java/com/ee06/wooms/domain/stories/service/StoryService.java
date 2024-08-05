@@ -14,7 +14,6 @@ import com.ee06.wooms.domain.wooms.entity.Wooms;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
-import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
 import com.ee06.wooms.global.ai.service.AIService;
 import com.ee06.wooms.global.aws.service.S3Service;
 import com.ee06.wooms.global.common.CommonResponse;
@@ -24,12 +23,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import static com.ee06.wooms.global.aws.FileFormat.AUDIO_TYPE;
 import static com.ee06.wooms.global.aws.FileFormat.STORY_EXTENSION;
 
 @Service
@@ -48,6 +44,7 @@ public class StoryService {
     @Transactional(readOnly = true)
     public StoryResponse getStories(Long woomsId, Pageable pageable) {
         woomsRepository.findWoomsById(woomsId).orElseThrow(WoomsNotValidException::new);
+        Integer totalPage = storyRepository.countByWoomsId(woomsId);
 
         List<StoryWriteRequest> stories = storyRepository.findAllByWoomsId(woomsId, pageable)
                 .stream()
@@ -63,12 +60,14 @@ public class StoryService {
                         )
                         .build())
                 .toList();
+
         String message = pageable.getPageNumber() + "페이지";
         if (stories.isEmpty()) message = message.concat(Script.NOT_FOUND_STORIES.getScript());
 
         return StoryResponse.builder()
                 .stories(stories)
                 .message(message)
+                .totalPage(totalPage/4+1)
                 .build();
     }
 
@@ -79,12 +78,12 @@ public class StoryService {
         Wooms wooms = woomsRepository.findById(woomsId).orElseThrow(WoomsNotValidException::new);
         if(!enrollmentRepository.existsByPkUserUuidAndPkWoomId(user.getUuid(), woomsId)) throw new WoomsUserNotEnrolledException();
 
-        String script =
-                Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
-                        .orElseThrow(FailedRequestToGptException::new);
-
-        InputStream audioStream = aiService.convertMP3File(script);
-        s3Service.save(audioStream, "stories", fileName, STORY_EXTENSION.getFormat(), AUDIO_TYPE.getFormat());
+//        String script =
+//                Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
+//                        .orElseThrow(FailedRequestToGptException::new);
+//
+//        InputStream audioStream = aiService.convertMP3File(script);
+//        s3Service.save(audioStream, "stories", fileName, STORY_EXTENSION.getFormat(), AUDIO_TYPE.getFormat());
         storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
 
         return new CommonResponse("ok");
