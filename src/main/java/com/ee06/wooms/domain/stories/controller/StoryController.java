@@ -20,9 +20,10 @@ public class StoryController {
     private final StoryService storyService;
 
     @GetMapping("/wooms/{woomsId}/stories")
-    public ResponseEntity<StoryResponse> getStories(@PathVariable Long woomsId,
+    public ResponseEntity<StoryResponse> getStories(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                    @PathVariable Long woomsId,
                                                     @PageableDefault(size = 4) Pageable pageable) {
-        return ResponseEntity.ok(storyService.getStories(woomsId, pageable));
+        return ResponseEntity.ok(storyService.getStories(currentUser, woomsId, pageable));
     }
 
     @PostMapping("/wooms/{woomsId}/stories")

@@ -54,4 +54,9 @@ public class WoomsExceptionHandler {
     public ResponseEntity<Object> woomsLeaderNotLeaveException(WoomsLeaderNotLeftWoomsException e) {
         return ErrorCodeUtils.build(ErrorCode.NOT_LEFT_WOOMS_LEADER);
     }
+
+    @ExceptionHandler(WoomsNotAllowedUserException.class)
+    public ResponseEntity<Object> woomsUserNotAllowed(WoomsNotAllowedUserException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_ALLOWED_USER);
+    }
 }
