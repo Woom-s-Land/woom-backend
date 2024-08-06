@@ -33,5 +33,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
             "e.user.uuid = :userUuid1")
     boolean areUsersInSameGroup(@Param("userUuid1") UUID userUuid1, @Param("userUuid2") UUID userUuid2);
 
-
+    @Query("SELECT COUNT(e) FROM Enrollment e WHERE e.wooms.id = :woomsId AND e.status = :status")
+    Integer countByWoomsIdAndStatus(@Param("woomsId") Long woomsId, @Param("status") EnrollmentStatus status);
 }

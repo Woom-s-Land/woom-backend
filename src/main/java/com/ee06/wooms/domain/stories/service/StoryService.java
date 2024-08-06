@@ -1,5 +1,7 @@
 package com.ee06.wooms.domain.stories.service;
 
+import com.ee06.wooms.domain.enrollments.entity.Enrollment;
+import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
 import com.ee06.wooms.domain.stories.Script;
 import com.ee06.wooms.domain.stories.dto.StoryResponse;
@@ -11,6 +13,7 @@ import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
+import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotAllowedUserException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,17 +43,21 @@ import static com.ee06.wooms.global.aws.FileFormat.STORY_EXTENSION;
 public class StoryService {
     private final AIService aiService;
     private final S3Service s3Service;
-    private final EnrollmentRepository enrollmentRepository;
 
-    private final UserRepository userRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final StoryRepository storyRepository;
     private final WoomsRepository woomsRepository;
 
-    @Transactional(readOnly = true)
-    public StoryResponse getStories(Long woomsId, Pageable pageable) {
-        woomsRepository.findWoomsById(woomsId).orElseThrow(WoomsNotValidException::new);
-        Integer totalPage = storyRepository.countByWoomsId(woomsId);
+    private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
+    public StoryResponse getStories(CustomUserDetails currentUser, Long woomsId, Pageable pageable) {
+        User user = fetchUser(currentUser);
+
+        if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
+            throw new WoomsNotAllowedUserException();
+
+        Integer totalPage = storyRepository.countByWoomsId(woomsId);
         List<StoryWriteRequest> stories = storyRepository.findAllByWoomsId(woomsId, pageable)
                 .stream()
                 .map((story) -> StoryWriteRequest.builder()
@@ -72,16 +80,20 @@ public class StoryService {
         return StoryResponse.builder()
                 .stories(stories)
                 .message(message)
-                .totalPage(totalPage/4+1)
+                .totalPage(totalPage / 4 + 1)
                 .build();
     }
 
-    public CommonResponse writeStory(CustomUserDetails userDetails, StoryWriteRequest storyWriteRequest, Long woomsId) {
+    public CommonResponse writeStory(CustomUserDetails currentUser, StoryWriteRequest storyWriteRequest, Long woomsId) {
         String fileName = String.valueOf(UUID.randomUUID());
-
-        User user = userRepository.findById(UUID.fromString(userDetails.getUuid())).orElseThrow(UserNotFoundException::new);
+        User user = fetchUser(currentUser);
         Wooms wooms = woomsRepository.findById(woomsId).orElseThrow(WoomsNotValidException::new);
-        if(!enrollmentRepository.existsByPkUserUuidAndPkWoomId(user.getUuid(), woomsId)) throw new WoomsUserNotEnrolledException();
+
+        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomId(user.getUuid(), woomsId))
+            throw new WoomsUserNotEnrolledException();
+
+        if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
+            throw new WoomsNotAllowedUserException();
 
         String script =
                 Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
@@ -92,5 +104,14 @@ public class StoryService {
         storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
 
         return new CommonResponse("ok");
+    }
+
+    private User fetchUser(CustomUserDetails currentUser) {
+        return userRepository.findById(UUID.fromString(currentUser.getUuid())).orElseThrow(UserNotFoundException::new);
+    }
+
+    private Enrollment fetchEnrollment(Long woomsId, User user) {
+        return enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId)
+                .orElseThrow(WoomsUserNotEnrolledException::new);
     }
 }
