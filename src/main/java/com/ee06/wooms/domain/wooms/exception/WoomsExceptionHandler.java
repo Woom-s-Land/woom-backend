@@ -1,13 +1,6 @@
 package com.ee06.wooms.domain.wooms.exception;
 
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsEnrollmentLimitExceededException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidEnrollmentException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotLeaderException;
+import com.ee06.wooms.domain.wooms.exception.ex.*;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.ErrorCodeUtils;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +48,10 @@ public class WoomsExceptionHandler {
     @ExceptionHandler(WoomsEnrollmentLimitExceededException.class)
     public ResponseEntity<Object> woomsNotValidException(WoomsEnrollmentLimitExceededException e) {
         return ErrorCodeUtils.build(ErrorCode.NOT_VALID_ENROLLMENT_LIMIT);
+    }
+
+    @ExceptionHandler(WoomsLeaderNotLeftWoomsException.class)
+    public ResponseEntity<Object> woomsLeaderNotLeaveException(WoomsLeaderNotLeftWoomsException e) {
+        return ErrorCodeUtils.build(ErrorCode.NOT_LEFT_WOOMS_LEADER);
     }
 }

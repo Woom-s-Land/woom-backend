@@ -42,6 +42,7 @@ public enum ErrorCode {
     NOT_VALID_ENROLLMENT(HttpStatus.NOT_FOUND, "유효하지 않은 수락 요청입니다."),
     NOT_VALID_WOOMS(HttpStatus.NOT_FOUND, "유효하지 않은 Wooms 입니다."),
     NOT_VALID_ENROLLMENT_LIMIT(HttpStatus.NOT_FOUND, "Wooms의 인원이 이미 12명 이상입니다."),
+    NOT_LEFT_WOOMS_LEADER(HttpStatus.FORBIDDEN, "방장은 자신을 제외한 그룹원이 있는 경우 방을 탈퇴할 수 없습니다."),
 
     //======================== OAuth 예외 ========================//
     NOT_FOUND_PLATFORM_SERVICE(HttpStatus.INTERNAL_SERVER_ERROR, "제공하지 않는 플랫폼입니다."),

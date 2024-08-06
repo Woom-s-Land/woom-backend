@@ -8,21 +8,10 @@ import com.ee06.wooms.domain.users.dto.UserInfoDto;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.users.exception.ex.UserNotFoundException;
 import com.ee06.wooms.domain.users.repository.UserRepository;
-import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsDto;
-import com.ee06.wooms.domain.wooms.dto.WoomsEnrollRequest;
-import com.ee06.wooms.domain.wooms.dto.WoomsMandateAdminRequest;
+import com.ee06.wooms.domain.wooms.dto.*;
 import com.ee06.wooms.domain.wooms.entity.MapColorStatus;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyMemberException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsAlreadyWaitingException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsEnrollmentLimitExceededException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidEnrollmentException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidInviteCodeException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
-import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotLeaderException;
+import com.ee06.wooms.domain.wooms.exception.ex.*;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
 import com.ee06.wooms.global.common.CommonResponse;
 import jakarta.transaction.Transactional;
@@ -176,6 +165,22 @@ public class WoomsService {
         Wooms targetWooms = findWoomsByInviteCode(woomsInviteCode);
 
         return new CommonResponse(targetWooms.getTitle());
+    }
+
+    public CommonResponse leaveWooms(CustomUserDetails currentUser, Long woomsId) {
+        User user = fetchUser(currentUser.getUuid());
+
+        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomId(user.getUuid(), woomsId))
+            throw new WoomsUserNotEnrolledException();
+
+        if (woomsRepository.existsUserUuidByUserUuidAndId(user.getUuid(), woomsId) &&
+                enrollmentRepository.countByWoomsIdAndStatus(woomsId, EnrollmentStatus.ACCEPT) > 1)
+            throw new WoomsLeaderNotLeftWoomsException();
+
+        enrollmentRepository.findByPkUserUuidAndWoomsId(UUID.fromString(currentUser.getUuid()), woomsId)
+                .ifPresent(enrollment -> enrollment.modifyEnrollmentStatus(EnrollmentStatus.REFUSE));
+
+        return new CommonResponse("ok");
     }
 
     private EnrollmentStatus validateAndUpdateStatus(Enrollment enrollment, EnrollmentStatus newStatus) {
