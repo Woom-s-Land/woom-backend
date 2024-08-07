@@ -1,6 +1,7 @@
 package com.ee06.wooms.global.aws.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ee06.wooms.global.aws.exception.FileUploadFailedException;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.io.InputStream;
 
 @Slf4j
 @Service
@@ -22,11 +23,12 @@ public class S3Service {
     @Value("${cloud.aws.s3.url}")
     private String root;
 
-    public void save(File file, String dir) {
-        String keyName = dir + "/" + file.getName();
-        log.info(keyName);
+    public void save(InputStream stream, String dir, String fileName, String extension, String type) {
+        String keyName = "%s/%s%s".formatted(dir, fileName, extension);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(type);
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, keyName, file);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, keyName, stream, metadata);
         try {
             s3Client.putObject(putObjectRequest);
         } catch (Exception e) {
@@ -34,8 +36,7 @@ public class S3Service {
         }
     }
 
-    public String getFilePath(String dir, String fileName) {
-        log.info("{}{}/{}", root, dir, fileName);
-        return root + dir + "/" + fileName + ".mp3";
+    public String getFilePath(String dir, String fileName, String extension) {
+        return "%s%s/%s%s".formatted(root, dir, fileName, extension);
     }
 }

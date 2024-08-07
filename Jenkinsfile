@@ -66,7 +66,7 @@ pipeline {
 
         stage('Stop Existing Containers') {
             steps {
-                sh 'docker-compose -f ${COMPOSE_FILE} down --remove-orphans --volumes' 
+                sh 'docker-compose -f ${COMPOSE_FILE} down'
             }
         }
 

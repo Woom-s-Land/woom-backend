@@ -4,9 +4,11 @@ import com.ee06.wooms.domain.enrollments.entity.Enrollment;
 import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.users.entity.User;
 import com.ee06.wooms.domain.wooms.entity.Wooms;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
 
     List<Enrollment> findByPkWoomIdAndStatus(Long woomId, EnrollmentStatus status);
 
+    Page<Enrollment> findByPkWoomIdAndStatus(Long woomId, EnrollmentStatus status, Pageable pageable);
+
     boolean existsByPkUserUuidAndPkWoomId(UUID userUuid, Long woomId);
 
     @Query("SELECT COUNT(e) > 0 FROM Enrollment e WHERE e.wooms.id IN " +
@@ -29,5 +33,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
             "e.user.uuid = :userUuid1")
     boolean areUsersInSameGroup(@Param("userUuid1") UUID userUuid1, @Param("userUuid2") UUID userUuid2);
 
-
+    @Query("SELECT COUNT(e) FROM Enrollment e WHERE e.wooms.id = :woomsId AND e.status = :status")
+    Integer countByWoomsIdAndStatus(@Param("woomsId") Long woomsId, @Param("status") EnrollmentStatus status);
 }

@@ -1,6 +1,5 @@
 package com.ee06.wooms.global.ai.service;
 
-import com.ee06.wooms.global.ai.exception.FailedConvertFileException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -11,9 +10,8 @@ import org.springframework.ai.openai.audio.speech.SpeechPrompt;
 import org.springframework.ai.openai.audio.speech.SpeechResponse;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -29,20 +27,12 @@ public class AIService {
         return chatOutput.getContent();
     }
 
-    public File convertMP3File(String script, String fileName) {
+    public InputStream convertMP3File(String script) {
         SpeechPrompt speechPrompt = new SpeechPrompt(script, speechOptions);
         SpeechResponse audioResponse = speechModel.call(speechPrompt);
 
         byte[] responseAsBytes = audioResponse.getResult().getOutput();
-        InputStream audioStream = new ByteArrayInputStream(responseAsBytes);
 
-        File mp3File = new File(fileName + ".mp3");
-        try {
-            Files.copy(audioStream, mp3File.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new FailedConvertFileException();
-        }
-
-        return mp3File;
+        return new ByteArrayInputStream(responseAsBytes);
     }
 }

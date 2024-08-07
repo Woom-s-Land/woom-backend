@@ -1,9 +1,9 @@
 package com.ee06.wooms.global.jwt.filter;
 
 import com.ee06.wooms.global.jwt.JWTUtil;
+import com.ee06.wooms.global.util.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,12 +26,7 @@ public class ChannelJoinFilter extends OncePerRequestFilter {
         }
 
         String channelUuid = request.getParameter("channelUuid");
-        String token = Optional.ofNullable(request.getCookies())
-                .flatMap(cookies -> Arrays.stream(cookies)
-                        .filter(cookie -> Objects.equals("Authorization", cookie.getName()))
-                        .map(Cookie::getValue)
-                        .findAny())
-                .orElse(null);
+        String token = CookieUtils.getCookie(request, "Authorization");
 
         String costume = jwtUtil.getCostume(token);
         String nickname = jwtUtil.getNickname(token);
@@ -42,18 +34,9 @@ public class ChannelJoinFilter extends OncePerRequestFilter {
 
         String newAccessToken = jwtUtil.generateAccessToken(uuid, nickname, costume, channelUuid);
 
-        response.addCookie(createCookie("Authorization", newAccessToken));
+        CookieUtils.addCookie(response, "Authorization", newAccessToken, 216000);
         response.setStatus(HttpStatus.OK.value());
 
         chain.doFilter(request, response);
-    }
-
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60 * 60 * 60);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 }
