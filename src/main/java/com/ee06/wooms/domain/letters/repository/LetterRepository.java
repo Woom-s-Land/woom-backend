@@ -27,5 +27,8 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
                                                         Pageable pageable);
     Optional<Letter> findByIdAndUserUuid(Long id, UUID userUuid);
 
+    @Query("SELECT l FROM Letter l WHERE l.id = :id AND l.receiver.uuid = :userUuid")
+    Optional<Letter> findByIdAndReceiverUuid(@Param("id") Long id, @Param("userUuid") UUID userUuid);
+
     int countByReceiverUuidAndReceiveDateAfter(UUID receiverUuid, LocalDateTime dateTime);
 }

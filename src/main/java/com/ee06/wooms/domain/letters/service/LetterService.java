@@ -72,7 +72,8 @@ public class LetterService {
     public LetterDetailDto getLetterDetail(CustomUserDetails customUserDetails, Long letterId) {
         UUID userUuid = UUID.fromString(customUserDetails.getUuid());
 
-        Letter letter = letterRepository.findByIdAndUserUuid(letterId, userUuid)
+
+        Letter letter = letterRepository.findByIdAndReceiverUuid(letterId, userUuid)
                 .orElseThrow(NotValidLetterException::new);
 
         letter.modifyLetterStatusRead();
