@@ -1,5 +1,6 @@
 package com.ee06.wooms.domain.letters.controller;
 
+import com.ee06.wooms.domain.letters.dto.LetterDetailDto;
 import com.ee06.wooms.domain.letters.dto.LetterDto;
 import com.ee06.wooms.domain.letters.dto.NewLetterRequest;
 import com.ee06.wooms.domain.letters.service.LetterService;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -76,4 +78,18 @@ public class LetterController {
     public ResponseEntity<CommonResponse> deleteLetter(@PathVariable("letterId") Long letterId, @AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(letterService.deleteLetter(currentUser, letterId));
     }
+
+    @Operation(summary = "특정 편지의 상세 정보를 확인합니다.")
+    @Parameters(value = {
+            @Parameter(name = "letterId", description = "해당 Letter의 id", example = "1"),
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LetterDetailDto.class))),
+    })
+    @GetMapping("/letters/{letterId}/detail")
+    public ResponseEntity<LetterDetailDto> getLetterDetail(@PathVariable("letterId") Long letterId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+        return ResponseEntity.ok(letterService.getLetterDetail(currentUser, letterId));
+    }
+
+
 }
