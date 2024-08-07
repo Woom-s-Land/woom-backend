@@ -1,6 +1,5 @@
 package com.ee06.wooms.domain.letters.dto;
 
-import com.ee06.wooms.domain.letters.entity.LetterStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +13,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LetterDto {
+public class LetterDetailDto {
     private Long id;
-    private LocalDateTime receiveDate;
     private LocalDateTime sentDate;
     private String senderName;
-    private String receiverName;
-    private LetterStatus status;
+    private String content;
 }
