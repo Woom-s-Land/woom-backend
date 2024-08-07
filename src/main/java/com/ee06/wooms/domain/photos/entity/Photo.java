@@ -48,6 +48,18 @@ public class Photo extends BaseTimeEntity {
     private String nickname;
 
     @Column(name = "wooms_photo_flipped")
-    private WoomPhotoFlipped flipped;
+    private WoomsPhotoFlipped flipped;
 
+    @Column(name = "wooms_map_id")
+    private Integer mapId;
+
+    public static Photo of(User user, Wooms wooms, String path, String summary, Integer mapId) {
+        return Photo.builder()
+                .build();
+    }
+
+    public void flip(){
+        if(flipped == WoomsPhotoFlipped.FLIPPED) flipped = WoomsPhotoFlipped.UNFLIPPED;
+        else flipped = WoomsPhotoFlipped.FLIPPED;
+    }
 }
