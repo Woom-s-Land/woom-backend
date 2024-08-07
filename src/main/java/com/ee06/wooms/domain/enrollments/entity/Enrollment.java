@@ -25,7 +25,7 @@ public class Enrollment extends BaseTimeEntity {
     @JoinColumn(name = "user_uuid", columnDefinition = "BINARY(16)")
     private User user;
 
-    @MapsId("woomId")
+    @MapsId("woomsId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wooms_id")
     private Wooms wooms;
@@ -42,7 +42,7 @@ public class Enrollment extends BaseTimeEntity {
         private UUID userUuid;
 
         @Column(name = "wooms_id")
-        private Long woomId;
+        private Long woomsId;
     }
 
     public static Enrollment of(User user, Wooms wooms, EnrollmentStatus status) {
