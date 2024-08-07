@@ -60,7 +60,13 @@ public enum ErrorCode {
     FAILED_CONVERT_MP3_FILE(HttpStatus.BAD_REQUEST, "MP3 파일 변환에 실패하였습니다."),
 
     //======================= S3 예외 ======================//
-    FAILED_UPLOAD_FILE(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하였습니다.");
+    FAILED_UPLOAD_FILE(HttpStatus.BAD_REQUEST, "파일 업로드에 실패하였습니다."),
+
+    //======================= 사진 예외 ======================//
+    NOT_MATCHED_USER(HttpStatus.BAD_REQUEST, "사진 등록자가 일치하지 않습니다."),
+    NOT_MATCHED_WOOMS(HttpStatus.BAD_REQUEST, "해당 그룹의 사진이 아닙니다."),
+    NOT_FOUND_PHOTO(HttpStatus.BAD_REQUEST, "존재하지 않는 사진입니다."),
+    FAILED_CREATE_PHOTO(HttpStatus.BAD_REQUEST, "사진 등록에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private String message;
