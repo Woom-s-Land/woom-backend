@@ -90,6 +90,4 @@ public class LetterController {
     public ResponseEntity<LetterDetailDto> getLetterDetail(@PathVariable("letterId") Long letterId, @AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(letterService.getLetterDetail(currentUser, letterId));
     }
-
-
 }
