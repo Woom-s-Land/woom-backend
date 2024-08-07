@@ -89,7 +89,7 @@ public class StoryService {
         User user = fetchUser(currentUser);
         Wooms wooms = woomsRepository.findById(woomsId).orElseThrow(WoomsNotValidException::new);
 
-        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomId(user.getUuid(), woomsId))
+        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomsId(user.getUuid(), woomsId))
             throw new WoomsUserNotEnrolledException();
 
         if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
