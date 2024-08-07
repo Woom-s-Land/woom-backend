@@ -25,7 +25,6 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
     Page<Letter> findByReceiverUuidAndReceiveDateBefore(@Param("userUuid") UUID userUuid,
                                                         @Param("cutoffDate") LocalDateTime cutoffDate,
                                                         Pageable pageable);
-    Optional<Letter> findByIdAndUserUuid(Long id, UUID userUuid);
 
     @Query("SELECT l FROM Letter l WHERE l.id = :id AND l.receiver.uuid = :userUuid")
     Optional<Letter> findByIdAndReceiverUuid(@Param("id") Long id, @Param("userUuid") UUID userUuid);
