@@ -78,7 +78,7 @@ public class WoomsService {
             throw new WoomsUserNotEnrolledException();
         }
 
-        List<UserInfoDto> userInfoDtos = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.ACCEPT).stream()
+        List<UserInfoDto> userInfoDtos = enrollmentRepository.findByPkWoomsIdAndStatus(woomsId, EnrollmentStatus.ACCEPT).stream()
                 .map(Enrollment::getUser)
                 .map(User::toDto)
                 .collect(Collectors.toList());
@@ -97,7 +97,7 @@ public class WoomsService {
             throw new WoomsUserNotLeaderException();
         }
 
-        Page<Enrollment> enrollmentsPage = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.WAITING, pageable);
+        Page<Enrollment> enrollmentsPage = enrollmentRepository.findByPkWoomsIdAndStatus(woomsId, EnrollmentStatus.WAITING, pageable);
 
         return enrollmentsPage.map(enrollment -> createUserDto(enrollment.getUser()));
     }
@@ -110,7 +110,7 @@ public class WoomsService {
             throw new WoomsUserNotLeaderException();
         }
 
-        List<Enrollment> acceptedEnrollments = enrollmentRepository.findByPkWoomIdAndStatus(woomsId, EnrollmentStatus.ACCEPT);
+        List<Enrollment> acceptedEnrollments = enrollmentRepository.findByPkWoomsIdAndStatus(woomsId, EnrollmentStatus.ACCEPT);
 
         if (acceptedEnrollments.size() >= 12) {
             throw new WoomsEnrollmentLimitExceededException();
@@ -135,7 +135,7 @@ public class WoomsService {
             throw new WoomsUserNotLeaderException();
         }
 
-        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomId(targetUser.getUuid(), woomsId)) {
+        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomsId(targetUser.getUuid(), woomsId)) {
             throw new WoomsNotValidEnrollmentException();
         }
 
@@ -170,7 +170,7 @@ public class WoomsService {
     public CommonResponse leaveWooms(CustomUserDetails currentUser, Long woomsId) {
         User user = fetchUser(currentUser.getUuid());
 
-        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomId(user.getUuid(), woomsId))
+        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomsId(user.getUuid(), woomsId))
             throw new WoomsUserNotEnrolledException();
 
         if (woomsRepository.existsUserUuidByUserUuidAndId(user.getUuid(), woomsId) &&

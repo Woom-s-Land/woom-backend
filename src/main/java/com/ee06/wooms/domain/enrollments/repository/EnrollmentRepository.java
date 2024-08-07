@@ -25,7 +25,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Enrollme
 
     Page<Enrollment> findByPkWoomsIdAndStatus(Long woomsId, EnrollmentStatus status, Pageable pageable);
 
-    boolean existsByPkUserUuidAndPkWoomId(UUID userUuid, Long woomId);
+    boolean existsByPkUserUuidAndPkWoomsId(UUID userUuid, Long woomsId);
 
     @Query("SELECT COUNT(e) > 0 FROM Enrollment e WHERE e.wooms.id IN " +
             "(SELECT e1.wooms.id FROM Enrollment e1 WHERE e1.user.uuid = :userUuid1) AND " +
