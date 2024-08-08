@@ -65,6 +65,16 @@ public class Wooms extends BaseTimeEntity {
                 .build();
     }
 
+    public WoomsDto toWoomsDto() {
+        return WoomsDto.builder()
+                .woomsId(this.id)
+                .woomsLeaderUuid(this.user.getUuid())
+                .woomsInviteCode(this.inviteCode)
+                .woomsTitle(this.title)
+                .mapColorStatus(this.mapColorStatus)
+                .build();
+    }
+
     public void modifyUser(User newUser) {
         this.user = newUser;
     }
