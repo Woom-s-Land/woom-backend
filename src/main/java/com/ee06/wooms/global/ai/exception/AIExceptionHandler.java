@@ -1,5 +1,8 @@
 package com.ee06.wooms.global.ai.exception;
 
+import com.ee06.wooms.global.ai.exception.ex.FailedConvertFileException;
+import com.ee06.wooms.global.ai.exception.ex.FailedRequestToGptException;
+import com.ee06.wooms.global.ai.exception.ex.FailedSwitchStateException;
 import com.ee06.wooms.global.exception.ErrorCode;
 import com.ee06.wooms.global.util.ErrorCodeUtils;
 import org.springframework.http.ResponseEntity;
@@ -17,5 +20,10 @@ public class AIExceptionHandler {
     @ExceptionHandler(FailedConvertFileException.class)
     public ResponseEntity<Object> failedConvertAudioFile(FailedConvertFileException e) {
         return ErrorCodeUtils.build(ErrorCode.FAILED_CONVERT_MP3_FILE);
+    }
+
+    @ExceptionHandler(FailedSwitchStateException.class)
+    public ResponseEntity<Object> failedSwitchState(FailedSwitchStateException e) {
+        return ErrorCodeUtils.build(ErrorCode.FAILED_SWITCH_STATE);
     }
 }
