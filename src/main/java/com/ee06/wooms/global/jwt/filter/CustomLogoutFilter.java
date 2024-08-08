@@ -36,6 +36,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         //get refresh token
+        String access = CookieUtils.getCookie(request, "Authorization");
         String refresh = CookieUtils.getCookie(request, "refresh");
 
         if (refresh == null) {
@@ -54,6 +55,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         refreshTokenRepository.deleteByRefreshToken(refresh);
 
         CookieUtils.addCookie(response, "refresh", refresh, 0);
+        CookieUtils.addCookie(response, "Authorization", access, 0);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }

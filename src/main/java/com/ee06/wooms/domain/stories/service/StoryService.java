@@ -109,7 +109,7 @@ public class StoryService {
     private void validateEnrollment(Long woomsId, User user) {
         enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId).ifPresentOrElse(
                 (enrollment) -> {
-                    if(Objects.equals(enrollment.getStatus(), EnrollmentStatus.ACCEPT)) throw new WoomsNotAllowedUserException();
+                    if(!Objects.equals(enrollment.getStatus(), EnrollmentStatus.ACCEPT)) throw new WoomsNotAllowedUserException();
                 },
                 () -> {throw new WoomsUserNotEnrolledException();}
         );
