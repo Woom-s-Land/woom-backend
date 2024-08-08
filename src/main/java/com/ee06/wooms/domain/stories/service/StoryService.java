@@ -1,6 +1,5 @@
 package com.ee06.wooms.domain.stories.service;
 
-import com.ee06.wooms.domain.enrollments.entity.Enrollment;
 import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
 import com.ee06.wooms.domain.stories.Script;
@@ -54,9 +53,7 @@ public class StoryService {
     @Transactional(readOnly = true)
     public StoryResponse getStories(CustomUserDetails currentUser, Long woomsId, Pageable pageable) {
         User user = fetchUser(currentUser);
-
-        if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
-            throw new WoomsNotAllowedUserException();
+        validateEnrollment(woomsId, user);
 
         Integer totalPage = storyRepository.countByWoomsId(woomsId);
         List<StoryWriteRequest> stories = storyRepository.findAllByWoomsId(woomsId, pageable)
@@ -89,12 +86,7 @@ public class StoryService {
         String fileName = String.valueOf(UUID.randomUUID());
         User user = fetchUser(currentUser);
         Wooms wooms = woomsRepository.findById(woomsId).orElseThrow(WoomsNotValidException::new);
-
-        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomsId(user.getUuid(), woomsId))
-            throw new WoomsUserNotEnrolledException();
-
-        if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
-            throw new WoomsNotAllowedUserException();
+        validateEnrollment(woomsId, user);
 
         String script =
                 Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
@@ -114,8 +106,12 @@ public class StoryService {
         return userRepository.findById(UUID.fromString(currentUser.getUuid())).orElseThrow(UserNotFoundException::new);
     }
 
-    private Enrollment fetchEnrollment(Long woomsId, User user) {
-        return enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId)
-                .orElseThrow(WoomsUserNotEnrolledException::new);
+    private void validateEnrollment(Long woomsId, User user) {
+        enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId).ifPresentOrElse(
+                (enrollment) -> {
+                    if(Objects.equals(enrollment.getStatus(), EnrollmentStatus.ACCEPT)) throw new WoomsNotAllowedUserException();
+                },
+                () -> {throw new WoomsUserNotEnrolledException();}
+        );
     }
 }
