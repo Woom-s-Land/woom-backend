@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class WoomsDto {
     private final Long woomsId;
     private final UUID woomsInviteCode;
+    private final UUID woomsLeaderUuid;
     private final String woomsTitle;
     private final MapColorStatus mapColorStatus;
 }

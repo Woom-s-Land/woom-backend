@@ -86,7 +86,7 @@ public class WoomsService {
         Wooms wooms = woomsRepository.findById(woomsId)
                 .orElseThrow(WoomsNotValidInviteCodeException::new);
 
-        WoomsDto woomsDto = wooms.toDto();
+        WoomsDto woomsDto = wooms.toWoomsDto();
         return new WoomsDetailInfoDto(woomsDto, userInfoDtos);
     }
 
