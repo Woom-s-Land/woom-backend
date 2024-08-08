@@ -11,6 +11,7 @@ import com.ee06.wooms.domain.users.exception.ex.*;
 import com.ee06.wooms.domain.users.repository.MailRepository;
 import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.common.CommonResponse;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -174,5 +175,45 @@ public class UserService implements UserDetailsService {
         }
 
         return Optional.of(1);
+    }
+
+    @PostConstruct
+    public void init() {
+        Join[] joins = {
+                new Join("ssafy@ssafy.com", "ssafy1234!@", "싸피"),
+                new Join("example@example.com", "1234", "김도예"),
+                new Join("example1@example.com", "1234", "송도언"),
+                new Join("example2@example.com", "1234", "윤대영"),
+                new Join("example3@example.com", "1234", "이현수"),
+                new Join("example4@example.com", "1234", "정훈"),
+                new Join("example5@example.com", "1234", "홍성우"),
+                new Join("example6@example.com", "1234", "이준호"),
+                new Join("example7@example.com", "1234", "김하늘"),
+                new Join("example8@example.com", "1234", "정수현"),
+                new Join("example9@example.com", "1234", "조영준"),
+                new Join("example10@example.com", "1234", "문정희"),
+                new Join("example11@example.com", "1234", "오세훈"),
+                new Join("example12@example.com", "1234", "최나영"),
+                new Join("example13@example.com", "1234", "류정민"),
+                new Join("example14@example.com", "1234", "서지민"),
+                new Join("example15@example.com", "1234", "홍지윤"),
+                new Join("example16@example.com", "1234", "김지훈"),
+                new Join("example17@example.com", "1234", "양수진"),
+                new Join("example18@example.com", "1234", "이재호"),
+                new Join("example19@example.com", "1234", "박민주"),
+                new Join("example20@example.com", "1234", "정유진"),
+                new Join("example21@example.com", "1234", "한지우"),
+                new Join("example22@example.com", "1234", "김상민"),
+                new Join("example23@example.com", "1234", "이상준"),
+                new Join("example24@example.com", "1234", "문채원"),
+                new Join("example25@example.com", "1234", "장하늘"),
+                new Join("example26@example.com", "1234", "유지훈"),
+                new Join("example27@example.com", "1234", "오민석"),
+                new Join("example28@example.com", "1234", "권지영"),
+                new Join("example29@example.com", "1234", "채윤호"),
+                new Join("example30@example.com", "1234", "이서진")
+        };
+
+        for (Join joinDto : joins) join(joinDto);
     }
 }
