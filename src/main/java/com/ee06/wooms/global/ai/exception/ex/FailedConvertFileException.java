@@ -1,4 +1,4 @@
-package com.ee06.wooms.global.ai.exception;
+package com.ee06.wooms.global.ai.exception.ex;
 
 import com.ee06.wooms.global.exception.ErrorCode;
 import lombok.Getter;

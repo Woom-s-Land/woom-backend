@@ -1,6 +1,5 @@
 package com.ee06.wooms.domain.stories.service;
 
-import com.ee06.wooms.domain.enrollments.entity.Enrollment;
 import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
 import com.ee06.wooms.domain.stories.Script;
@@ -17,8 +16,9 @@ import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotAllowedUserException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsNotValidException;
 import com.ee06.wooms.domain.wooms.exception.ex.WoomsUserNotEnrolledException;
 import com.ee06.wooms.domain.wooms.repository.WoomsRepository;
-import com.ee06.wooms.global.ai.exception.FailedRequestToGptException;
+import com.ee06.wooms.global.ai.exception.ex.FailedRequestToGptException;
 import com.ee06.wooms.global.ai.service.AIService;
+import com.ee06.wooms.global.ai.service.QueueService;
 import com.ee06.wooms.global.aws.service.S3Service;
 import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +27,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static com.ee06.wooms.global.aws.FileFormat.AUDIO_TYPE;
 import static com.ee06.wooms.global.aws.FileFormat.STORY_EXTENSION;
@@ -41,21 +41,19 @@ import static com.ee06.wooms.global.aws.FileFormat.STORY_EXTENSION;
 @RequiredArgsConstructor
 @Slf4j
 public class StoryService {
+    private final QueueService queueService;
     private final AIService aiService;
     private final S3Service s3Service;
 
     private final EnrollmentRepository enrollmentRepository;
     private final StoryRepository storyRepository;
     private final WoomsRepository woomsRepository;
-
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public StoryResponse getStories(CustomUserDetails currentUser, Long woomsId, Pageable pageable) {
         User user = fetchUser(currentUser);
-
-        if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
-            throw new WoomsNotAllowedUserException();
+        validateEnrollment(woomsId, user);
 
         Integer totalPage = storyRepository.countByWoomsId(woomsId);
         List<StoryWriteRequest> stories = storyRepository.findAllByWoomsId(woomsId, pageable)
@@ -88,20 +86,18 @@ public class StoryService {
         String fileName = String.valueOf(UUID.randomUUID());
         User user = fetchUser(currentUser);
         Wooms wooms = woomsRepository.findById(woomsId).orElseThrow(WoomsNotValidException::new);
-
-        if (!enrollmentRepository.existsByPkUserUuidAndPkWoomsId(user.getUuid(), woomsId))
-            throw new WoomsUserNotEnrolledException();
-
-        if(!Objects.equals(fetchEnrollment(woomsId, user).getStatus(), EnrollmentStatus.ACCEPT))
-            throw new WoomsNotAllowedUserException();
+        validateEnrollment(woomsId, user);
 
         String script =
                 Optional.ofNullable(aiService.convertScript(storyWriteRequest.getContent(), storyWriteRequest.getUserNickname()))
                         .orElseThrow(FailedRequestToGptException::new);
 
-        InputStream audioStream = aiService.convertMP3File(script);
-        s3Service.save(audioStream, "stories", fileName, STORY_EXTENSION.getFormat(), AUDIO_TYPE.getFormat());
-        storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
+        CompletableFuture.runAsync(() -> {
+            queueService.enqueueRequest(script, audioStream -> {
+                s3Service.save(audioStream, "stories", fileName, STORY_EXTENSION.getFormat(), AUDIO_TYPE.getFormat());
+                storyRepository.save(Story.of(wooms, user, storyWriteRequest, fileName));
+            });
+        });
 
         return new CommonResponse("ok");
     }
@@ -110,8 +106,12 @@ public class StoryService {
         return userRepository.findById(UUID.fromString(currentUser.getUuid())).orElseThrow(UserNotFoundException::new);
     }
 
-    private Enrollment fetchEnrollment(Long woomsId, User user) {
-        return enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId)
-                .orElseThrow(WoomsUserNotEnrolledException::new);
+    private void validateEnrollment(Long woomsId, User user) {
+        enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId).ifPresentOrElse(
+                (enrollment) -> {
+                    if(Objects.equals(enrollment.getStatus(), EnrollmentStatus.ACCEPT)) throw new WoomsNotAllowedUserException();
+                },
+                () -> {throw new WoomsUserNotEnrolledException();}
+        );
     }
 }

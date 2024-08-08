@@ -1,6 +1,7 @@
 package com.ee06.wooms.domain.letters.service;
 
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
+import com.ee06.wooms.domain.letters.dto.LetterDetailDto;
 import com.ee06.wooms.domain.letters.dto.LetterDto;
 import com.ee06.wooms.domain.letters.dto.NewLetterRequest;
 import com.ee06.wooms.domain.letters.entity.Letter;
@@ -68,22 +69,16 @@ public class LetterService {
         return letters.map(this::toLetterDto);
     }
 
-    private User fetchUser(String userUuidStr) {
-        UUID userUuid = UUID.fromString(userUuidStr);
-        return userRepository.findById(userUuid)
-                .orElseThrow(UserNotFoundException::new);
-    }
+    public LetterDetailDto getLetterDetail(CustomUserDetails customUserDetails, Long letterId) {
+        UUID userUuid = UUID.fromString(customUserDetails.getUuid());
 
-    private LetterDto toLetterDto(Letter letter) {
-        return LetterDto.builder()
-                .id(letter.getId())
-                .senderName(letter.getSender().getName())
-                .sentDate(letter.getSentDate())
-                .receiverName(letter.getReceiver().getName())
-                .content(letter.getContent())
-                .receiveDate(letter.getReceiveDate())
-                .status(letter.getStatus())
-                .build();
+
+        Letter letter = letterRepository.findByIdAndReceiverUuid(letterId, userUuid)
+                .orElseThrow(NotValidLetterException::new);
+
+        letter.modifyLetterStatusRead();
+
+        return toLetterDetailDto(letter);
     }
 
     public int countFutureLetters(CustomUserDetails customUserDetails) {
@@ -101,5 +96,30 @@ public class LetterService {
 
         letterRepository.delete(letter);
         return new CommonResponse("ok");
+    }
+
+    private User fetchUser(String userUuidStr) {
+        UUID userUuid = UUID.fromString(userUuidStr);
+        return userRepository.findById(userUuid)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    private LetterDto toLetterDto(Letter letter) {
+        return LetterDto.builder()
+                .id(letter.getId())
+                .senderName(letter.getSender().getName())
+                .sentDate(letter.getSentDate())
+                .receiveDate(letter.getReceiveDate())
+                .status(letter.getStatus())
+                .build();
+    }
+
+    private LetterDetailDto toLetterDetailDto(Letter letter) {
+        return LetterDetailDto.builder()
+                .content(letter.getContent())
+                .id(letter.getId())
+                .sentDate(letter.getSentDate())
+                .senderName(letter.getSender().getName())
+                .build();
     }
 }

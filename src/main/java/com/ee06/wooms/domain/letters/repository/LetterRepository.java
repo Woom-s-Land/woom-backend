@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -24,6 +25,9 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
     Page<Letter> findByReceiverUuidAndReceiveDateBefore(@Param("userUuid") UUID userUuid,
                                                         @Param("cutoffDate") LocalDateTime cutoffDate,
                                                         Pageable pageable);
+
+    @Query("SELECT l FROM Letter l WHERE l.id = :id AND l.receiver.uuid = :userUuid")
+    Optional<Letter> findByIdAndReceiverUuid(@Param("id") Long id, @Param("userUuid") UUID userUuid);
 
     int countByReceiverUuidAndReceiveDateAfter(UUID receiverUuid, LocalDateTime dateTime);
 }

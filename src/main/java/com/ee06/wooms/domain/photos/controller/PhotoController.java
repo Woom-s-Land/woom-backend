@@ -1,5 +1,6 @@
 package com.ee06.wooms.domain.photos.controller;
 
+import com.ee06.wooms.domain.photos.dto.MapResponse;
 import com.ee06.wooms.domain.photos.dto.PhotoDetailsResponse;
 import com.ee06.wooms.domain.photos.dto.PhotoResponse;
 import com.ee06.wooms.domain.photos.service.PhotoService;
@@ -25,7 +26,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/wooms/{woomsId}/photos")
+@RequestMapping("/api/wooms/{woomsId}")
 public class PhotoController {
     private final PhotoService photoService;
 
@@ -38,14 +39,14 @@ public class PhotoController {
         return ResponseEntity.ok(photoService.save(userDetails, woomsId, summary, mapId, file));
     }
 
-    @GetMapping("/month")
+    @GetMapping("/photos/month")
     public ResponseEntity<List<PhotoResponse>> getPhotoMonth(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                             @PathVariable("woomsId") Long woomsId,
                                                             @PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "id") Pageable pageable) {
         return ResponseEntity.ok(photoService.getMonthList(userDetails, woomsId, pageable));
     }
 
-    @GetMapping
+    @GetMapping("/photos")
     public ResponseEntity<List<PhotoResponse>> getPhotoList(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                             @PathVariable("woomsId") Long woomsId,
                                                             @RequestParam LocalDate date,
@@ -53,17 +54,23 @@ public class PhotoController {
         return ResponseEntity.ok(photoService.getPhotoList(userDetails, woomsId, date, pageable));
     }
 
-    @GetMapping("/{photoId}")
+    @GetMapping("/photos/{photoId}")
     public ResponseEntity<PhotoDetailsResponse> getPhotoDetail(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                @PathVariable("woomsId") Long woomsId,
                                                                @PathVariable("photoId") Long photoId) {
         return ResponseEntity.ok(photoService.getPhotoDetails(userDetails, woomsId, photoId));
     }
 
-    @PatchMapping("/{photoId}")
+    @PatchMapping("/photos/{photoId}")
     public ResponseEntity<CommonResponse> photoFlip(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                           @PathVariable("woomsId") Long woomsId,
                                                           @PathVariable("photoId") Long photoId) {
         return ResponseEntity.ok(photoService.photoFlip(userDetails, woomsId, photoId));
+    }
+
+    @GetMapping("/map")
+    public ResponseEntity<List<MapResponse>> getMap(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                    @PathVariable("woomsId") Long woomsId){
+        return ResponseEntity.ok(photoService.getMap(userDetails, woomsId));
     }
 }

@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ee06.wooms.domain.enrollments.entity.Enrollment;
 import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
+import com.ee06.wooms.domain.photos.dto.MapResponse;
 import com.ee06.wooms.domain.photos.dto.PhotoDetailsResponse;
 import com.ee06.wooms.domain.photos.dto.PhotoResponse;
 import com.ee06.wooms.domain.photos.entity.Photo;
@@ -58,7 +59,7 @@ public class PhotoService {
 
             s3Service.save(file.getInputStream(), DIR, fileName, extension, file.getContentType());
 
-            photoRepository.save(Photo.of(user, wooms, fileName, summary, mapId));
+            photoRepository.save(Photo.of(user, wooms, s3Service.getFilePath(DIR, fileName, extension), summary, mapId));
         } catch (Exception e) {
             throw new FailedCreatePhotoException();
         }
@@ -122,6 +123,11 @@ public class PhotoService {
         return new CommonResponse("ok");
     }
 
+    public List<MapResponse> getMap(CustomUserDetails userDetails, Long woomsId) {
+       Enrollment enrollment = getEnrollments(userDetails, woomsId);
+
+       return photoRepository.findPhotoCounts();
+    }
 
     private Photo getPhoto(CustomUserDetails userDetails, Long woomsId, Long photoId) {
         Photo photo = photoRepository.findById(photoId).orElseThrow(NotFoundPhotoException::new);
@@ -152,4 +158,5 @@ public class PhotoService {
     private User fetchUser(String userUuidStr) {
         return userRepository.findById(UUID.fromString(userUuidStr)).orElseThrow(UserNotFoundException::new);
     }
+
 }
