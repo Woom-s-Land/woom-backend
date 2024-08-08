@@ -51,9 +51,9 @@ public class WoomsController {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WoomsDto.class))),
     })
     @GetMapping("/wooms")
-    public ResponseEntity<List<WoomsDto>> getWoomsInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
-        List<WoomsDto> woomsInfo = woomsService.findAllWooms(UUID.fromString(currentUser.getUuid()));
-        return ResponseEntity.ok(woomsInfo);
+    public ResponseEntity<Page<WoomsDto>> getWoomsInfo(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                       @PageableDefault(size = 8) Pageable pageable) {
+        return ResponseEntity.ok(woomsService.findAllWooms(currentUser, pageable));
     }
 
     @Operation(summary = "특정 Wooms(그룹)에 참가 요청을 합니다.")

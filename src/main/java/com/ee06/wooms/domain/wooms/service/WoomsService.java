@@ -46,11 +46,10 @@ public class WoomsService {
 
     }
 
-    public List<WoomsDto> findAllWooms(UUID userUuid) {
-        List<Wooms> wooms = woomsRepository.findByUserUuid(userUuid);
-        return wooms.stream()
-                .map(Wooms::toDto)
-                .collect(Collectors.toList());
+    public Page<WoomsDto> findAllWooms(CustomUserDetails currentUser, Pageable pageable) {
+        UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
+        Page<Wooms> wooms = woomsRepository.findByUserUuid(currentUserUuid, pageable);
+        return wooms.map(Wooms::toDto);
     }
 
     public CommonResponse createWoomsParticipationRequest(CustomUserDetails currentUser, String woomsInviteCode) {
