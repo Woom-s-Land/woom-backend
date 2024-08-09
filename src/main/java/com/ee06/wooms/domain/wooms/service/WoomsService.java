@@ -182,13 +182,14 @@ public class WoomsService {
         return new CommonResponse("ok");
     }
 
-    public Boolean checkAdmin(CustomUserDetails currentUser, Long woomsId) {
+    public WoomsAdminResponse checkAdmin(CustomUserDetails currentUser, Long woomsId) {
         User user = fetchUser(currentUser.getUuid());
 
         Wooms wooms = woomsRepository.findWoomsById(woomsId)
                 .orElseThrow(WoomsNotValidException::new);
-
-        return wooms.getUser().getUuid().equals(user.getUuid());
+        return WoomsAdminResponse.builder()
+                .isWoomsAdmin(wooms.getUser().getUuid().equals(user.getUuid()))
+                .build();
     }
 
     private EnrollmentStatus validateAndUpdateStatus(Enrollment enrollment, EnrollmentStatus newStatus) {
