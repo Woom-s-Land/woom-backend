@@ -166,4 +166,17 @@ public class WoomsController {
                                                      @PathVariable("woomsId") Long woomsId) {
         return ResponseEntity.ok(woomsService.leaveWooms(currentUser, woomsId));
     }
+
+    @Operation(summary = "특정 그룹 관리자 여부 확인")
+    @Parameters(value = {
+            @Parameter(name = "woomsId", description = "해당 Wooms ID", example = "1"),
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+    })
+    @DeleteMapping("/wooms/{woomsId}/admin")
+    public ResponseEntity<Boolean> checkAdmin(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                     @PathVariable("woomsId") Long woomsId) {
+        return ResponseEntity.ok(woomsService.checkAdmin(currentUser, woomsId));
+    }
 }
