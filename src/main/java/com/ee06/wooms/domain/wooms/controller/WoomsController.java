@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.wooms.controller;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.UserInfoDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsAdminResponse;
 import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDto;
@@ -174,9 +175,9 @@ public class WoomsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
     })
-    @DeleteMapping("/wooms/{woomsId}/admin")
-    public ResponseEntity<Boolean> checkAdmin(@AuthenticationPrincipal CustomUserDetails currentUser,
-                                                     @PathVariable("woomsId") Long woomsId) {
+    @GetMapping("/wooms/{woomsId}/admin")
+    public ResponseEntity<WoomsAdminResponse> checkAdmin(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                         @PathVariable("woomsId") Long woomsId) {
         return ResponseEntity.ok(woomsService.checkAdmin(currentUser, woomsId));
     }
 }
