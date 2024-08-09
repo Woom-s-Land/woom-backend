@@ -54,6 +54,7 @@ public class Comment extends BaseTimeEntity {
         return CommentResponse.builder()
                 .nickname(user.getNickname())
                 .content(content)
+                .costume(user.getCostume())
                 .createdDate(getCreatedDate())
                 .build();
     }
