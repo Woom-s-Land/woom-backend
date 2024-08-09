@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @AllArgsConstructor
 @Builder
@@ -20,4 +22,6 @@ public class UserGameInfo {
 
     @NotNull(message = "코스튬 번호는 공백이 될 수 없습니다.")
     private Integer costume;
+
+    private UUID userUuid;
 }

@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.wooms.controller;
 
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.ee06.wooms.domain.users.dto.UserInfoDto;
+import com.ee06.wooms.domain.wooms.dto.WoomsAdminResponse;
 import com.ee06.wooms.domain.wooms.dto.WoomsCreateRequestDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDetailInfoDto;
 import com.ee06.wooms.domain.wooms.dto.WoomsDto;
@@ -51,9 +52,9 @@ public class WoomsController {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WoomsDto.class))),
     })
     @GetMapping("/wooms")
-    public ResponseEntity<List<WoomsDto>> getWoomsInfo(@AuthenticationPrincipal CustomUserDetails currentUser) {
-        List<WoomsDto> woomsInfo = woomsService.findAllWooms(UUID.fromString(currentUser.getUuid()));
-        return ResponseEntity.ok(woomsInfo);
+    public ResponseEntity<Page<WoomsDto>> getWoomsInfo(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                       @PageableDefault(size = 8) Pageable pageable) {
+        return ResponseEntity.ok(woomsService.findAllWooms(currentUser, pageable));
     }
 
     @Operation(summary = "특정 Wooms(그룹)에 참가 요청을 합니다.")
@@ -165,5 +166,18 @@ public class WoomsController {
     public ResponseEntity<CommonResponse> leaveWooms(@AuthenticationPrincipal CustomUserDetails currentUser,
                                                      @PathVariable("woomsId") Long woomsId) {
         return ResponseEntity.ok(woomsService.leaveWooms(currentUser, woomsId));
+    }
+
+    @Operation(summary = "특정 그룹 관리자 여부 확인")
+    @Parameters(value = {
+            @Parameter(name = "woomsId", description = "해당 Wooms ID", example = "1"),
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class))),
+    })
+    @GetMapping("/wooms/{woomsId}/admin")
+    public ResponseEntity<WoomsAdminResponse> checkAdmin(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                         @PathVariable("woomsId") Long woomsId) {
+        return ResponseEntity.ok(woomsService.checkAdmin(currentUser, woomsId));
     }
 }

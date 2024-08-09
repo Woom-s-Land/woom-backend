@@ -46,11 +46,10 @@ public class WoomsService {
 
     }
 
-    public List<WoomsDto> findAllWooms(UUID userUuid) {
-        List<Wooms> wooms = woomsRepository.findByUserUuid(userUuid);
-        return wooms.stream()
-                .map(Wooms::toDto)
-                .collect(Collectors.toList());
+    public Page<WoomsDto> findAllWooms(CustomUserDetails currentUser, Pageable pageable) {
+        UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
+        Page<Wooms> wooms = woomsRepository.findByUserUuid(currentUserUuid, pageable);
+        return wooms.map(Wooms::toDto);
     }
 
     public CommonResponse createWoomsParticipationRequest(CustomUserDetails currentUser, String woomsInviteCode) {
@@ -183,6 +182,16 @@ public class WoomsService {
         return new CommonResponse("ok");
     }
 
+    public WoomsAdminResponse checkAdmin(CustomUserDetails currentUser, Long woomsId) {
+        User user = fetchUser(currentUser.getUuid());
+
+        Wooms wooms = woomsRepository.findWoomsById(woomsId)
+                .orElseThrow(WoomsNotValidException::new);
+        return WoomsAdminResponse.builder()
+                .isWoomsAdmin(wooms.getUser().getUuid().equals(user.getUuid()))
+                .build();
+    }
+
     private EnrollmentStatus validateAndUpdateStatus(Enrollment enrollment, EnrollmentStatus newStatus) {
         if (enrollment.getStatus() == newStatus) {
             throw new WoomsNotValidEnrollmentException();
@@ -228,6 +237,5 @@ public class WoomsService {
                 .costume(user.getCostume())
                 .build();
     }
-
 
 }
