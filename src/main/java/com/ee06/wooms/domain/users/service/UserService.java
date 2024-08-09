@@ -109,6 +109,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(UUID.fromString(currentUser.getUuid()))
                 .map(user -> UserGameInfo.builder()
                         .email(user.getEmail())
+                        .userUuid(user.getUuid())
                         .nickname(user.getNickname())
                         .costume(user.getCostume())
                         .build())
