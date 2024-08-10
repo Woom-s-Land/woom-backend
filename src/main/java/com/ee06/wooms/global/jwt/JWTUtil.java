@@ -35,6 +35,15 @@ public class JWTUtil {
                 .getSubject();
     }
 
+    public String getChannelUuid(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("channelUuid", String.class);
+    }
+
     public String getUuid(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
