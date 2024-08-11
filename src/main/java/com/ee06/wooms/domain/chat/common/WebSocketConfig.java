@@ -17,7 +17,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompErrorHandler errorHandler;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.setErrorHandler(errorHandler).addEndpoint("/ws").setAllowedOriginPatterns("*");
+        registry.setErrorHandler(errorHandler).addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:5173")
+                .setAllowedOrigins("http://localhost:3000")
+                .setAllowedOrigins("https://i11e206.p.ssafy.io");
     }
 
     @Override
