@@ -54,7 +54,7 @@ public class CommentService {
     }
 
     public boolean isWroteToday(CustomUserDetails userDetails, Long woomsId){
-        return commentRepository.isWriteByToday(LocalDateTime.now().with(LocalDate.MIN)
-                , woomsId, UUID.fromString(userDetails.getUuid()));
+        return commentRepository.isWriteByToday(LocalDate.now().atStartOfDay(),
+                woomsId, UUID.fromString(userDetails.getUuid()));
     }
 }
