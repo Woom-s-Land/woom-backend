@@ -1,6 +1,7 @@
 package com.ee06.wooms.domain.chat.controller;
 
 import com.ee06.wooms.domain.chat.ChannelRepository;
+import com.ee06.wooms.domain.chat.SessionRepository;
 import com.ee06.wooms.domain.chat.dto.ChatMessage;
 import com.ee06.wooms.domain.chat.dto.MoveRequest;
 import com.ee06.wooms.domain.chat.dto.MoveResponse;
@@ -9,6 +10,7 @@ import com.ee06.wooms.domain.chat.entity.Woom;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
