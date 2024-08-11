@@ -37,7 +37,7 @@ public class CommentController {
 
     @GetMapping("/{woomsId}")
     public ResponseEntity<List<CommentResponse>> getComment(@PathVariable("woomsId") Long woomsId,
-                                                            @PageableDefault(size = 4) Pageable pageable) {
+                                                            @PageableDefault(size = 4, direction = Sort.Direction.DESC, sort = "id") Pageable pageable) {
         return ResponseEntity.ok(commentService.getComments(woomsId, pageable));
     }
 
