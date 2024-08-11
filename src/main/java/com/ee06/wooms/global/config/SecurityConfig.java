@@ -2,7 +2,11 @@ package com.ee06.wooms.global.config;
 
 import com.ee06.wooms.domain.users.service.CustomOAuth2UserService;
 import com.ee06.wooms.global.jwt.JWTUtil;
-import com.ee06.wooms.global.jwt.filter.*;
+import com.ee06.wooms.global.jwt.filter.ChannelJoinFilter;
+import com.ee06.wooms.global.jwt.filter.CustomLogoutFilter;
+import com.ee06.wooms.global.jwt.filter.JWTFilter;
+import com.ee06.wooms.global.jwt.filter.JwtAuthenticationEntryPoint;
+import com.ee06.wooms.global.jwt.filter.LoginFilter;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import com.ee06.wooms.global.oauth.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +43,7 @@ public class SecurityConfig {
         return web -> web
                 .ignoring()
                 .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**"
-                ,"/actuator/**", "/images/**", "/js/**", "/css/**");
+                ,"/actuator/**", "/images/**", "/js/**", "/css/**", "/ws/**");
     }
 
     private static final String[] WHITE_LIST = {
