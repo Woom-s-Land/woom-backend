@@ -1,5 +1,5 @@
 use woomsDB;
-
+set foreign_key_checks = 0;
 ############################### 그룹 데이터 삽입 ###############################
 -- 'ssafy@ssafy.com' 사용자 UUID
 SET @uuid1 = (SELECT user_uuid FROM users WHERE user_email = 'ssafy@ssafy.com');
@@ -693,3 +693,5 @@ VALUES (41, 0, '2024-08-15 15:00:00', '2024-08-15 15:00:00', 4, 41, (SELECT user
 
 INSERT INTO `woomsDB`.`wooms_photos` (`wooms_map_id`, `wooms_photo_flipped`, `created_date`, `modified_date`, `wooms_id`, `wooms_photo_id`, `user_uuid`, `wooms_nickname`, `wooms_photo_file_path`, `wooms_photo_summary`)
 VALUES (42, 0, '2024-08-25 17:00:00', '2024-08-25 17:00:00', 4, 42, (SELECT user_uuid FROM users WHERE user_email = 'example30@example.com'), (SELECT user_nickname FROM users WHERE user_email = 'example30@example.com'), NULL, '여름 끝자락, 친구들과 함께한 시원한 수영장에서의 멋진 순간!');
+
+set foreign_key_checks = 1;
