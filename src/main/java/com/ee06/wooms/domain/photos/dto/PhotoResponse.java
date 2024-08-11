@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -13,5 +15,6 @@ import lombok.NoArgsConstructor;
 public class PhotoResponse {
     private Long id;
     private String path;
+    private LocalDate date;
     private WoomsPhotoFlipped flipped;
 }
