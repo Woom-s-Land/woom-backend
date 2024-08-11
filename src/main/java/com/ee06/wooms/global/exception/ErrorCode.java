@@ -14,11 +14,13 @@ public enum ErrorCode {
     BINDING_ERROR(HttpStatus.BAD_REQUEST),
 
     //======================== JWT 예외 ========================//
-    NOT_FOUND_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 토큰입니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
-    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 재발급 토큰입니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
+    NOT_FOUND_TOKEN(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 인증 정보입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 정보입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 정보입니다. 다시 로그인 해주세요."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 인증 정보입니다."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "인증 정보를 갱신할 수 없습니다. 다시 로그인 해주세요."),
     MAL_FORMED_TOKEN(HttpStatus.UNAUTHORIZED, "지원하지 않는 유형의 토큰입니다."),
+    RE_ISSUE_TOKEN(HttpStatus.UNAUTHORIZED, "인증 정보가 갱신되었습니다. 다시 요청해주세요."),
 
     //======================== 사용자 예외 ========================//
     EXIST_USER(HttpStatus.INTERNAL_SERVER_ERROR, "이미 회원가입 된 이메일입니다."),

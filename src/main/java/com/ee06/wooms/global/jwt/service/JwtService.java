@@ -5,10 +5,13 @@ import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.jwt.dto.RefreshToken;
+import com.ee06.wooms.global.jwt.exception.ExpiredRefreshTokenException;
 import com.ee06.wooms.global.jwt.exception.InvalidRefreshTokenException;
 import com.ee06.wooms.global.jwt.exception.InvalidTokenException;
+import com.ee06.wooms.global.jwt.exception.ReIssueTokenResponse;
 import com.ee06.wooms.global.jwt.repository.RefreshTokenRepository;
 import com.ee06.wooms.global.util.CookieUtils;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +31,8 @@ public class JwtService {
 
     public CommonResponse issueRefreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = CookieUtils.getCookie(request, "refresh");
-        if (!jwtUtil.validateToken(refreshToken) || !Objects.equals(jwtUtil.getSubject(refreshToken), "refresh-token"))
-            throw new InvalidTokenException();
 
-        if (refreshTokenRepository.findById(refreshToken).isEmpty())
-            throw new InvalidRefreshTokenException();
+        validateRefreshToken(refreshToken);
 
         String uuid = jwtUtil.getUuid(refreshToken);
         UserDto userDto = userService.findById(UUID.fromString(uuid));
@@ -49,7 +49,25 @@ public class JwtService {
         CookieUtils.addCookie(response, "Authorization", newAccessToken, 216000);
         CookieUtils.addCookie(response, "refresh", newRefreshToken, 216000);
 
-        return new CommonResponse("ok");
+        throw new ReIssueTokenResponse();
+    }
+
+    private void validateRefreshToken(String refreshToken) {
+        try {
+            jwtUtil.validateToken(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredRefreshTokenException();
+        } catch (Exception e) {
+            throw new InvalidTokenException();
+        }
+
+        if (!Objects.equals(jwtUtil.getSubject(refreshToken), "refresh-token")){
+            throw new InvalidTokenException();
+        }
+
+        if (refreshTokenRepository.findById(refreshToken).isEmpty()) {
+            throw new InvalidRefreshTokenException();
+        }
     }
 
     private void addRefreshToken(String uuid, String refreshToken) {

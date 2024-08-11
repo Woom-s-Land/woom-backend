@@ -28,6 +28,8 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
+    private final String RE_ISSUE_URI = "/api/auth/token";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String uri = request.getRequestURI();
@@ -59,15 +61,13 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private boolean isNotValidate(HttpServletRequest request, HttpServletResponse response, String token) throws IOException, ServletException {
         try {
-            jwtUtil.isExpired(token);
             jwtUtil.validateToken(token);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.MAL_FORMED_TOKEN) {
             });
             return true;
         } catch (ExpiredJwtException e) {
-            authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.EXPIRED_TOKEN) {
-            });
+            response.sendRedirect(RE_ISSUE_URI);
             return true;
         } catch (IllegalArgumentException e) {
             authenticationEntryPoint.commence(request, response, new CustomAuthenticationException(ErrorCode.INVALID_TOKEN) {
