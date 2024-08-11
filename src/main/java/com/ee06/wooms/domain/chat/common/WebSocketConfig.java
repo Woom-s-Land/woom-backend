@@ -18,9 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setErrorHandler(errorHandler).addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:5173")
-                .setAllowedOrigins("http://localhost:3000")
-                .setAllowedOrigins("https://i11e206.p.ssafy.io");
+            .setAllowedOrigins("http://localhost:5173","http://localhost:3000","https://i11e206.p.ssafy.io");
     }
 
     @Override
