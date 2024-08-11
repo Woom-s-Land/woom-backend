@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -76,6 +77,7 @@ public class PhotoService {
                 .map(photo -> PhotoResponse.builder()
                         .id(photo.getId())
                         .path(photo.getPath())
+                        .date(photo.getCreatedDate().toLocalDate())
                         .flipped(photo.getFlipped())
                         .build())
                 .toList();
@@ -85,7 +87,7 @@ public class PhotoService {
     public List<PhotoResponse> getPhotoList(CustomUserDetails userDetails, Long woomsId, LocalDate startDate, Pageable pageable) {
 
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
-
+        startDate = startDate.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endDate = startDate.plusMonths(1);
 
         return photoRepository.findAllByMonth(startDate, endDate, pageable)
