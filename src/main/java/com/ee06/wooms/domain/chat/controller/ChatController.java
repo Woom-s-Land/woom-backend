@@ -28,10 +28,12 @@ public class ChatController {
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate template;
     private final ChannelRepository channelRepository;
+    private final SessionRepository sessionRepository;
 
     @PostMapping("/join/{woomsId}")
     public void join(@AuthenticationPrincipal CustomUserDetails userDetails,
-                     @DestinationVariable("woomsId") UUID woomsId){
+                     @DestinationVariable("woomsId") UUID woomsId,
+                     HttpServletRequest request){
         Woom woom = new Woom(userDetails, woomsId);
         Channel channel = channelRepository.get(woomsId);
         channel.getWooms().forEach(woom1 ->
@@ -43,6 +45,7 @@ public class ChatController {
                 }
             }
         );
+        sessionRepository.put(request.getSession().getId(), woomsId);
         channel.addWoom(woom);
         channelRepository.put(woomsId, channel);
     }
