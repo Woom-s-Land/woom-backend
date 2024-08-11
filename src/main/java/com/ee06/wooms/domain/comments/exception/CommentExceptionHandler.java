@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = "com.ee06.wooms.domain.comments")
 public class CommentExceptionHandler {
     @ExceptionHandler(ExistWroteCommentException.class)
-    public ResponseEntity<Object> existWroteCommentException(WoomsAlreadyMemberException e) {
-        return ErrorCodeUtils.build(ErrorCode.EXIST_WROTE_COMMENT);
+    public ResponseEntity<Object> existWroteCommentException(ExistWroteCommentException e) {
+        return ErrorCodeUtils.build(e.getErrorCode());
     }
 }
