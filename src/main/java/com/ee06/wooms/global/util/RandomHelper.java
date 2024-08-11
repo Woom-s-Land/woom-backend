@@ -15,8 +15,9 @@ public class RandomHelper {
     private static Random rand = new Random();
 
     public static int generateCostumeNumber() {
-        return rand.nextInt(13) + 1;
+        return rand.nextInt(12);
     }
+
 
     public static String generateNickname() {
         String[] actions = {
