@@ -52,6 +52,13 @@ public class WoomsService {
         return wooms.map(Wooms::toDto);
     }
 
+    public Page<WoomsDto> findAllAcceptedWooms(CustomUserDetails currentUser, Pageable pageable) {
+        UUID currentUserUuid = UUID.fromString(currentUser.getUuid());
+        Page<Wooms> wooms = woomsRepository.findByUserUuidAndAcceptedStatus(currentUserUuid, pageable);
+        return wooms.map(Wooms::toDto);
+    }
+
+
     public CommonResponse createWoomsParticipationRequest(CustomUserDetails currentUser, String woomsInviteCode) {
 
         User user = fetchUser(currentUser.getUuid());

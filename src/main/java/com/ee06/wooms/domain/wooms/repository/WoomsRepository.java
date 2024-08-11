@@ -4,6 +4,9 @@ import com.ee06.wooms.domain.wooms.entity.Wooms;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +19,8 @@ public interface WoomsRepository  extends JpaRepository<Wooms, Long> {
     Optional<Wooms> findWoomsById(Long woomsId);
     boolean existsByUserUuidAndId(UUID userUuid, Long id);
     boolean existsUserUuidByUserUuidAndId(UUID userUuid, Long id);
+
+    @Query("SELECT w FROM Wooms w, Enrollment e WHERE w.id = e.pk.woomsId AND e.pk.userUuid = :userUuid AND e.status = 1")
+    Page<Wooms> findByUserUuidAndAcceptedStatus(@Param("userUuid") UUID userUuid, Pageable pageable);
+
 }

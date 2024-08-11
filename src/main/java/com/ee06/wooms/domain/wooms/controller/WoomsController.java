@@ -54,7 +54,7 @@ public class WoomsController {
     @GetMapping("/wooms")
     public ResponseEntity<Page<WoomsDto>> getWoomsInfo(@AuthenticationPrincipal CustomUserDetails currentUser,
                                                        @PageableDefault(size = 8) Pageable pageable) {
-        return ResponseEntity.ok(woomsService.findAllWooms(currentUser, pageable));
+        return ResponseEntity.ok(woomsService.findAllAcceptedWooms(currentUser, pageable));
     }
 
     @Operation(summary = "특정 Wooms(그룹)에 참가 요청을 합니다.")
