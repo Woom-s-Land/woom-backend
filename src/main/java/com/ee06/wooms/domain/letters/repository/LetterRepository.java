@@ -1,6 +1,7 @@
 package com.ee06.wooms.domain.letters.repository;
 
 import com.ee06.wooms.domain.letters.entity.Letter;
+import com.ee06.wooms.domain.letters.entity.LetterStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,7 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
     Optional<Letter> findByIdAndReceiverUuid(@Param("id") Long id, @Param("userUuid") UUID userUuid);
 
     int countByReceiverUuidAndReceiveDateAfter(UUID receiverUuid, LocalDateTime dateTime);
+
+    int countByReceiverUuidAndStatus(UUID receiverUuid, LetterStatus status);
+
 }

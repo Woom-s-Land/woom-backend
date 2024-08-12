@@ -2,6 +2,7 @@ package com.ee06.wooms.domain.letters.controller;
 
 import com.ee06.wooms.domain.letters.dto.LetterDetailDto;
 import com.ee06.wooms.domain.letters.dto.LetterDto;
+import com.ee06.wooms.domain.letters.dto.LetterUnreadDto;
 import com.ee06.wooms.domain.letters.dto.NewLetterRequest;
 import com.ee06.wooms.domain.letters.service.LetterService;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
@@ -89,5 +90,14 @@ public class LetterController {
     @GetMapping("/letters/{letterId}/detail")
     public ResponseEntity<LetterDetailDto> getLetterDetail(@PathVariable("letterId") Long letterId, @AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(letterService.getLetterDetail(currentUser, letterId));
+    }
+
+    @Operation(summary = "읽지 않은 편지의 수를 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LetterDetailDto.class))),
+    })
+    @GetMapping("/letters/{letterId}/detail")
+    public ResponseEntity<LetterUnreadDto> getLetterDetail(@AuthenticationPrincipal CustomUserDetails currentUser) {
+        return ResponseEntity.ok(letterService.getTotalUnreadLetter(currentUser));
     }
 }

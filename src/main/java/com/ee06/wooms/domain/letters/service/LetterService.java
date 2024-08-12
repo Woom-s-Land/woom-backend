@@ -3,6 +3,7 @@ package com.ee06.wooms.domain.letters.service;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
 import com.ee06.wooms.domain.letters.dto.LetterDetailDto;
 import com.ee06.wooms.domain.letters.dto.LetterDto;
+import com.ee06.wooms.domain.letters.dto.LetterUnreadDto;
 import com.ee06.wooms.domain.letters.dto.NewLetterRequest;
 import com.ee06.wooms.domain.letters.entity.Letter;
 import com.ee06.wooms.domain.letters.entity.LetterStatus;
@@ -98,6 +99,16 @@ public class LetterService {
         return new CommonResponse("ok");
     }
 
+    public LetterUnreadDto getTotalUnreadLetter(CustomUserDetails customUserDetails) {
+        UUID userUuid = UUID.fromString(customUserDetails.getUuid());
+
+        int unreadCount = letterRepository.countByReceiverUuidAndStatus(userUuid, LetterStatus.UNREAD);
+        return LetterUnreadDto.builder()
+                .totalUnreadCount(unreadCount)
+                .build();
+    }
+
+
     private User fetchUser(String userUuidStr) {
         UUID userUuid = UUID.fromString(userUuidStr);
         return userRepository.findById(userUuid)
@@ -122,4 +133,6 @@ public class LetterService {
                 .senderName(letter.getSender().getName())
                 .build();
     }
+
+
 }
