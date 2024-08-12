@@ -84,13 +84,13 @@ public class PhotoService {
     }
 
     @Transactional(readOnly = true)
-    public List<PhotoResponse> getPhotoList(CustomUserDetails userDetails, Long woomsId, LocalDate startDate, Pageable pageable) {
+    public List<PhotoResponse> getPhotoList(CustomUserDetails userDetails, Long woomsId, String startDate, Pageable pageable) {
 
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
-        startDate = startDate.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate endDate = startDate.plusMonths(1);
+        LocalDate date = LocalDate.parse(startDate).with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endDate = date.plusMonths(1);
 
-        return photoRepository.findAllByMonth(startDate, endDate, pageable)
+        return photoRepository.findAllByMonth(date, endDate, pageable)
                 .stream()
                 .map(photo -> PhotoResponse.builder()
                         .id(photo.getId())
