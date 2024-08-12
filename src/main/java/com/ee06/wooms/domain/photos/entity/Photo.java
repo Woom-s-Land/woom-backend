@@ -55,6 +55,13 @@ public class Photo extends BaseTimeEntity {
 
     public static Photo of(User user, Wooms wooms, String path, String summary, Integer mapId) {
         return Photo.builder()
+                .user(user)
+                .wooms(wooms)
+                .path(path)
+                .summary(summary)
+                .nickname(user.getNickname())
+                .flipped(WoomsPhotoFlipped.UNFLIPPED)
+                .mapId(mapId)
                 .build();
     }
 
