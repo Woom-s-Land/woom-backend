@@ -96,7 +96,7 @@ public class LetterController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LetterDetailDto.class))),
     })
-    @GetMapping("/letters/{letterId}/detail")
+    @GetMapping("/letters/total")
     public ResponseEntity<LetterUnreadDto> getLetterDetail(@AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(letterService.getTotalUnreadLetter(currentUser));
     }
