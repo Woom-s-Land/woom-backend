@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +50,7 @@ public class PhotoController {
     @GetMapping("/photos")
     public ResponseEntity<List<PhotoResponse>> getPhotoList(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                             @PathVariable("woomsId") Long woomsId,
-                                                            @RequestParam String date,
+                                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
                                                             @PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "id") Pageable pageable) {
         return ResponseEntity.ok(photoService.getPhotoList(userDetails, woomsId, date, pageable));
     }
