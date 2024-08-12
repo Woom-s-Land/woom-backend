@@ -16,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -33,10 +35,9 @@ public class ChatController {
     private final SessionRepository sessionRepository;
 
     @PostMapping("/api/join/{woomsId}")
-    public void join(@AuthenticationPrincipal CustomUserDetails userDetails,
-                     @DestinationVariable("woomsId") UUID woomsId,
+    public void join(@DestinationVariable("woomsId") UUID woomsId,
                      HttpServletRequest request) {
-        Woom woom = new Woom(userDetails, woomsId);
+        Woom woom = new Woom(getDetail(), woomsId);
         Channel channel = channelRepository.get(woomsId);
         channel.getWooms().forEach(woom1 ->
                 {
@@ -54,21 +55,20 @@ public class ChatController {
     }
 
     @MessageMapping("/chat/{woomsId}")
-    public void sendMessage(@AuthenticationPrincipal CustomUserDetails userDetails,
-                            @DestinationVariable("woomsId") UUID woomsId,
+    public void sendMessage(@DestinationVariable("woomsId") UUID woomsId,
                             String content) throws Exception {
         ChatMessage chatMessage = ChatMessage.builder()
                 .content(content)
-                .nickname(userDetails.getNickname())
+                .nickname(getDetail().getNickname())
                 .build();
         log.info("chatMessage: {}", chatMessage);
         template.convertAndSend("/chat/" + woomsId, objectMapper.writeValueAsString(chatMessage));
     }
 
     @MessageMapping("/move/{woomsId}")
-    public void move(@AuthenticationPrincipal CustomUserDetails userDetails,
-                     @DestinationVariable("woomsId") UUID woomsId,
+    public void move(@DestinationVariable("woomsId") UUID woomsId,
                      String content) throws Exception {
+        CustomUserDetails userDetails = getDetail();
         log.info("content {}", content);
         MoveRequest moveRequest = objectMapper.readValue(content, MoveRequest.class);
         MoveResponse moveResponse = getMoveResponse(userDetails, moveRequest);
@@ -90,4 +90,8 @@ public class ChatController {
                 .build();
     }
 
+    public CustomUserDetails getDetail(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (CustomUserDetails) authentication.getDetails();
+    }
 }
