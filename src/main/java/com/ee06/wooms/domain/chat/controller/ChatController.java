@@ -32,27 +32,28 @@ public class ChatController {
     private final ChannelRepository channelRepository;
     private final SessionRepository sessionRepository;
 
-    @PostMapping("/join/{woomsId}")
+    @PostMapping("/api/join/{woomsId}")
     public void join(@AuthenticationPrincipal CustomUserDetails userDetails,
                      @DestinationVariable("woomsId") UUID woomsId,
-                     HttpServletRequest request){
+                     HttpServletRequest request) {
         Woom woom = new Woom(userDetails, woomsId);
         Channel channel = channelRepository.get(woomsId);
         channel.getWooms().forEach(woom1 ->
-            {
-                try {
-                    template.convertAndSend("/ws/send/move/" + woomsId, objectMapper.writeValueAsString(MoveResponse.of(woom1)));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
+                {
+                    try {
+                        log.info("woom : {} ", MoveResponse.of(woom1));
+                        template.convertAndSend("/move/" + woomsId, objectMapper.writeValueAsString(MoveResponse.of(woom1)));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
         );
         sessionRepository.put(request.getSession().getId(), woomsId);
         channel.addWoom(woom);
         channelRepository.put(woomsId, channel);
     }
 
-    @MessageMapping("/ws/wooms/chat/{woomsId}")
+    @MessageMapping("/chat/{woomsId}")
     public void sendMessage(@AuthenticationPrincipal CustomUserDetails userDetails,
                             @DestinationVariable("woomsId") UUID woomsId,
                             String content) throws Exception {
@@ -61,19 +62,21 @@ public class ChatController {
                 .nickname(userDetails.getNickname())
                 .build();
         log.info("chatMessage: {}", chatMessage);
-        template.convertAndSend("/ws/send/chat/" + woomsId, objectMapper.writeValueAsString(chatMessage));
+        template.convertAndSend("/chat/" + woomsId, objectMapper.writeValueAsString(chatMessage));
     }
 
-    @MessageMapping("/ws/wooms/move/{woomsId}")
+    @MessageMapping("/move/{woomsId}")
     public void move(@AuthenticationPrincipal CustomUserDetails userDetails,
                      @DestinationVariable("woomsId") UUID woomsId,
                      String content) throws Exception {
+        log.info("content {}", content);
         MoveRequest moveRequest = objectMapper.readValue(content, MoveRequest.class);
         MoveResponse moveResponse = getMoveResponse(userDetails, moveRequest);
 
         channelRepository.get(woomsId).moveWoom(new Woom(userDetails, woomsId), moveRequest);
-
-        template.convertAndSend("/ws/send/move/" + woomsId, objectMapper.writeValueAsString(moveResponse));
+        log.info("moveRequest: {}", moveRequest);
+        log.info("moveResponse: {}", moveResponse);
+        template.convertAndSend("/move/" + woomsId, objectMapper.writeValueAsString(moveRequest));
     }
 
     public MoveResponse getMoveResponse(CustomUserDetails userDetails, MoveRequest moveRequest) {
