@@ -1,13 +1,14 @@
 package com.ee06.wooms.domain.chat;
 
 import com.ee06.wooms.domain.chat.entity.Channel;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Repository
+@Component
 public class ChannelRepository {
     private ConcurrentMap<UUID, Channel> channelCache = new ConcurrentHashMap<>();
 
