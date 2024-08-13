@@ -31,6 +31,14 @@ public class Woom {
         this.direction = 0;
     }
 
+    public static Woom DefaultWoom(){
+        return Woom.builder()
+                .x("1020")
+                .y("750")
+                .direction(0)
+                .stepId(0)
+                .build();
+    }
     public Woom move(MoveMessage moveMessage){
         this.x = moveMessage.getX();
         this.y = moveMessage.getY();
