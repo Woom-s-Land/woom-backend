@@ -72,7 +72,7 @@ public class PhotoService {
 
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
 
-        return photoRepository.findLatestPhotosByMonth(pageable)
+        return photoRepository.findLatestPhotosByMonth(woomsId, pageable)
                 .stream()
                 .map(photo -> PhotoResponse.builder()
                         .id(photo.getId())
@@ -90,7 +90,7 @@ public class PhotoService {
         LocalDateTime date = startDate.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
         LocalDateTime endDate = date.plusMonths(1);
 
-        return photoRepository.findAllByMonth(date, endDate, pageable)
+        return photoRepository.findAllByMonth(woomsId, date, endDate, pageable)
                 .stream()
                 .map(photo -> PhotoResponse.builder()
                         .id(photo.getId())
@@ -129,7 +129,7 @@ public class PhotoService {
     public List<MapResponse> getMap(CustomUserDetails userDetails, Long woomsId) {
        Enrollment enrollment = getEnrollments(userDetails, woomsId);
 
-       return photoRepository.findPhotoCounts();
+       return photoRepository.findPhotoCounts(woomsId);
     }
 
     private Photo getPhoto(CustomUserDetails userDetails, Long woomsId, Long photoId) {
