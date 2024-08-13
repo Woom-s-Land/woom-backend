@@ -13,15 +13,16 @@ import java.util.List;
 
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
-    @Query("SELECT p FROM Photo p WHERE p.createdDate >= :startDate AND p.createdDate < :endDate")
-    Page<Photo> findAllByMonth(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+    @Query("SELECT p FROM Photo p WHERE p.wooms.id = :woomsId AND p.createdDate >= :startDate AND p.createdDate < :endDate")
+    Page<Photo> findAllByMonth(@Param("woomsId") Long woomsId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
     @Query("SELECT p FROM Photo p WHERE p.createdDate IN (" +
             "SELECT MIN(p2.createdDate) FROM Photo p2 " +
+            "where p.wooms.id = :woomsId " +
             "GROUP BY FUNCTION('YEAR', p2.createdDate), FUNCTION('MONTH', p2.createdDate)) ")
-    Page<Photo> findLatestPhotosByMonth(Pageable pageable);
+    Page<Photo> findLatestPhotosByMonth(@Param("woomsId") Long woomsId, Pageable pageable);
 
     @Query("SELECT new com.ee06.wooms.domain.photos.dto.MapResponse(p.mapId, COUNT(p)) " +
-            "FROM Photo p GROUP BY p.mapId")
-    List<MapResponse> findPhotoCounts();
+            "FROM Photo p where p.wooms.id = :woomsId GROUP BY p.mapId")
+    List<MapResponse> findPhotoCounts(@Param("woomsId") Long woomsId);
 }
