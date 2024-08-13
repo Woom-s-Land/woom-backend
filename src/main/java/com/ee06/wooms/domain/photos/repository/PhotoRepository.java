@@ -18,8 +18,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     @Query("SELECT p FROM Photo p WHERE p.createdDate IN (" +
             "SELECT MIN(p2.createdDate) FROM Photo p2 " +
-            "GROUP BY FUNCTION('YEAR', p2.createdDate), FUNCTION('MONTH', p2.createdDate)) " +
-            "ORDER BY p.createdDate ASC")
+            "GROUP BY FUNCTION('YEAR', p2.createdDate), FUNCTION('MONTH', p2.createdDate)) ")
     Page<Photo> findLatestPhotosByMonth(Pageable pageable);
 
     @Query("SELECT new com.ee06.wooms.domain.photos.dto.MapResponse(p.mapId, COUNT(p)) " +

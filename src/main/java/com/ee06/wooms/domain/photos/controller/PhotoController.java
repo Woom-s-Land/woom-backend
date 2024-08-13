@@ -43,7 +43,7 @@ public class PhotoController {
     @GetMapping("/photos/month")
     public ResponseEntity<List<PhotoResponse>> getPhotoMonth(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                             @PathVariable("woomsId") Long woomsId,
-                                                            @PageableDefault(size = 6) Pageable pageable) {
+                                                            @PageableDefault(size = 6, direction = Sort.Direction.DESC, sort = "id") Pageable pageable) {
         return ResponseEntity.ok(photoService.getMonthList(userDetails, woomsId, pageable));
     }
 
