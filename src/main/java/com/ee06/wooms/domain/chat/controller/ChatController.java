@@ -1,11 +1,11 @@
 package com.ee06.wooms.domain.chat.controller;
 
 import com.ee06.wooms.domain.chat.ChannelRepository;
-import com.ee06.wooms.domain.chat.SessionRepository;
 import com.ee06.wooms.domain.chat.dto.ChatMessage;
 import com.ee06.wooms.domain.chat.dto.MoveMessage;
 import com.ee06.wooms.domain.chat.entity.Channel;
 import com.ee06.wooms.domain.chat.entity.Woom;
+import com.ee06.wooms.global.common.CommonResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,21 +16,21 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class ChatController {
 
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate template;
     private final ChannelRepository channelRepository;
-    private final SessionRepository sessionRepository;
 
     @PostMapping("/api/join/{woomsId}")
-    public void join(@PathVariable("woomsId") UUID woomsId) {
+    public CommonResponse join(@PathVariable("woomsId") UUID woomsId) {
         Channel channel = channelRepository.get(woomsId);
         channel.getWooms().forEach(woom1 ->
                 {
@@ -42,6 +42,7 @@ public class ChatController {
                     }
                 }
         );
+        return new CommonResponse("ok");
     }
 
     @MessageMapping("/chat/{woomsId}")
