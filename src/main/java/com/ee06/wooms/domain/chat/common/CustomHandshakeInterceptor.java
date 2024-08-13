@@ -4,8 +4,6 @@ import com.ee06.wooms.domain.chat.ChannelRepository;
 import com.ee06.wooms.domain.chat.SessionRepository;
 import com.ee06.wooms.domain.chat.entity.Channel;
 import com.ee06.wooms.domain.chat.entity.Woom;
-import com.ee06.wooms.domain.users.entity.User;
-import com.ee06.wooms.domain.users.repository.UserRepository;
 import com.ee06.wooms.global.jwt.JWTUtil;
 import com.ee06.wooms.global.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,11 +26,8 @@ import java.util.UUID;
 public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
     private final JWTUtil jwtUtil;
 
-    private final UserRepository userRepository;
-
     private final ChannelRepository channelRepository;
     private final SessionRepository sessionRepository;
-
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
@@ -65,17 +60,25 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor 
         String sessionId = servletRequest.getSession().getId();
         String token = (String) servletRequest.getSession().getAttribute("token");
         log.info("토큰 읽기 성공");
-        log.info("token : {}", token);
 
+        log.info("token : {}", token);
         UUID userUuid = UUID.fromString(jwtUtil.getUuid(token));
+
+        log.info("userUuid : {}", userUuid);
         String nickname = jwtUtil.getNickname(token);
+
+        log.info("nickname : {}", nickname);
         Integer costume = Integer.valueOf(jwtUtil.getCostume(token));
+
+        log.info("costume : {}", costume);
         UUID channelUuid = UUID.fromString(jwtUtil.getChannelUuid(token));
+
+        log.info("channelUuid : {}", channelUuid);
 
         log.info("userUuid : {}", userUuid);
         log.info("channelUuid : {}", channelUuid);
         
-        Woom woom = new Woom().builder()
+        Woom woom = Woom.builder()
                 .woomsId(channelUuid)
                 .costume(costume)
                 .nickname(nickname)
