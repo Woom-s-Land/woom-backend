@@ -105,7 +105,7 @@ public class PhotoService {
     public PhotoDetailsResponse getPhotoDetails(CustomUserDetails userDetails, Long woomsId, Long photoId) {
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
 
-        Photo photo = getPhoto(userDetails, woomsId, photoId);
+        Photo photo = photoRepository.findById(photoId).orElseThrow(NotFoundPhotoException::new);
 
         return PhotoDetailsResponse.builder()
                 .id(photo.getId())
@@ -119,7 +119,7 @@ public class PhotoService {
     public CommonResponse photoFlip(CustomUserDetails userDetails, Long woomsId, Long photoId) {
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
 
-        Photo photo = getPhoto(userDetails, enrollment.getWooms().getId(), photoId);
+        Photo photo = getPhoto(userDetails, woomsId, photoId);
 
         photo.flip();
 
