@@ -41,7 +41,7 @@ public class JWTUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
-                .get("channelUuid", String.class);
+                .get("channel-uuid", String.class);
     }
 
     public String getUuid(String token) {
