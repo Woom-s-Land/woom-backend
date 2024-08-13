@@ -13,6 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Woom {
     private String nickname;
     private UUID woomsId;
