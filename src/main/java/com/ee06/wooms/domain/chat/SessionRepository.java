@@ -1,22 +1,21 @@
 package com.ee06.wooms.domain.chat;
 
+import com.ee06.wooms.domain.chat.entity.Woom;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class SessionRepository {
-    private ConcurrentMap<String, UUID> sessionCache = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Woom> sessionCache = new ConcurrentHashMap<>();
 
-    public void put(String key, UUID value) {
+    public void put(String key, Woom value) {
         sessionCache.put(key, value);
     }
 
-    public UUID get(String key) {
-        return sessionCache.getOrDefault(key, UUID.randomUUID());
+    public Woom get(String key) {
+        return sessionCache.getOrDefault(key, new Woom());
     }
 
     public void remove(String key) { this.sessionCache.remove(key); }

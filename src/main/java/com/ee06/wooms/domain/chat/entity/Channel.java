@@ -1,10 +1,9 @@
 package com.ee06.wooms.domain.chat.entity;
 
-import com.ee06.wooms.domain.chat.dto.MoveRequest;
+import com.ee06.wooms.domain.chat.dto.MoveMessage;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 public class Channel {
     Set<Woom> wooms;
@@ -15,11 +14,11 @@ public class Channel {
     public void addWoom(Woom woom) {
         wooms.add(woom);
     }
-    public void removeWoom(UUID uuid) {
-        wooms.remove(Woom.deleteWoom(uuid));
+    public void removeWoom(Woom woom) {
+        wooms.remove(woom);
     }
-    public void moveWoom(Woom woom, MoveRequest moveRequest){
-        woom.move(moveRequest);
+    public void moveWoom(Woom woom, MoveMessage moveMessage){
+        woom.move(moveMessage);
         wooms.add(woom);
     }
     public Set<Woom> getWooms() {
