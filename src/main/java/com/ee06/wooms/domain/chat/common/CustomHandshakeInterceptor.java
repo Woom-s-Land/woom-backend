@@ -75,15 +75,15 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor 
         log.info("userUuid : {}", userUuid);
         log.info("channelUuid : {}", channelUuid);
 
-        User user = userRepository.findById(userUuid).get();
-
-        log.info("user 불러오기 성공");
-        log.info("user.name : {}", user.getName());
+//        User user = userRepository.findById(userUuid).get();
+//
+//        log.info("user 불러오기 성공");
+//        log.info("user.name : {}", user.getName());
 
         Woom woom = Woom.builder()
                 .woomsId(channelUuid)
-                .costume(user.getCostume())
-                .nickname(user.getName())
+                .costume(costume)
+                .nickname(nickname)
                 .build();
 
         Channel channel = channelRepository.get(channelUuid);
