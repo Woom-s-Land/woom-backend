@@ -95,6 +95,7 @@ public class PhotoService {
                 .map(photo -> PhotoResponse.builder()
                         .id(photo.getId())
                         .path(photo.getPath())
+                        .date(photo.getCreatedDate().toLocalDate())
                         .flipped(photo.getFlipped())
                         .build())
                 .toList();
@@ -104,7 +105,7 @@ public class PhotoService {
     public PhotoDetailsResponse getPhotoDetails(CustomUserDetails userDetails, Long woomsId, Long photoId) {
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
 
-        Photo photo = getPhoto(userDetails, enrollment.getWooms().getId(), photoId);
+        Photo photo = getPhoto(userDetails, woomsId, photoId);
 
         return PhotoDetailsResponse.builder()
                 .id(photo.getId())
