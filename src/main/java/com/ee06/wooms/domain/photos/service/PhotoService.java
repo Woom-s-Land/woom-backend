@@ -1,6 +1,5 @@
 package com.ee06.wooms.domain.photos.service;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.ee06.wooms.domain.enrollments.entity.Enrollment;
 import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
@@ -31,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Objects;
@@ -87,8 +87,8 @@ public class PhotoService {
     public List<PhotoResponse> getPhotoList(CustomUserDetails userDetails, Long woomsId, LocalDate startDate, Pageable pageable) {
 
         Enrollment enrollment = getEnrollments(userDetails, woomsId);
-        LocalDate date = startDate.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate endDate = date.plusMonths(1);
+        LocalDateTime date = startDate.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
+        LocalDateTime endDate = date.plusMonths(1);
 
         return photoRepository.findAllByMonth(date, endDate, pageable)
                 .stream()
