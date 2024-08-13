@@ -77,13 +77,10 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor 
 
         log.info("userUuid : {}", userUuid);
         log.info("channelUuid : {}", channelUuid);
-        
-        Woom woom = Woom.builder()
-                .woomsId(channelUuid)
-                .costume(costume)
-                .nickname(nickname)
-                .build();
-        
+        Woom woom = Woom.DefaultWoom();
+        woom.setWoomsId(channelUuid);
+        woom.setCostume(costume);
+        woom.setNickname(nickname);
         Channel channel = channelRepository.get(channelUuid);
         channel.addWoom(woom);
         log.info("addWoom 성공");
