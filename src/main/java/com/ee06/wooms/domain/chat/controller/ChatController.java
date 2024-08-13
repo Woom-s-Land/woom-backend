@@ -36,7 +36,7 @@ public class ChatController {
                 {
                     try {
                         log.info("woom : {} ", MoveMessage.of(woom1));
-                        template.convertAndSend("/move/" + woomsId, objectMapper.writeValueAsString(MoveMessage.of(woom1)));
+                        template.convertAndSend("/ws/wooms/move/" + woomsId, objectMapper.writeValueAsString(MoveMessage.of(woom1)));
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
@@ -51,7 +51,7 @@ public class ChatController {
         ChatMessage chatMessage = objectMapper.readValue(content, ChatMessage.class);
 
         log.info("chatMessage: {}", chatMessage);
-        template.convertAndSend("/chat/" + woomsId, objectMapper.writeValueAsString(chatMessage));
+        template.convertAndSend("/ws/wooms/chat/" + woomsId, objectMapper.writeValueAsString(chatMessage));
     }
 
     @MessageMapping("/move/{woomsId}")
@@ -61,7 +61,7 @@ public class ChatController {
 
         channelRepository.get(woomsId).moveWoom(new Woom(moveMessage.getNickname(), moveMessage.getCostume(), woomsId), moveMessage);
         log.info("moveMessage: {}", moveMessage);
-        template.convertAndSend("/move/" + woomsId, objectMapper.writeValueAsString(moveMessage));
+        template.convertAndSend("/ws/wooms/move/" + woomsId, objectMapper.writeValueAsString(moveMessage));
     }
 
 }
