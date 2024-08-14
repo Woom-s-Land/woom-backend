@@ -26,7 +26,7 @@ public enum ErrorCode {
     EXIST_USER(HttpStatus.INTERNAL_SERVER_ERROR, "이미 회원가입 된 이메일입니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
     NOT_FOUND_EMAIL_USER(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 이메일입니다."),
-    UN_AUTHENTICATED_USER(HttpStatus.FORBIDDEN, "허가되지 않는 접근입니다."),
+    UN_AUTHENTICATED_USER(HttpStatus.UNAUTHORIZED, "허가되지 않는 접근입니다."),
     ACCESS_DENIED_USER(HttpStatus.FORBIDDEN, "허가되지 않는 사용자입니다."),
     NOT_SENT_EMAIL_USER(HttpStatus.INTERNAL_SERVER_ERROR, "이메일을 전송하지 못하였습니다.\n정확한 이메일을 입력해주세요."),
     EMAIL_EXPIRED_USER(HttpStatus.BAD_GATEWAY, "만료된 인증 코드입니다. 다시 인증해주세요."),
