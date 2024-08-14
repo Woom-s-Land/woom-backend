@@ -6,6 +6,7 @@ import com.ee06.wooms.domain.users.dto.auth.ModifyPasswordInfo;
 import com.ee06.wooms.domain.users.dto.auth.UserGameInfo;
 import com.ee06.wooms.domain.users.entity.Mail;
 import com.ee06.wooms.domain.users.exception.ex.UserNicknameTooLongException;
+import com.ee06.wooms.domain.users.exception.ex.UserNotAllowedException;
 import com.ee06.wooms.domain.users.service.UserService;
 import com.ee06.wooms.global.common.CommonResponse;
 import com.ee06.wooms.global.exception.BindingException;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.objenesis.ObjenesisHelper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,12 @@ import java.util.Objects;
 @RequestMapping("/api")
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/auth/users")
+    public ResponseEntity<CommonResponse> authenticationCheck(@AuthenticationPrincipal CustomUserDetails currentUser) {
+        if(currentUser == null) throw new UserNotAllowedException();
+        return ResponseEntity.ok(new CommonResponse("ok"));
+    }
 
     @PostMapping("/auth/users")
     public ResponseEntity<CommonResponse> join(@Valid @RequestBody Join joinDto, BindingResult result) {
