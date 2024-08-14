@@ -80,7 +80,7 @@ public class UserController {
                                                          @Valid @RequestBody UserGameInfo userGameInfo,
                                                          BindingResult result) {
 
-        if (userGameInfo.getNickname().getBytes(StandardCharsets.UTF_8).length > 14)
+        if (userGameInfo.getNickname().getBytes(StandardCharsets.UTF_8).length > 21)
             throw new UserNicknameTooLongException();
 
         if (result.hasErrors())
