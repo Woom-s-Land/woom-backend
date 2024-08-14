@@ -29,7 +29,7 @@ import java.util.Objects;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/auth/users")
+    @GetMapping("/authorization/users")
     public ResponseEntity<CommonResponse> authenticationCheck(@AuthenticationPrincipal CustomUserDetails currentUser) {
         if(currentUser == null) throw new UserNotAllowedException();
         return ResponseEntity.ok(new CommonResponse("ok"));
