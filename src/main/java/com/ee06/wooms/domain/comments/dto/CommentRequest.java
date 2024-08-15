@@ -16,6 +16,6 @@ import org.hibernate.validator.constraints.Length;
 public class CommentRequest {
 
     @NotNull
-    @Length(min = 1, max = 20)
+    @Length(min = 1, max = 30)
     private String content;
 }

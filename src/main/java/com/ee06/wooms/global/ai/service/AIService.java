@@ -21,7 +21,7 @@ public class AIService {
     private final OpenAiAudioSpeechOptions speechOptions;
 
     public String convertScript(String content, String nickname) {
-        ChatResponse chatResponse = chatClient.prompt().user("사용자 이름: " + nickname + content).call().chatResponse();
+        ChatResponse chatResponse = chatClient.prompt().user( content + "\"사용자 이름: \"" + nickname).call().chatResponse();
         AssistantMessage chatOutput = chatResponse.getResult().getOutput();
 
         return chatOutput.getContent();
