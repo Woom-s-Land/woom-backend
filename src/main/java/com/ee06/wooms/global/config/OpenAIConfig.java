@@ -38,7 +38,7 @@ public class OpenAIConfig {
     @Bean
     OpenAiAudioSpeechOptions openAiAudioSpeechOptions() {
         return OpenAiAudioSpeechOptions.builder()
-                .withVoice(OpenAiAudioApi.SpeechRequest.Voice.SHIMMER)
+                .withVoice(OpenAiAudioApi.SpeechRequest.Voice.NOVA)
                 .withSpeed(1.1f)
                 .withResponseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
                 .withModel(OpenAiAudioApi.TtsModel.TTS_1_HD.value)
