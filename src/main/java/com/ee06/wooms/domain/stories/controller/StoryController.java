@@ -1,6 +1,7 @@
 package com.ee06.wooms.domain.stories.controller;
 
 import com.ee06.wooms.domain.stories.dto.StoryResponse;
+import com.ee06.wooms.domain.stories.dto.StorySearchCriteria;
 import com.ee06.wooms.domain.stories.dto.StoryWriteRequest;
 import com.ee06.wooms.domain.stories.service.StoryService;
 import com.ee06.wooms.domain.users.dto.CustomUserDetails;
@@ -13,6 +14,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -34,5 +38,14 @@ public class StoryController {
             @PathVariable Long woomsId
     ) {
         return ResponseEntity.ok(storyService.writeStory(customUserDetails, storyDto, woomsId));
+    }
+
+    @GetMapping("/wooms/{woomsId}/stories/date")
+    public ResponseEntity<StoryResponse> getSpecificDateStories(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                                                @PathVariable Long woomsId,
+                                                                @PageableDefault(size = 4, direction = Sort.Direction.DESC, sort = "id") Pageable pageable,
+                                                                @RequestBody StorySearchCriteria criteria
+                                                                ) {
+        return ResponseEntity.ok(storyService.getSpecificDateStories(currentUser, woomsId, pageable, criteria));
     }
 }
