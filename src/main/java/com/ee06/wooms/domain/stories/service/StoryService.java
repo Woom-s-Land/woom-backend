@@ -4,6 +4,7 @@ import com.ee06.wooms.domain.enrollments.entity.EnrollmentStatus;
 import com.ee06.wooms.domain.enrollments.repository.EnrollmentRepository;
 import com.ee06.wooms.domain.stories.Script;
 import com.ee06.wooms.domain.stories.dto.StoryResponse;
+import com.ee06.wooms.domain.stories.dto.StorySearchCriteria;
 import com.ee06.wooms.domain.stories.dto.StoryWriteRequest;
 import com.ee06.wooms.domain.stories.entity.Story;
 import com.ee06.wooms.domain.stories.repository.StoryRepository;
@@ -24,9 +25,11 @@ import com.ee06.wooms.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,6 +105,46 @@ public class StoryService {
         return new CommonResponse("ok");
     }
 
+    public StoryResponse getSpecificDateStories(CustomUserDetails currentUser,
+                                                Long woomsId,
+                                                Pageable pageable,
+                                                StorySearchCriteria criteria
+    ) {
+        User user = fetchUser(currentUser);
+        validateEnrollment(woomsId, user);
+
+        Integer totalPage = storyRepository.countByWoomsId(woomsId);
+        List<StoryWriteRequest> stories = storyRepository.findAllBySpecificDateStories(
+                        woomsId,
+                        criteria.getStartDate(),
+                        criteria.getEndDate(),
+                        criteria.getKeyword(),
+                        pageable)
+                .stream()
+                .map((story) -> StoryWriteRequest.builder()
+                        .id(story.getId())
+                        .userNickname(story.getUser().getNickname())
+                        .costume(userRepository.findCostumeById(story.getUser().getUuid()))
+                        .content(story.getContent())
+                        .fileName(s3Service.getFilePath(
+                                        "stories",
+                                        String.valueOf(story.getFileName()),
+                                        STORY_EXTENSION.getFormat()
+                                )
+                        )
+                        .build())
+                .toList();
+
+        String message = pageable.getPageNumber() + "페이지";
+        if (stories.isEmpty()) message = message.concat(Script.NOT_FOUND_STORIES.getScript());
+
+        return StoryResponse.builder()
+                .stories(stories)
+                .message(message)
+                .totalPage(totalPage / 4 + 1)
+                .build();
+    }
+
     private User fetchUser(CustomUserDetails currentUser) {
         return userRepository.findById(UUID.fromString(currentUser.getUuid())).orElseThrow(UserNotFoundException::new);
     }
@@ -109,9 +152,12 @@ public class StoryService {
     private void validateEnrollment(Long woomsId, User user) {
         enrollmentRepository.findByPkUserUuidAndWoomsId(user.getUuid(), woomsId).ifPresentOrElse(
                 (enrollment) -> {
-                    if(!Objects.equals(enrollment.getStatus(), EnrollmentStatus.ACCEPT)) throw new WoomsNotAllowedUserException();
+                    if (!Objects.equals(enrollment.getStatus(), EnrollmentStatus.ACCEPT))
+                        throw new WoomsNotAllowedUserException();
                 },
-                () -> {throw new WoomsUserNotEnrolledException();}
+                () -> {
+                    throw new WoomsUserNotEnrolledException();
+                }
         );
     }
 }
